@@ -90,8 +90,8 @@
 </head>
 <body class="min-h-screen flex flex-col bg-[#f4f5fb] text-slate-800">
 
-  <!-- TOP GLOBAL NAVIGATION BAR -->
-  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-indigo-100 shadow-sm">
+  <!-- TOP GLOBAL NAVIGATION BAR (Hidden on Login screen; shown only after signing in) -->
+  <header id="mainTopHeader" class="hidden sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-indigo-100 shadow-sm">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
       <!-- Brand / Domain Identity -->
       <div class="flex items-center gap-3 min-w-0 cursor-pointer" onclick="switchMainView('library')">
@@ -130,7 +130,7 @@
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span id="activeUserLabel">மாணவர் / ஆசிரியர் பார்வை</span>
         </div>
-        <button type="button" onclick="openQuickUploadFromNav()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs shadow-sm transition flex items-center gap-1.5">
+        <button id="headerQuickUploadBtn" type="button" onclick="openQuickUploadFromNav()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs shadow-sm transition flex items-center gap-1.5">
           <span>➕ புத்தகம் பதிவேற்றுக</span>
         </button>
       </div>
@@ -140,7 +140,7 @@
   <!-- ===================================================================== -->
   <!-- VIEW 1: USER LIBRARY INTERFACE (பயனர் இடைமுகப்பு - MANARKENI STYLE)   -->
   <!-- ===================================================================== -->
-  <main id="viewLibrary" class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 space-y-6">
+  <main id="viewLibrary" class="hidden flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 space-y-6">
 
     <!-- Hero Banner with Search & Quick Filters -->
     <section class="manarkeni-gradient rounded-2xl p-5 sm:p-7 text-white shadow-lg relative overflow-hidden">
@@ -183,7 +183,7 @@
               <div class="text-[11px] text-indigo-100">HTML &amp; PDF</div>
             </div>
           </div>
-          <button type="button" onclick="switchMainView('admin')" class="w-full py-2.5 px-4 rounded-xl bg-white text-indigo-900 hover:bg-indigo-50 font-bold text-xs sm:text-sm shadow transition flex items-center justify-center gap-2">
+          <button id="heroAdminShortcutBtn" type="button" onclick="switchMainView('admin')" class="w-full py-2.5 px-4 rounded-xl bg-white text-indigo-900 hover:bg-indigo-50 font-bold text-xs sm:text-sm shadow transition flex items-center justify-center gap-2">
             <span>📤</span>
             <span>நிர்வாகி முகப்பு: புதிய புத்தகம் பதிவேற்றுக</span>
           </button>
@@ -673,7 +673,7 @@
   <!-- ===================================================================== -->
   <!-- VIEW 3: MANARKENI-INSPIRED SPLIT LOGIN PAGE (உள்நுழைவு முகப்பு)         -->
   <!-- ===================================================================== -->
-  <main id="viewLogin" class="hidden flex-1 flex items-center justify-center p-3 sm:p-6 lg:p-10">
+  <main id="viewLogin" class="flex-1 min-h-screen flex items-center justify-center p-0 sm:p-6 lg:p-10">
     <div class="w-full max-w-5xl bg-white rounded-3xl shadow-xl border border-slate-200/80 overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[540px]">
 
       <!-- Left Side: Teal Manarkeni Aesthetic (Matches Reference Image 1) -->
@@ -1259,8 +1259,8 @@ function jsonResponse(obj) {
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-3 sm:px-0"></div>
 
-  <!-- FOOTER -->
-  <footer class="bg-white border-t border-slate-200/80 py-4 px-4 mt-8">
+  <!-- FOOTER (Hidden on Login screen) -->
+  <footer id="mainAppFooter" class="hidden bg-white border-t border-slate-200/80 py-4 px-4 mt-8">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
       <div class="flex items-center gap-2">
         <span class="font-bold text-indigo-900">library.ceosvg.in</span>
@@ -1468,15 +1468,29 @@ function jsonResponse(obj) {
         login: document.getElementById('navBtnLogin')
       };
 
+      // Show header & footer ONLY after login (hide completely on Login view)
+      const topHeader = document.getElementById('mainTopHeader');
+      const appFooter = document.getElementById('mainAppFooter');
+      if (topHeader) topHeader.classList.toggle('hidden', viewName === 'login');
+      if (appFooter) appFooter.classList.toggle('hidden', viewName === 'login');
+
+      // Show Admin navigation buttons only when logged in as Admin
+      const isAdmin = (currentRole === 'Admin');
+      if (btns.admin) btns.admin.classList.toggle('hidden', !isAdmin);
+      const quickUpBtn = document.getElementById('headerQuickUploadBtn');
+      if (quickUpBtn) quickUpBtn.classList.toggle('hidden', !isAdmin);
+      const heroAdminBtn = document.getElementById('heroAdminShortcutBtn');
+      if (heroAdminBtn) heroAdminBtn.classList.toggle('hidden', !isAdmin);
+
       Object.keys(views).forEach((k) => {
         if (views[k]) {
           views[k].classList.toggle('hidden', k !== viewName);
         }
         if (btns[k]) {
           if (k === viewName) {
-            btns[k].className = 'px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm';
+            btns[k].className = (k === 'admin' && !isAdmin ? 'hidden ' : '') + 'px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm';
           } else {
-            btns[k].className = 'px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 text-slate-600 hover:text-indigo-700 hover:bg-white';
+            btns[k].className = (k === 'admin' && !isAdmin ? 'hidden ' : '') + 'px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 text-slate-600 hover:text-indigo-700 hover:bg-white';
           }
         }
       });
@@ -1695,7 +1709,7 @@ function jsonResponse(obj) {
             </div>
           </article>
         `;
-      }).join('') + `
+      }).join('') + (currentRole === 'Admin' ? `
         <article onclick="switchMainView('admin')" class="book-card bg-indigo-50/50 hover:bg-indigo-50 rounded-2xl p-3 border-2 border-dashed border-indigo-300 flex flex-col items-center justify-center text-center cursor-pointer min-h-[250px] group transition">
           <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-2xl font-bold shadow-md group-hover:scale-110 transition mb-3">
             ➕
@@ -1708,7 +1722,7 @@ function jsonResponse(obj) {
             📤 நிர்வாகி பதிவேற்றம் →
           </span>
         </article>
-      `;
+      ` : '');
     }
 
     // =====================================================================
