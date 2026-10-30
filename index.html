@@ -1301,8 +1301,11 @@ function jsonResponse(obj) {
     let activeClassFilter = 'ALL';
     let activeFormatFilter = 'ALL';
     let currentRole = 'Guest';
+    let currentMainView = 'login';
+    let currentBadgeText = '';
     let currentReaderBook = null;
     let currentReaderFormat = 'FLIPBOOK';
+    let activeHtmlBlobUrl = '';
     let currentFlipSpread = 0; // 0 = Pages 1-2, 1 = Pages 3-4, 2 = Pages 5-6
     let flipSoundEnabled = true;
     let autoFlipTimer = null;
@@ -1353,6 +1356,53 @@ function jsonResponse(obj) {
       }).catch(() => null);
     }
 
+    function saveActiveSessionState() {
+      try {
+        if (currentMainView === 'login') {
+          localStorage.removeItem('ceosvg_active_session_v1');
+        } else {
+          localStorage.setItem('ceosvg_active_session_v1', JSON.stringify({
+            loggedIn: true,
+            role: currentRole,
+            badgeText: currentBadgeText || document.getElementById('activeUserLabel')?.textContent || '',
+            activeView: currentMainView,
+            openBookId: currentReaderBook ? currentReaderBook.id : '',
+            openFormat: currentReaderBook ? currentReaderFormat : ''
+          }));
+        }
+      } catch (e) {}
+    }
+
+    function restoreActiveSessionOnLoad() {
+      try {
+        const rawSession = localStorage.getItem('ceosvg_active_session_v1');
+        if (!rawSession) return;
+        const sess = JSON.parse(rawSession);
+        if (sess && sess.loggedIn) {
+          currentRole = sess.role || 'Guest';
+          currentBadgeText = sess.badgeText || '';
+          const badgeLabel = document.getElementById('activeUserLabel');
+          if (badgeLabel && currentBadgeText) {
+            badgeLabel.textContent = currentBadgeText;
+          }
+          const guardBanner = document.getElementById('adminRoleGuardBanner');
+          if (guardBanner) {
+            guardBanner.classList.toggle('hidden', currentRole === 'Admin');
+          }
+          const targetView = (sess.activeView === 'admin' && currentRole === 'Admin') ? 'admin' : 'library';
+          switchMainView(targetView);
+
+          // If the user had a book open when they refreshed, reopen it seamlessly
+          if (sess.openBookId) {
+            const foundBook = booksCatalog.find(b => b.id === sess.openBookId);
+            if (foundBook) {
+              openBookReader(foundBook.id, sess.openFormat || 'HTML');
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
     function loadStoredState() {
       try {
         const rawBooks = localStorage.getItem('ceosvg_library_books_v2');
@@ -1386,14 +1436,15 @@ function jsonResponse(obj) {
         savedBookIds = [];
       }
 
-      // Also restore full books (including large PDF/HTML/Flipbook blobs) from IndexedDB if available
+      // Restore full books (including large PDF/HTML/Flipbook content) from IndexedDB and then restore active login session
       loadBooksFromIndexedDB().then(idbBooks => {
-        if (Array.isArray(idbBooks) && idbBooks.length >= booksCatalog.length) {
+        if (Array.isArray(idbBooks) && idbBooks.length > 0) {
           booksCatalog = idbBooks;
-          renderLibraryGrid();
-          renderAdminBooksTable();
-          updateHeroStats();
         }
+        renderLibraryGrid();
+        renderAdminBooksTable();
+        updateHeroStats();
+        restoreActiveSessionOnLoad();
       });
     }
 
@@ -1408,8 +1459,10 @@ function jsonResponse(obj) {
         try {
           const lightweightCatalog = booksCatalog.map(b => ({
             ...b,
+            hasCustomHtml: !!(b.customHtmlContent && b.customHtmlContent.trim()),
+            customHtmlContent: (b.customHtmlContent && b.customHtmlContent.length > 150000) ? '' : (b.customHtmlContent || ''),
             pdfDataUrl: '',
-            customFlipImages: Array.isArray(b.customFlipImages) ? b.customFlipImages.slice(0, 2) : undefined
+            customFlipImages: Array.isArray(b.customFlipImages) ? b.customFlipImages.slice(0, 1) : undefined
           }));
           localStorage.setItem('ceosvg_library_books_v2', JSON.stringify(lightweightCatalog));
         } catch (e2) {}
@@ -1473,6 +1526,8 @@ function jsonResponse(obj) {
 
     // Switch Top-Level View (Library / Admin / Login)
     function switchMainView(viewName) {
+      currentMainView = viewName;
+      saveActiveSessionState();
       const views = {
         library: document.getElementById('viewLibrary'),
         admin: document.getElementById('viewAdmin'),
@@ -1594,7 +1649,7 @@ function jsonResponse(obj) {
         const hasHtml = book.formats && book.formats.html;
 
         return `
-          <article class="book-card bg-white rounded-2xl p-2.5 border border-slate-200/90 shadow-sm flex flex-col justify-between group cursor-pointer" onclick="openBookReader('${book.id}', '${(book.customHtmlContent && book.formats?.html) ? 'HTML' : (book.formats?.flipbook ? 'FLIPBOOK' : (book.formats?.pdf ? 'PDF' : 'HTML'))}')">
+          <article class="book-card bg-white rounded-2xl p-2.5 border border-slate-200/90 shadow-sm flex flex-col justify-between group cursor-pointer" onclick="openBookReader('${book.id}', '${((book.customHtmlContent || book.hasCustomHtml) && book.formats?.html) ? 'HTML' : (book.formats?.flipbook ? 'FLIPBOOK' : (book.formats?.pdf ? 'PDF' : 'HTML'))}')">
             <div>
               <!-- Book Cover Image Container -->
               <div class="relative rounded-xl overflow-hidden aspect-[3/4.1] bg-slate-100 border border-slate-100">
@@ -1688,12 +1743,19 @@ function jsonResponse(obj) {
       if (modal) modal.classList.remove('hidden');
 
       switchReaderFormat(fmt);
+      saveActiveSessionState();
     }
 
     function closeReaderModal() {
       stopAutoFlip();
+      currentReaderBook = null;
+      if (activeHtmlBlobUrl) {
+        try { URL.revokeObjectURL(activeHtmlBlobUrl); } catch (e) {}
+        activeHtmlBlobUrl = '';
+      }
       const modal = document.getElementById('readerModal');
       if (modal) modal.classList.add('hidden');
+      saveActiveSessionState();
       renderLibraryGrid();
     }
 
@@ -2075,6 +2137,40 @@ function jsonResponse(obj) {
       }
     }
 
+    // Helper: Enhance uploaded HTML so internal #hash links scroll smoothly without reloading parent URL
+    function buildSafeStandaloneHtmlBlobUrl(rawHtml) {
+      const navGuardScript = `<script>
+        document.addEventListener('click', function(e) {
+          var a = e.target && e.target.closest ? e.target.closest('a') : null;
+          if (!a) return;
+          var href = a.getAttribute('href') || '';
+          if (href.charAt(0) === '#') {
+            e.preventDefault();
+            var id = href.slice(1);
+            if (!id) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+            var target = document.getElementById(id) || document.querySelector('[name="' + id + '"]');
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+          } else if (a.getAttribute('target') === '_top' || a.getAttribute('target') === '_parent') {
+            a.setAttribute('target', '_self');
+          }
+        }, true);
+      <\/script>`;
+
+      let finalHtml = rawHtml;
+      if (/<\/body>/i.test(finalHtml)) {
+        finalHtml = finalHtml.replace(/<\/body>/i, navGuardScript + '</body>');
+      } else {
+        finalHtml = finalHtml + navGuardScript;
+      }
+
+      if (activeHtmlBlobUrl) {
+        try { URL.revokeObjectURL(activeHtmlBlobUrl); } catch (e) {}
+      }
+      const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+      activeHtmlBlobUrl = URL.createObjectURL(blob);
+      return activeHtmlBlobUrl;
+    }
+
     // RENDER INTERACTIVE HTML READER PANE (100% Full-Screen Native Webpage View)
     function renderHtmlReaderPane() {
       const contentEl = document.getElementById('htmlReaderContent');
@@ -2083,11 +2179,12 @@ function jsonResponse(obj) {
 
       if (book.customHtmlContent && book.customHtmlContent.trim()) {
         const rawHtml = book.customHtmlContent.trim();
+        const blobUrl = buildSafeStandaloneHtmlBlobUrl(rawHtml);
         contentEl.className = 'w-full h-full flex-1 overflow-hidden p-0 m-0';
         contentEl.innerHTML = '<iframe id="customHtmlBookIframe" class="w-full h-full border-0 block bg-white" style="width:100vw;height:100vh;border:none;display:block;"></iframe>';
         const ifr = document.getElementById('customHtmlBookIframe');
         if (ifr) {
-          ifr.srcdoc = rawHtml;
+          ifr.src = blobUrl;
         }
         return;
       }
@@ -2748,14 +2845,20 @@ function jsonResponse(obj) {
 
     function handleUserLogout() {
       currentRole = 'Guest';
+      currentBadgeText = '';
+      currentReaderBook = null;
+      try { localStorage.removeItem('ceosvg_active_session_v1'); } catch (e) {}
       const pwdInput = document.getElementById('loginPasswordInput');
       if (pwdInput) pwdInput.value = '';
+      const modal = document.getElementById('readerModal');
+      if (modal) modal.classList.add('hidden');
       switchMainView('login');
       showToast('🚪 வெற்றிகரமாக வெளியேறினீர்கள் (Logged Out)!', 'info');
     }
 
     function quickLoginAs(role, customBadgeText) {
       currentRole = role;
+      currentBadgeText = customBadgeText || (role === 'Admin' ? 'நிர்வாகி (9999999999)' : (role === 'Teacher' ? 'ஆசிரியர் (9876543211)' : 'பயனர் (9876543210)'));
       const badgeLabel = document.getElementById('activeUserLabel');
       const guardBanner = document.getElementById('adminRoleGuardBanner');
       if (guardBanner) {
