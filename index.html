@@ -142,112 +142,6 @@
   <!-- ===================================================================== -->
   <main id="viewLibrary" class="hidden flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 space-y-6">
 
-    <!-- Hero Banner with Search & Quick Filters -->
-    <section class="manarkeni-gradient rounded-2xl p-5 sm:p-7 text-white shadow-lg relative overflow-hidden">
-      <!-- Decorative circles like Manarkeni login -->
-      <div class="w-64 h-64 rounded-full bg-white/5 absolute -top-20 -right-12 pointer-events-none"></div>
-      <div class="w-44 h-44 rounded-full bg-white/5 absolute -bottom-16 left-1/3 pointer-events-none"></div>
-
-      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        <div class="space-y-2.5 max-w-2xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm text-xs font-medium border border-white/25">
-            <span>🏛️ பள்ளிக்கல்வித்துறை • முதன்மைக் கல்வி அலுவலகம், சிவகங்கை</span>
-          </div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-snug">
-            சிவகங்கை கல்விக்களம் (<span class="underline decoration-amber-300 decoration-2 underline-offset-4">library.ceosvg.in</span>)
-          </h1>
-          <p class="text-indigo-50 text-sm sm:text-base leading-relaxed">
-            பாடநூல்கள் மற்றும் கற்றல் வளங்களை <strong>3D Flipbook</strong>, <strong>PDF</strong> மற்றும் <strong>Interactive HTML</strong> வடிவங்களில் உடனடியாகப் படியுங்கள்.
-          </p>
-        </div>
-
-        <!-- Quick Stats & Admin Upload Shortcut -->
-        <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-4 min-w-[270px]">
-          <div class="grid grid-cols-3 gap-2 text-center">
-            <div class="bg-white/10 rounded-xl p-2.5">
-              <div id="heroStatTotal" class="text-xl sm:text-2xl font-extrabold text-white">1</div>
-              <div class="text-[11px] text-indigo-100">மொத்த நூல்கள்</div>
-            </div>
-            <div class="bg-white/10 rounded-xl p-2.5">
-              <div id="heroStatFlip" class="text-xl sm:text-2xl font-extrabold text-amber-300">1</div>
-              <div class="text-[11px] text-indigo-100">3D Flipbooks</div>
-            </div>
-            <div class="bg-white/10 rounded-xl p-2.5">
-              <div id="heroStatHtmlPdf" class="text-xl sm:text-2xl font-extrabold text-emerald-200">1</div>
-              <div class="text-[11px] text-indigo-100">HTML &amp; PDF</div>
-            </div>
-          </div>
-          <button id="heroAdminShortcutBtn" type="button" onclick="switchMainView('admin')" class="w-full py-2.5 px-4 rounded-xl bg-white text-indigo-900 hover:bg-indigo-50 font-bold text-xs sm:text-sm shadow transition flex items-center justify-center gap-2">
-            <span>📤</span>
-            <span>நிர்வாகி முகப்பு: புதிய புத்தகம் பதிவேற்றுக</span>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Search, Class Filter, Medium Filter & Format Filter Bar -->
-    <section class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/80 space-y-4">
-      <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-        <!-- Search Input -->
-        <div class="relative flex-1">
-          <span class="absolute inset-y-0 left-3.5 flex items-center text-slate-400 pointer-events-none">🔍</span>
-          <input
-            id="searchInput"
-            type="text"
-            oninput="handleSearchOrFilter()"
-            placeholder="புத்தகத்தின் பெயர், பாடம் (எ.கா: கணிதம், இயற்பியல், வேதியியல், வரலாறு, NEET)..."
-            class="w-full pl-10 pr-9 py-2.5 rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 outline-none text-sm transition"
-          />
-          <button id="clearSearchBtn" type="button" onclick="clearSearchInput()" class="hidden absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-slate-600 text-xs font-bold">✕</button>
-        </div>
-
-        <!-- Medium Select -->
-        <div class="flex flex-wrap items-center gap-2">
-          <label for="mediumSelect" class="text-xs font-semibold text-slate-500 sr-only">பயிற்று மொழி</label>
-          <select id="mediumSelect" onchange="handleSearchOrFilter()" class="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs sm:text-sm font-semibold text-slate-700 focus:border-indigo-600 outline-none">
-            <option value="ALL">🌐 அனைத்து மொழிகள் (All Mediums)</option>
-            <option value="தமிழ் வழி">தமிழ் வழி (Tamil Medium)</option>
-            <option value="English Medium">ஆங்கில வழி (English Medium)</option>
-            <option value="இருமொழி">இருமொழி (Bilingual)</option>
-          </select>
-
-          <!-- Format Filter Pills -->
-          <div class="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200">
-            <button type="button" id="fmtBtn_ALL" onclick="setFormatFilter('ALL')" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white shadow-sm transition">அனைத்தும்</button>
-            <button type="button" id="fmtBtn_FLIPBOOK" onclick="setFormatFilter('FLIPBOOK')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-indigo-700 transition">📖 Flipbook</button>
-            <button type="button" id="fmtBtn_PDF" onclick="setFormatFilter('PDF')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-indigo-700 transition">📄 PDF</button>
-            <button type="button" id="fmtBtn_HTML" onclick="setFormatFilter('HTML')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-indigo-700 transition">🌐 HTML</button>
-            <button type="button" id="fmtBtn_SAVED" onclick="setFormatFilter('SAVED')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-indigo-700 transition">⭐ பிடித்தவை</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Class Category Horizontal Filter Pills -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-1 pt-1" id="classPillsContainer">
-        <button type="button" data-class="ALL" onclick="setClassFilter('ALL')" class="class-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-900 border-2 border-indigo-600 transition">
-          அனைத்து வகுப்புகள் (All)
-        </button>
-        <button type="button" data-class="Class XII" onclick="setClassFilter('Class XII')" class="class-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-400 transition">
-          வகுப்பு 12 (Class XII - Subjects)
-        </button>
-        <button type="button" data-class="Class XI" onclick="setClassFilter('Class XI')" class="class-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-400 transition">
-          வகுப்பு 11 (Class XI)
-        </button>
-        <button type="button" data-class="Class X" onclick="setClassFilter('Class X')" class="class-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-400 transition">
-          வகுப்பு 10 (SSLC)
-        </button>
-        <button type="button" data-class="Class VI-IX" onclick="setClassFilter('Class VI-IX')" class="class-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-400 transition">
-          வகுப்பு 6–9 (இடைநிலை)
-        </button>
-        <button type="button" data-class="Class I-V" onclick="setClassFilter('Class I-V')" class="class-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-400 transition">
-          வகுப்பு 1–5 (தொடக்கக் கல்வி)
-        </button>
-        <button type="button" data-class="Competitive" onclick="setClassFilter('Competitive')" class="class-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-400 transition">
-          🎯 போட்டித் தேர்வு &amp; CEO கையேடுகள்
-        </button>
-      </div>
-    </section>
-
     <!-- Section Heading (Matches Reference Image 2: "Class XII - Subjects") -->
     <section class="space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -301,69 +195,10 @@
       </button>
     </section>
 
-    <!-- Streamlined Admin Header + KPI Summary Cards -->
-    <section class="bg-white rounded-3xl shadow-sm border border-slate-200/90 overflow-hidden">
-      <div class="manarkeni-gradient p-5 sm:p-6 text-white flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div class="space-y-1">
-          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-white/15 text-amber-200 text-xs font-bold border border-white/20">
-            <span>⚙️ சிவகங்கை கல்விக்களம் • நிர்வாகி கட்டுப்பாட்டு அறை</span>
-          </div>
-          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">புத்தகப் பதிவேற்றம் மற்றும் நூலக மேலாண்மை</h1>
-          <p class="text-xs sm:text-sm text-indigo-100">
-            <strong>HTML</strong>, <strong>PDF</strong> மற்றும் <strong>3D Flipbook</strong> புத்தகங்களை <code>CEOSVG.IN/digitalbooks</code> கோப்புறையில் சேமித்து நிர்வகிக்கவும்.
-          </p>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2">
-          <button type="button" onclick="loadSampleAdminUploadDemo()" class="px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition shadow-sm flex items-center gap-1.5">
-            <span>⚡ மாதிரி புத்தகத் தரவை நிரப்புக (Auto-Fill Demo)</span>
-          </button>
-          <button type="button" onclick="exportLibraryCatalogJson()" class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/25 text-xs font-bold transition flex items-center gap-1.5">
-            <span>📥 நூலக பட்டியல் (JSON)</span>
-          </button>
-          <button type="button" onclick="switchMainView('library')" class="px-3.5 py-2 rounded-xl bg-white text-indigo-950 hover:bg-indigo-50 text-xs font-extrabold transition shadow-sm">
-            <span>👁️ பயனர் நூலகத்தைப் பார்க்க</span>
-          </button>
-          <button type="button" onclick="handleUserLogout()" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold transition shadow-sm flex items-center gap-1.5">
-            <span>🚪 வெளியேறு (Logout)</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- 4 Clean KPI Cards Bar -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-slate-100 bg-slate-50/60">
-        <div class="p-4 flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-xl font-bold shrink-0">📚</div>
-          <div>
-            <div class="text-[11px] font-bold text-slate-500">மொத்தப் புத்தகங்கள்</div>
-            <div id="adminKpiBooks" class="text-xl font-extrabold text-slate-900">1</div>
-          </div>
-        </div>
-        <div class="p-4 flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-bold shrink-0">📖</div>
-          <div>
-            <div class="text-[11px] font-bold text-slate-500">ஆதரவு வடிவங்கள்</div>
-            <div class="text-sm font-extrabold text-slate-900">HTML • PDF • Flipbook</div>
-          </div>
-        </div>
-        <div class="p-4 flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold shrink-0">👥</div>
-          <div>
-            <div class="text-[11px] font-bold text-slate-500">பதிவு செய்த பயனர்கள்</div>
-            <div id="adminKpiUsers" class="text-xl font-extrabold text-slate-900">4</div>
-          </div>
-        </div>
-        <div class="p-4 flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center text-xl font-bold shrink-0">☁️</div>
-          <div class="min-w-0">
-            <div class="text-[11px] font-bold text-slate-500">Google Drive சேமிப்பிடம்</div>
-            <div class="text-xs font-extrabold text-indigo-700 truncate">CEOSVG.IN / digitalbooks</div>
-          </div>
-        </div>
-      </div>
-
+    <!-- Streamlined Admin Sub-Navigation Bar -->
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden">
       <!-- Streamlined 4-Section Admin Sub-Navigation Bar -->
-      <div class="px-4 py-3 bg-white border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2">
+      <div class="px-4 py-3 bg-white flex flex-wrap items-center justify-between gap-2">
         <div class="flex flex-wrap items-center gap-1.5">
           <button type="button" id="adminSubTab_upload" onclick="switchAdminSubTab('upload')" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 text-white shadow-sm transition flex items-center gap-1.5">
             <span>📤 1. புதிய புத்தகம் பதிவேற்றம்</span>
@@ -1688,8 +1523,6 @@ function jsonResponse(obj) {
       if (btns.admin) btns.admin.classList.toggle('hidden', !isAdmin);
       const quickUpBtn = document.getElementById('headerQuickUploadBtn');
       if (quickUpBtn) quickUpBtn.classList.toggle('hidden', !isAdmin);
-      const heroAdminBtn = document.getElementById('heroAdminShortcutBtn');
-      if (heroAdminBtn) heroAdminBtn.classList.toggle('hidden', !isAdmin);
 
       Object.keys(views).forEach((k) => {
         if (views[k]) {
@@ -1724,25 +1557,11 @@ function jsonResponse(obj) {
       if (titleInput) titleInput.focus();
     }
 
-    // Update Hero Stats
+    // Update Book Counts
     function updateHeroStats() {
       const total = booksCatalog.length;
-      const flipCount = booksCatalog.filter(b => b.formats && b.formats.flipbook).length;
-      const htmlPdfCount = booksCatalog.filter(b => b.formats && (b.formats.pdf || b.formats.html)).length;
-
-      const elTotal = document.getElementById('heroStatTotal');
-      const elFlip = document.getElementById('heroStatFlip');
-      const elHtmlPdf = document.getElementById('heroStatHtmlPdf');
       const elAdminBadge = document.getElementById('adminTotalBooksBadge');
-
-      if (elTotal) elTotal.textContent = String(total);
-      if (elFlip) elFlip.textContent = String(flipCount);
-      if (elHtmlPdf) elHtmlPdf.textContent = String(htmlPdfCount);
       if (elAdminBadge) elAdminBadge.textContent = String(total);
-      const kpiBooks = document.getElementById('adminKpiBooks');
-      if (kpiBooks) kpiBooks.textContent = String(total);
-      const kpiUsers = document.getElementById('adminKpiUsers');
-      if (kpiUsers) kpiUsers.textContent = String(usersCatalog.length);
     }
 
     function switchAdminSubTab(tabName) {
@@ -1761,71 +1580,10 @@ function jsonResponse(obj) {
       });
     }
 
-    // Filter Controls
-    function setClassFilter(cls) {
-      activeClassFilter = cls;
-      const pills = document.querySelectorAll('.class-pill');
-      pills.forEach(btn => {
-        const c = btn.getAttribute('data-class');
-        if (c === cls) {
-          btn.className = 'class-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-900 border-2 border-indigo-600 transition';
-        } else {
-          btn.className = 'class-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-400 transition';
-        }
-      });
-
-      const headingMap = {
-        'ALL': 'Class I to XII – All Subjects (அனைத்து பாடநூல்கள் & மின்-நூல்கள்)',
-        'Class XII': 'Class XII – Subjects (வகுப்பு 12 பாடநூல்கள்)',
-        'Class XI': 'Class XI – Subjects (வகுப்பு 11 பாடநூல்கள்)',
-        'Class X': 'Class X – SSLC Subjects (வகுப்பு 10 பாடநூல்கள்)',
-        'Class VI-IX': 'Classes VI to IX – இடைநிலைப் பள்ளி நூல்கள்',
-        'Class I-V': 'Classes I to V – தொடக்கக் கல்வி நூல்கள்',
-        'Competitive': 'CEO Sivaganga – போட்டித் தேர்வு & வழிகாட்டி நூல்கள்'
-      };
-      const headingEl = document.getElementById('currentSectionHeading');
-      if (headingEl) {
-        headingEl.textContent = headingMap[cls] || cls;
-      }
-      renderLibraryGrid();
-    }
-
-    function setFormatFilter(fmt) {
-      activeFormatFilter = fmt;
-      const ids = ['ALL', 'FLIPBOOK', 'PDF', 'HTML', 'SAVED'];
-      ids.forEach(id => {
-        const btn = document.getElementById('fmtBtn_' + id);
-        if (!btn) return;
-        if (id === fmt) {
-          btn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white shadow-sm transition';
-        } else {
-          btn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-indigo-700 transition';
-        }
-      });
-      renderLibraryGrid();
-    }
-
-    function handleSearchOrFilter() {
-      const sInput = document.getElementById('searchInput');
-      const clearBtn = document.getElementById('clearSearchBtn');
-      if (sInput && clearBtn) {
-        clearBtn.classList.toggle('hidden', !sInput.value.trim());
-      }
-      renderLibraryGrid();
-    }
-
-    function clearSearchInput() {
-      const sInput = document.getElementById('searchInput');
-      if (sInput) sInput.value = '';
-      handleSearchOrFilter();
-    }
-
     function resetAllFilters() {
-      clearSearchInput();
-      const med = document.getElementById('mediumSelect');
-      if (med) med.value = 'ALL';
-      setFormatFilter('ALL');
-      setClassFilter('ALL');
+      activeClassFilter = 'ALL';
+      activeFormatFilter = 'ALL';
+      renderLibraryGrid();
     }
 
     function toggleSaveBook(bookId, event) {
@@ -1850,23 +1608,7 @@ function jsonResponse(obj) {
       const badgeEl = document.getElementById('filteredCountBadge');
       if (!container) return;
 
-      const query = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
-      const mediumFilter = document.getElementById('mediumSelect')?.value || 'ALL';
-
-      const filtered = booksCatalog.filter(book => {
-        if (activeClassFilter !== 'ALL' && book.classLevel !== activeClassFilter) return false;
-        if (mediumFilter !== 'ALL' && book.medium !== mediumFilter) return false;
-        if (activeFormatFilter === 'FLIPBOOK' && (!book.formats || !book.formats.flipbook)) return false;
-        if (activeFormatFilter === 'PDF' && (!book.formats || !book.formats.pdf)) return false;
-        if (activeFormatFilter === 'HTML' && (!book.formats || !book.formats.html)) return false;
-        if (activeFormatFilter === 'SAVED' && !savedBookIds.includes(book.id)) return false;
-
-        if (query) {
-          const hay = `${book.titleTa} ${book.titleEn} ${book.classLevel} ${book.description || ''} ${book.code || ''}`.toLowerCase();
-          if (!hay.includes(query)) return false;
-        }
-        return true;
-      });
+      const filtered = [...booksCatalog];
 
       if (badgeEl) {
         badgeEl.textContent = `${filtered.length} நூல்கள்`;
