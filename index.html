@@ -315,6 +315,71 @@
       </div>
     </section>
 
+    <!-- Admin Auth Guard Banner (Shown when viewing as Student/Guest) -->
+    <section id="adminRoleGuardBanner" class="hidden bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl">🔒</span>
+        <div>
+          <h3 class="text-sm font-extrabold text-amber-950">நிர்வாகி அணுகல் பாதுகாப்பு (Admin Role Notice)</h3>
+          <p class="text-xs text-amber-900 mt-0.5">
+            நீங்கள் தற்போது <strong>பயனர் (Student / Guest)</strong> நிலையில் உள்ளீர்கள். புத்தகங்களைப் பதிவேற்ற நிர்வாகி கணக்கில் (<strong>ID:</strong> <code class="bg-white px-1.5 py-0.5 rounded border">admin@ceosvg.in</code> / <strong>Password:</strong> <code class="bg-white px-1.5 py-0.5 rounded border">Admin@2026</code>) உள்நுழையவும்.
+          </p>
+        </div>
+      </div>
+      <button type="button" onclick="quickLoginAs('Admin')" class="shrink-0 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shadow transition">
+        🔓 நிர்வாகியாக உள்நுழைக (Admin Login)
+      </button>
+    </section>
+
+    <!-- Google Drive (CEOSVG.IN / digitalbooks) & Google Sheet Live Connection Panel -->
+    <section class="bg-white rounded-2xl shadow-sm border border-indigo-200 p-5 space-y-4">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-extrabold border border-emerald-200">
+            <span>☁️ Google Drive &amp; Google Sheets நேரடி இணைப்பு</span>
+          </div>
+          <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
+            CEOSVG.IN → digitalbooks கோப்புறை &amp; பயனர் கடவுச்சொல் Google Sheet
+          </h2>
+          <p class="text-xs text-slate-500">
+            நிர்வாகி முகப்பில் பதிவேற்றப்படும் புத்தகங்கள் <strong>digitalbooks</strong> கோப்புறையிலும், பயனர் பதிவு மற்றும் கடவுச்சொல் விவரங்கள் <strong>Google Sheet</strong>-லும் சேமிக்கப்படுகின்றன.
+          </p>
+        </div>
+
+        <!-- Direct Workspace Links -->
+        <div class="flex flex-wrap items-center gap-2">
+          <a href="https://drive.google.com/drive/folders/1w1nM7tekSvSM374CPgcH6_AY1meSZm1z" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 text-slate-800 hover:text-indigo-800 border border-slate-200 text-xs font-bold transition flex items-center gap-1.5">
+            <span>📁 CEOSVG.IN கோப்புறை</span>
+          </a>
+          <a href="https://drive.google.com/drive/folders/1QXOrMIqF_eFaWeWgLFAGzlgvPkqAyNjA" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-extrabold transition flex items-center gap-1.5">
+            <span>📂 digitalbooks கோப்புறை</span>
+          </a>
+          <a href="https://docs.google.com/spreadsheets/d/1KOBO0_plHmDPz5kN2BhzVJfZx1F69aMIaKO50_SlN0E/edit" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold transition flex items-center gap-1.5">
+            <span>📊 பயனர் &amp; நூல்கள் Google Sheet</span>
+          </a>
+          <button type="button" onclick="toggleGasModal()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-extrabold transition flex items-center gap-1.5 shadow-sm">
+            <span>📜 Google Script நிரல் (Code.gs)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Apps Script Web App URL Configuration Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+        <div class="lg:col-span-4">
+          <label for="gasWebAppUrlInput" class="block text-xs font-extrabold text-slate-800">🔗 Google Apps Script Web App URL:</label>
+          <p class="text-[11px] text-slate-500">Code.gs நிரலை Deploy செய்து கிடைக்கும் <code class="text-indigo-700">/exec</code> இணைப்பை இங்கே சேமிக்கவும்</p>
+        </div>
+        <div class="lg:col-span-6">
+          <input id="gasWebAppUrlInput" type="url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-mono bg-white focus:border-indigo-600 outline-none" />
+        </div>
+        <div class="lg:col-span-2 flex items-center gap-2">
+          <button type="button" onclick="saveGasWebAppUrl()" class="w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-sm">
+            💾 இணைப்பைச் சேமி
+          </button>
+        </div>
+      </div>
+    </section>
+
     <!-- Admin Layout: Left Upload Form (7 cols) + Right Live Preview & Book List (5 cols) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
@@ -584,6 +649,23 @@
             <!-- Populated dynamically via JS -->
           </div>
         </div>
+
+        <!-- Registered Users & Passwords Management Card (Synced with Google Sheet) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-extrabold text-slate-800">👥 பயனர் பதிவு &amp; கடவுச்சொல் விவரங்கள் (Users Sheet)</h3>
+              <p class="text-[11px] text-slate-500">தற்காலிக நிர்வாகி, சோதனைப் பயனர் மற்றும் புதிய பதிவுகள்</p>
+            </div>
+            <a href="https://docs.google.com/spreadsheets/d/1KOBO0_plHmDPz5kN2BhzVJfZx1F69aMIaKO50_SlN0E/edit" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold hover:bg-emerald-100">
+              📊 Sheet-ல் திறக்க ↗
+            </a>
+          </div>
+
+          <div id="adminUsersTableList" class="space-y-2 max-h-[280px] overflow-y-auto pr-1">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
       </section>
     </div>
   </main>
@@ -652,13 +734,13 @@
           <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
             <div>
               <label id="loginIdLabel" for="loginIdInput" class="block text-xs font-bold text-slate-700 mb-1">Guest ID / Mobile Number</label>
-              <input id="loginIdInput" type="text" required value="9876543210" placeholder="Mobile Number or EMIS ID" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:border-indigo-600 outline-none" />
+              <input id="loginIdInput" type="text" required value="student@ceosvg.in" placeholder="Mobile Number or EMIS ID" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 text-sm focus:border-indigo-600 outline-none" />
             </div>
 
             <div>
               <label for="loginPasswordInput" class="block text-xs font-bold text-slate-700 mb-1">Password</label>
               <div class="relative">
-                <input id="loginPasswordInput" type="password" required value="ceosvg2026" class="w-full pl-9 pr-10 py-2.5 rounded-lg bg-indigo-50/60 border border-slate-200 text-sm focus:border-indigo-600 outline-none" />
+                <input id="loginPasswordInput" type="password" required value="User@2026" class="w-full pl-9 pr-10 py-2.5 rounded-lg bg-indigo-50/60 border border-slate-200 text-sm focus:border-indigo-600 outline-none" />
                 <span class="absolute inset-y-0 left-3 flex items-center text-slate-400 text-xs">🔒</span>
                 <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-3 flex items-center text-slate-500 hover:text-slate-800 text-xs">👁️</button>
               </div>
@@ -679,11 +761,61 @@
             </button>
           </form>
 
-          <div class="pt-2 border-t border-slate-100 text-center space-y-2">
-            <p class="text-xs text-slate-500">
-              விரைவு சோதனை உள்நுழைவு (1-Click Quick Access):
-            </p>
-            <div class="flex items-center justify-center gap-2">
+          <!-- Switch to New User Registration (Create Account) -->
+          <div class="text-center pt-1">
+            <button type="button" id="toggleRegisterModeBtn" onclick="toggleRegisterModal()" class="text-xs font-extrabold text-indigo-700 hover:text-indigo-900 underline underline-offset-4">
+              Don't have an account? புதிய பயனர் கணக்கு தொடங்குக (Create Account)
+            </button>
+          </div>
+
+          <!-- New User Registration Collapsible Box (Saves to Google Sheet) -->
+          <div id="registerUserBox" class="hidden bg-indigo-50/70 border border-indigo-200 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-extrabold text-indigo-950">🆕 புதிய பயனர் பதிவு (Google Sheet-ல் சேமிக்கப்படும்)</h4>
+              <button type="button" onclick="toggleRegisterModal()" class="text-xs font-bold text-slate-400 hover:text-slate-700">✕</button>
+            </div>
+            <div class="space-y-2.5">
+              <input id="regFullName" type="text" placeholder="உங்கள் முழுப் பெயர் (Full Name)" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white outline-none focus:border-indigo-600" />
+              <div class="grid grid-cols-2 gap-2">
+                <input id="regUserId" type="text" placeholder="பயனர் ID / கைபேசி எண்" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white outline-none focus:border-indigo-600" />
+                <select id="regUserRole" class="w-full px-2.5 py-2 rounded-lg border border-slate-200 text-xs bg-white outline-none focus:border-indigo-600">
+                  <option value="Student">மாணவர் (Student)</option>
+                  <option value="Teacher">ஆசிரியர் (Teacher)</option>
+                </select>
+              </div>
+              <input id="regPassword" type="password" placeholder="புதிய கடவுச்சொல் (Password)" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white outline-none focus:border-indigo-600" />
+              <button type="button" onclick="handleNewUserRegistration()" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow transition">
+                ✅ பதிவு செய்து உள்நுழைக (Register &amp; Save to Sheet)
+              </button>
+            </div>
+          </div>
+
+          <!-- Temporary Test Credentials Box (Admin & User ID + Password) -->
+          <div class="pt-3 border-t border-slate-200 space-y-2.5">
+            <div class="text-[11px] font-extrabold text-slate-700 text-center">
+              🔑 சோதனைக்கான தற்காலிக ID &amp; Password (சொடுக்கி நிரப்பவும்):
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
+              <div onclick="fillCredentialsAndLogin('Admin', 'admin@ceosvg.in', 'Admin@2026', false)" class="p-2.5 rounded-xl bg-amber-50/90 hover:bg-amber-100 border border-amber-200 cursor-pointer transition">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-extrabold text-amber-900">⚙️ நிர்வாகி (Admin)</span>
+                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 font-bold">நிரப்பு</span>
+                </div>
+                <div class="text-[11px] font-mono text-slate-800 mt-1">ID: <strong>admin@ceosvg.in</strong></div>
+                <div class="text-[11px] font-mono text-slate-800">Pass: <strong>Admin@2026</strong></div>
+              </div>
+
+              <div onclick="fillCredentialsAndLogin('Guest', 'student@ceosvg.in', 'User@2026', false)" class="p-2.5 rounded-xl bg-indigo-50/90 hover:bg-indigo-100 border border-indigo-200 cursor-pointer transition">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-extrabold text-indigo-900">🎓 பயனர் (Test User)</span>
+                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-200 text-indigo-900 font-bold">நிரப்பு</span>
+                </div>
+                <div class="text-[11px] font-mono text-slate-800 mt-1">ID: <strong>student@ceosvg.in</strong></div>
+                <div class="text-[11px] font-mono text-slate-800">Pass: <strong>User@2026</strong></div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-2 pt-1">
               <button type="button" onclick="quickLoginAs('Guest')" class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 text-xs font-bold transition">
                 🎓 மாணவர் முகப்பு
               </button>
@@ -823,6 +955,307 @@
 
   </div>
 
+  <!-- GOOGLE APPS SCRIPT (Code.gs) VIEWER & COPIER MODAL -->
+  <div id="gasCodeModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-4xl w-full max-h-[88vh] flex flex-col overflow-hidden">
+      <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between gap-3">
+        <div>
+          <h3 class="text-sm sm:text-base font-extrabold text-amber-300">📜 Google Apps Script நிரல் (Code.gs) — CEOSVG.IN / digitalbooks</h3>
+          <p class="text-[11px] text-slate-300">உங்கள் Drive கோப்புறை ID (<code class="text-emerald-300">1QXOrMIqF_eFaWeWgLFAGzlgvPkqAyNjA</code>) மற்றும் Google Sheet ID (<code class="text-emerald-300">1KOBO0_plHmDPz5kN2BhzVJfZx1F69aMIaKO50_SlN0E</code>) இணைக்கப்பட்டுள்ளது</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="copyGasScriptCode()" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold shadow transition">
+            📋 நிரலை நகலெடு (Copy Code.gs)
+          </button>
+          <button type="button" onclick="toggleGasModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-rose-600 text-white font-bold text-xs flex items-center justify-center">✕</button>
+        </div>
+      </div>
+
+      <div class="p-4 bg-indigo-50 border-b border-indigo-100 text-xs text-indigo-950 space-y-1">
+        <div class="font-extrabold">⚙️ Google Sheet-ல் இணைக்கும் எளிய வழிமுறை:</div>
+        <ol class="list-decimal list-inside space-y-0.5 text-[11px] text-slate-700">
+          <li>உங்கள் <a href="https://docs.google.com/spreadsheets/d/1KOBO0_plHmDPz5kN2BhzVJfZx1F69aMIaKO50_SlN0E/edit" target="_blank" rel="noopener noreferrer" class="font-bold text-indigo-700 underline">library_ceosvg_users_and_books_db Google Sheet</a>-ஐத் திறந்து <strong>Extensions → Apps Script</strong> செல்லவும்.</li>
+          <li>கீழே உள்ள <strong>Code.gs</strong> நிரலை நகலெடுத்து அங்கு ஒட்டி <strong>Save</strong> செய்யவும்.</li>
+          <li><strong>Deploy → New deployment → Web app</strong> (Execute as: <em>Me</em>, Who has access: <em>Anyone</em>) என அமைத்து கிடைக்கும் URL-ஐ நிர்வாகி முகப்பில் சேமிக்கவும்.</li>
+        </ol>
+      </div>
+
+      <div class="p-4 bg-slate-950 text-emerald-300 font-mono text-xs overflow-y-auto flex-1">
+        <pre id="gasScriptPreBlock" class="whitespace-pre-wrap leading-relaxed">/**
+ * ============================================================================
+ * சிவகங்கை கல்விக்களம் (library.ceosvg.in) - Google Apps Script Backend (Code.gs)
+ * ============================================================================
+ * இந்த நிரல் உங்கள் Google Drive-ல் உள்ள:
+ * 1. CEOSVG.IN கோப்புறை (ID: 1w1nM7tekSvSM374CPgcH6_AY1meSZm1z)
+ * 2. digitalbooks துணைக் கோப்புறை (ID: 1QXOrMIqF_eFaWeWgLFAGzlgvPkqAyNjA)
+ * 3. library_ceosvg_users_and_books_db Google Sheet (ID: 1KOBO0_plHmDPz5kN2BhzVJfZx1F69aMIaKO50_SlN0E)
+ * ஆகியவற்றுடன் நேரடியாக இணைக்கப்பட்டுள்ளது.
+ *
+ * பயன்படுத்துவது எப்படி (Deployment Steps):
+ * 1. உங்கள் Google Sheet-ஐத் திறக்கவும்:
+ *    https://docs.google.com/spreadsheets/d/1KOBO0_plHmDPz5kN2BhzVJfZx1F69aMIaKO50_SlN0E/edit
+ * 2. மேல் மெனுவில் Extensions -&gt; Apps Script என்பதைச் சொடுக்கவும்.
+ * 3. அங்குள்ள பழைய குறியீட்டை நீக்கிவிட்டு, இந்த முழு நிரலையும் ஒட்டவும் (Paste) மற்றும் சேமிக்கவும் (Save).
+ * 4. மேலே வலதுபுறம் உள்ள "Deploy" -&gt; "New deployment" என்பதைத் தேர்ந்தெடுக்கவும்.
+ * 5. Select type என்பதில் "Web app" என்பதைத் தேர்ந்தெடுக்கவும்:
+ *    - Execute as: "Me" (உங்கள் கணக்கு)
+ *    - Who has access: "Anyone" (அனைவரும்)
+ * 6. "Deploy" பொத்தானை அழுத்தி, கிடைக்கும் Web App URL (https://script.google.com/macros/s/.../exec)
+ *    இணைப்பை நகலெடுத்து, library.ceosvg.in நிர்வாகி முகப்பில் உள்ள "Google Apps Script URL" பெட்டியில் ஒட்டவும்.
+ * ============================================================================
+ */
+
+const CEOSVG_FOLDER_ID = '1w1nM7tekSvSM374CPgcH6_AY1meSZm1z';
+const DIGITALBOOKS_FOLDER_ID = '1QXOrMIqF_eFaWeWgLFAGzlgvPkqAyNjA';
+const SPREADSHEET_ID = '1KOBO0_plHmDPz5kN2BhzVJfZx1F69aMIaKO50_SlN0E';
+
+/**
+ * GET கோரிக்கைகள்: நூலகப் புத்தகங்கள் மற்றும் பயனர் பட்டியலைப் பெறுதல்
+ */
+function doGet(e) {
+  try {
+    const action = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.action) ? e.parameter.action : 'status';
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+
+    if (action === 'getBooks') {
+      const sheet = ss.getSheetByName('Books');
+      const rows = sheet.getDataRange().getValues();
+      const headers = rows[0];
+      const books = rows.slice(1).map(r =&gt; {
+        const obj = {};
+        headers.forEach((h, i) =&gt; obj[h] = r[i]);
+        return obj;
+      });
+      return jsonResponse({ status: 'success', books: books });
+    }
+
+    if (action === 'getUsers') {
+      const sheet = ss.getSheetByName('Users');
+      const rows = sheet.getDataRange().getValues();
+      const headers = rows[0];
+      const users = rows.slice(1).map(r =&gt; {
+        const obj = {};
+        headers.forEach((h, i) =&gt; obj[h] = r[i]);
+        return obj;
+      });
+      return jsonResponse({ status: 'success', users: users });
+    }
+
+    return jsonResponse({
+      status: 'success',
+      message: 'சிவகங்கை கல்விக்களம் (library.ceosvg.in) Backend API இயங்குகிறது!',
+      digitalBooksFolderId: DIGITALBOOKS_FOLDER_ID,
+      spreadsheetId: SPREADSHEET_ID
+    });
+  } catch (err) {
+    return jsonResponse({ status: 'error', message: err.toString() });
+  }
+}
+
+/**
+ * POST கோரிக்கைகள்:
+ * 1. registerUser - புதிய பயனர் பதிவு &amp; கடவுச்சொல் Google Sheet-ல் சேமிப்பு
+ * 2. loginUser    - பயனர் / நிர்வாகி உள்நுழைவு சரிபார்ப்பு
+ * 3. uploadBook   - நிர்வாகி பதிவேற்றும் HTML, PDF &amp; Flipbook கோப்புகளை
+ *                   ceosvg.in/digitalbooks கோப்புறையில் சேமித்து Google Sheet-ல் பதிவு செய்தல்
+ */
+function doPost(e) {
+  try {
+    const rawData = (e &amp;&amp; e.postData &amp;&amp; e.postData.contents) ? e.postData.contents : '{}';
+    const payload = JSON.parse(rawData);
+    const action = payload.action;
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const nowStr = Utilities.formatDate(new Date(), 'Asia/Kolkata', 'yyyy-MM-dd HH:mm:ss');
+
+    // 1. புதிய பயனர் பதிவு (Save User ID &amp; Password to Google Sheet)
+    if (action === 'registerUser') {
+      let userSheet = ss.getSheetByName('Users');
+      if (!userSheet) {
+        userSheet = ss.insertSheet('Users');
+        userSheet.appendRow(['User_ID', 'Password', 'Full_Name', 'Role', 'Mobile_or_Email', 'Status', 'Created_At']);
+      }
+
+      const data = userSheet.getDataRange().getValues();
+      for (let i = 1; i &lt; data.length; i++) {
+        if (String(data[i][0]).toLowerCase() === String(payload.userId).toLowerCase()) {
+          return jsonResponse({ status: 'error', message: 'இந்த பயனர் ID ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது!' });
+        }
+      }
+
+      userSheet.appendRow([
+        payload.userId,
+        payload.password,
+        payload.fullName || payload.userId,
+        payload.role || 'Student',
+        payload.mobileOrEmail || payload.userId,
+        'Active',
+        nowStr
+      ]);
+
+      return jsonResponse({
+        status: 'success',
+        message: 'பயனர் விவரம் மற்றும் கடவுச்சொல் Google Sheet-ல் சேமிக்கப்பட்டது!'
+      });
+    }
+
+    // 2. உள்நுழைவு சரிபார்ப்பு (Verify Login against Users Tab)
+    if (action === 'loginUser') {
+      const userSheet = ss.getSheetByName('Users');
+      const data = userSheet.getDataRange().getValues();
+      for (let i = 1; i &lt; data.length; i++) {
+        const rowId = String(data[i][0]).trim().toLowerCase();
+        const rowMobile = String(data[i][4]).trim().toLowerCase();
+        const rowPwd = String(data[i][1]).trim();
+        const inputId = String(payload.userId).trim().toLowerCase();
+
+        if ((rowId === inputId || rowMobile === inputId) &amp;&amp; rowPwd === String(payload.password).trim()) {
+          return jsonResponse({
+            status: 'success',
+            user: {
+              userId: data[i][0],
+              fullName: data[i][2],
+              role: data[i][3],
+              mobileOrEmail: data[i][4]
+            }
+          });
+        }
+      }
+      return jsonResponse({ status: 'error', message: 'தவறான பயனர் ID அல்லது கடவுச்சொல்!' });
+    }
+
+    // 3. புத்தகம் பதிவேற்றம் (Save HTML, PDF, Flipbook &amp; Cover to ceosvg.in/digitalbooks Drive Folder)
+    if (action === 'uploadBook') {
+      const digitalBooksFolder = DriveApp.getFolderById(DIGITALBOOKS_FOLDER_ID);
+      let bookSheet = ss.getSheetByName('Books');
+      if (!bookSheet) {
+        bookSheet = ss.insertSheet('Books');
+        bookSheet.appendRow([
+          'Book_ID', 'Title_Tamil', 'Title_English', 'Class_Level', 'Medium',
+          'Formats', 'HTML_File_URL', 'PDF_File_URL', 'Flipbook_URL',
+          'Cover_Image_URL', 'Uploaded_By', 'Uploaded_At'
+        ]);
+      }
+
+      const safeTitle = (payload.titleEn || payload.titleTa || 'Book').replace(/[^a-zA-Z0-9_-]/g, '_');
+      let htmlDriveUrl = payload.htmlExternalUrl || '';
+      let pdfDriveUrl = payload.pdfExternalUrl || '';
+      let flipDriveUrl = payload.flipbookExternalUrl || '';
+      let coverDriveUrl = '';
+
+      // (அ) PDF கோப்பை digitalbooks கோப்புறையில் சேமித்தல்
+      if (payload.pdfBase64) {
+        const pdfFile = saveBase64ToFolder(
+          digitalBooksFolder,
+          payload.pdfFileName || (safeTitle + '.pdf'),
+          payload.pdfBase64,
+          'application/pdf'
+        );
+        pdfDriveUrl = pdfFile.getUrl();
+        if (!flipDriveUrl) flipDriveUrl = pdfDriveUrl;
+      }
+
+      // (ஆ) HTML மின்-நூல் கோப்பை digitalbooks கோப்புறையில் சேமித்தல்
+      if (payload.htmlContent) {
+        const htmlBlob = Utilities.newBlob(payload.htmlContent, 'text/html', safeTitle + '.html');
+        const htmlFile = digitalBooksFolder.createFile(htmlBlob);
+        htmlFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        htmlDriveUrl = htmlFile.getUrl();
+      }
+
+      // (இ) அட்டைப்படத்தை (Cover Image) digitalbooks கோப்புறையில் சேமித்தல்
+      if (payload.coverBase64 &amp;&amp; payload.coverBase64.indexOf('data:image') === 0) {
+        const coverFile = saveBase64ToFolder(
+          digitalBooksFolder,
+          safeTitle + '_cover.jpg',
+          payload.coverBase64,
+          'image/jpeg'
+        );
+        coverDriveUrl = coverFile.getUrl();
+      }
+
+      // (ஈ) Flipbook பக்கப் படங்கள் இருப்பின் துணைக் கோப்புறையில் சேமித்தல்
+      if (Array.isArray(payload.flipbookImagesBase64) &amp;&amp; payload.flipbookImagesBase64.length &gt; 0) {
+        const flipSubFolder = digitalBooksFolder.createFolder(safeTitle + '_Flipbook_Pages');
+        flipSubFolder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        payload.flipbookImagesBase64.forEach((imgB64, idx) =&gt; {
+          saveBase64ToFolder(flipSubFolder, 'page_' + (idx + 1) + '.jpg', imgB64, 'image/jpeg');
+        });
+        flipDriveUrl = flipSubFolder.getUrl();
+      }
+
+      const bookId = payload.id || ('book-' + new Date().getTime());
+      bookSheet.appendRow([
+        bookId,
+        payload.titleTa || '',
+        payload.titleEn || '',
+        payload.classLevel || 'Class XII',
+        payload.medium || 'இருமொழி',
+        payload.formatsList || 'Flipbook | PDF | HTML',
+        htmlDriveUrl || ('https://drive.google.com/drive/folders/' + DIGITALBOOKS_FOLDER_ID),
+        pdfDriveUrl || ('https://drive.google.com/drive/folders/' + DIGITALBOOKS_FOLDER_ID),
+        flipDriveUrl || ('https://drive.google.com/drive/folders/' + DIGITALBOOKS_FOLDER_ID),
+        coverDriveUrl || 'Default Cover',
+        payload.uploadedBy || 'admin@ceosvg.in',
+        nowStr
+      ]);
+
+      return jsonResponse({
+        status: 'success',
+        message: 'புத்தகம் digitalbooks கோப்புறையிலும் Google Sheet-லும் வெற்றிகரமாகச் சேமிக்கப்பட்டது!',
+        bookId: bookId,
+        urls: {
+          html: htmlDriveUrl,
+          pdf: pdfDriveUrl,
+          flipbook: flipDriveUrl,
+          cover: coverDriveUrl,
+          folder: 'https://drive.google.com/drive/folders/' + DIGITALBOOKS_FOLDER_ID
+        }
+      });
+    }
+
+    return jsonResponse({ status: 'error', message: 'Unknown action: ' + action });
+  } catch (err) {
+    return jsonResponse({ status: 'error', message: err.toString() });
+  }
+}
+
+/**
+ * Helper: Base64 தரவை Google Drive கோப்பாக மாற்றி சேமித்தல்
+ */
+function saveBase64ToFolder(folder, fileName, base64Data, defaultMimeType) {
+  let cleanBase64 = base64Data;
+  let mimeType = defaultMimeType || 'application/octet-stream';
+
+  if (base64Data.indexOf(',') !== -1) {
+    const parts = base64Data.split(',');
+    const header = parts[0];
+    cleanBase64 = parts[1];
+    const mimeMatch = header.match(/data:([^;]+);base64/);
+    if (mimeMatch &amp;&amp; mimeMatch[1]) {
+      mimeType = mimeMatch[1];
+    }
+  }
+
+  const decodedBytes = Utilities.base64Decode(cleanBase64);
+  const blob = Utilities.newBlob(decodedBytes, mimeType, fileName);
+  const file = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return file;
+}
+
+/**
+ * Helper: JSON வெளியீடு
+ */
+function jsonResponse(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+</pre>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-3 sm:px-0"></div>
 
@@ -868,8 +1301,47 @@
       }
     ];
 
+    // Google Drive & Sheet Constants created in User's Drive
+    const DRIVE_CEOSVG_FOLDER_ID = '1w1nM7tekSvSM374CPgcH6_AY1meSZm1z';
+    const DRIVE_DIGITALBOOKS_FOLDER_ID = '1QXOrMIqF_eFaWeWgLFAGzlgvPkqAyNjA';
+    const DRIVE_USERS_BOOKS_SHEET_ID = '1KOBO0_plHmDPz5kN2BhzVJfZx1F69aMIaKO50_SlN0E';
+
+    // Default Users matching the Google Sheet "Users" tab
+    const DEFAULT_USERS = [
+      {
+        userId: 'admin@ceosvg.in',
+        password: 'Admin@2026',
+        fullName: 'முதன்மைக் கல்வி அலுவலர் (CEO Admin)',
+        role: 'Admin',
+        mobileOrEmail: 'admin@ceosvg.in',
+        status: 'Active',
+        createdAt: '2026-10-30 13:06:00'
+      },
+      {
+        userId: 'student@ceosvg.in',
+        password: 'User@2026',
+        fullName: 'மாதிரி மாணவர் (Test Student User)',
+        role: 'Guest',
+        mobileOrEmail: '9876543210',
+        status: 'Active',
+        createdAt: '2026-10-30 13:06:00'
+      },
+      {
+        userId: 'teacher@ceosvg.in',
+        password: 'Teacher@2026',
+        fullName: 'மாதிரி ஆசிரியர் (Test Teacher)',
+        role: 'Teacher',
+        mobileOrEmail: 'EMIS-SVG-40921',
+        status: 'Active',
+        createdAt: '2026-10-30 13:06:00'
+      }
+    ];
+
     // App State
     let booksCatalog = [];
+    let usersCatalog = [];
+    let gasWebAppUrl = '';
+    let pendingUploadPdfBase64 = '';
     let savedBookIds = [];
     let activeClassFilter = 'ALL';
     let activeFormatFilter = 'ALL';
@@ -906,8 +1378,19 @@
         if (rawSaved) {
           savedBookIds = JSON.parse(rawSaved) || [];
         }
+        const rawUsers = localStorage.getItem('ceosvg_users_db_v1');
+        if (rawUsers) {
+          const parsedUsers = JSON.parse(rawUsers);
+          usersCatalog = (Array.isArray(parsedUsers) && parsedUsers.length > 0) ? parsedUsers : [...DEFAULT_USERS];
+        } else {
+          usersCatalog = [...DEFAULT_USERS];
+        }
+        gasWebAppUrl = localStorage.getItem('ceosvg_gas_webapp_url') || '';
+        const urlInput = document.getElementById('gasWebAppUrlInput');
+        if (urlInput && gasWebAppUrl) urlInput.value = gasWebAppUrl;
       } catch (e) {
         booksCatalog = [...DEFAULT_BOOKS];
+        usersCatalog = [...DEFAULT_USERS];
         savedBookIds = [];
       }
     }
@@ -915,7 +1398,11 @@
     function saveStoredState() {
       try {
         localStorage.setItem('ceosvg_library_books_v2', JSON.stringify(booksCatalog));
+        localStorage.setItem('ceosvg_users_db_v1', JSON.stringify(usersCatalog));
         localStorage.setItem('ceosvg_saved_books_v1', JSON.stringify(savedBookIds));
+        if (gasWebAppUrl) {
+          localStorage.setItem('ceosvg_gas_webapp_url', gasWebAppUrl);
+        }
       } catch (e) {
         // Ignore storage quota errors in sandboxed iframe
       }
@@ -998,7 +1485,12 @@
         renderLibraryGrid();
       } else if (viewName === 'admin') {
         renderAdminBooksTable();
+        renderAdminUsersTable();
         updateAdminLivePreview();
+        const guardBanner = document.getElementById('adminRoleGuardBanner');
+        if (guardBanner) {
+          guardBanner.classList.toggle('hidden', currentRole === 'Admin');
+        }
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1790,12 +2282,17 @@
       }
     }
 
-    // Handle PDF File Upload
+    // Handle PDF File Upload (creates local Blob URL + Base64 for Google Drive digitalbooks folder)
     function handlePdfFileSelected(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
       pendingUploadPdfBlobUrl = URL.createObjectURL(file);
       pendingUploadPdfFileName = file.name;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        pendingUploadPdfBase64 = e.target.result || '';
+      };
+      reader.readAsDataURL(file);
       const label = document.getElementById('pdfFileNameLabel');
       if (label) {
         label.textContent = `✓ தேர்ந்தெடுக்கப்பட்டது: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
@@ -2043,6 +2540,9 @@
         showToast(`🎉 "${titleTa}" புத்தகம் (Flipbook, PDF & HTML) நூலகத்தில் வெற்றிகரமாக வெளியிடப்பட்டது!`, 'success');
       }
 
+      // Sync uploaded book to Google Drive (CEOSVG.IN -> digitalbooks) & Google Sheet via Google Apps Script
+      syncBookUploadToGoogleDrive(newBookObj);
+
       saveStoredState();
       resetAdminUploadForm();
       renderAdminBooksTable();
@@ -2143,7 +2643,7 @@
     }
 
     // =====================================================================
-    // LOGIN VIEW CONTROLS (MANARKENI STYLE)
+    // LOGIN, REGISTRATION & GOOGLE DRIVE / SHEET SYNC CONTROLS
     // =====================================================================
     function selectLoginRole(role) {
       currentRole = role;
@@ -2160,15 +2660,31 @@
 
       const labelEl = document.getElementById('loginIdLabel');
       const inputEl = document.getElementById('loginIdInput');
+      const pwdEl = document.getElementById('loginPasswordInput');
       if (role === 'Teacher') {
-        labelEl.textContent = 'Teacher EMIS ID / Mobile Number';
-        inputEl.value = 'EMIS-SVG-40921';
+        labelEl.textContent = 'Teacher ID / EMIS ID';
+        inputEl.value = 'teacher@ceosvg.in';
+        if (pwdEl) pwdEl.value = 'Teacher@2026';
       } else if (role === 'Admin') {
         labelEl.textContent = 'CEO Sivaganga Admin ID';
         inputEl.value = 'admin@ceosvg.in';
+        if (pwdEl) pwdEl.value = 'Admin@2026';
       } else {
-        labelEl.textContent = 'Guest ID / Mobile Number';
-        inputEl.value = '9876543210';
+        labelEl.textContent = 'User ID / Mobile Number';
+        inputEl.value = 'student@ceosvg.in';
+        if (pwdEl) pwdEl.value = 'User@2026';
+      }
+    }
+
+    function fillCredentialsAndLogin(role, idVal, pwdVal, autoSubmit) {
+      selectLoginRole(role);
+      const inputEl = document.getElementById('loginIdInput');
+      const pwdEl = document.getElementById('loginPasswordInput');
+      if (inputEl) inputEl.value = idVal;
+      if (pwdEl) pwdEl.value = pwdVal;
+      showToast(`🔑 ${role === 'Admin' ? 'நிர்வாகி' : 'பயனர்'} ID (${idVal}) மற்றும் கடவுச்சொல் நிரப்பப்பட்டது!`, 'info');
+      if (autoSubmit) {
+        quickLoginAs(role);
       }
     }
 
@@ -2180,25 +2696,189 @@
 
     function handleLoginSubmit(event) {
       event.preventDefault();
-      quickLoginAs(currentRole);
+      const inputId = (document.getElementById('loginIdInput')?.value || '').trim();
+      const inputPwd = (document.getElementById('loginPasswordInput')?.value || '').trim();
+
+      const matchedUser = usersCatalog.find(u =>
+        (u.userId.toLowerCase() === inputId.toLowerCase() || (u.mobileOrEmail && u.mobileOrEmail.toLowerCase() === inputId.toLowerCase())) &&
+        u.password === inputPwd
+      );
+
+      if (!matchedUser) {
+        showToast('❌ தவறான பயனர் ID அல்லது கடவுச்சொல்! கீழே உள்ள தற்காலிக ID & Password-ஐப் பயன்படுத்தவும்.', 'warn');
+        return;
+      }
+
+      const resolvedRole = matchedUser.role === 'Admin' ? 'Admin' : (matchedUser.role === 'Teacher' ? 'Teacher' : 'Guest');
+      quickLoginAs(resolvedRole, matchedUser.fullName + ' (' + matchedUser.userId + ')');
     }
 
-    function quickLoginAs(role) {
+    function quickLoginAs(role, customBadgeText) {
       currentRole = role;
       const badgeLabel = document.getElementById('activeUserLabel');
+      const guardBanner = document.getElementById('adminRoleGuardBanner');
+      if (guardBanner) {
+        guardBanner.classList.toggle('hidden', role === 'Admin');
+      }
+
       if (role === 'Admin') {
-        if (badgeLabel) badgeLabel.textContent = 'நிர்வாகி (admin@ceosvg.in)';
+        if (badgeLabel) badgeLabel.textContent = customBadgeText || 'நிர்வாகி (admin@ceosvg.in)';
         switchMainView('admin');
-        showToast('🔐 நிர்வாகி முகப்பில் (Admin Portal) வெற்றிகரமாக உள்நுழைந்தீர்கள்!', 'success');
+        showToast('🔐 நிர்வாகி முகப்பில் (admin@ceosvg.in) வெற்றிகரமாக உள்நுழைந்தீர்கள்!', 'success');
       } else if (role === 'Teacher') {
-        if (badgeLabel) badgeLabel.textContent = 'ஆசிரியர் (Teacher Mode)';
+        if (badgeLabel) badgeLabel.textContent = customBadgeText || 'ஆசிரியர் (teacher@ceosvg.in)';
         switchMainView('library');
         showToast('🔐 ஆசிரியர் கணக்கில் வெற்றிகரமாக உள்நுழைந்தீர்கள்!', 'success');
       } else {
-        if (badgeLabel) badgeLabel.textContent = 'மாணவர் / விருந்தினர்';
+        if (badgeLabel) badgeLabel.textContent = customBadgeText || 'பயனர் (student@ceosvg.in)';
         switchMainView('library');
         showToast('🔐 சிவகங்கை கல்விக்களம் மின்-நூலகத்திற்கு நல்வரவு!', 'success');
       }
+    }
+
+    function toggleRegisterModal() {
+      const box = document.getElementById('registerUserBox');
+      if (box) box.classList.toggle('hidden');
+    }
+
+    function handleNewUserRegistration() {
+      const fullName = (document.getElementById('regFullName')?.value || '').trim();
+      const userId = (document.getElementById('regUserId')?.value || '').trim();
+      const role = document.getElementById('regUserRole')?.value || 'Student';
+      const password = (document.getElementById('regPassword')?.value || '').trim();
+
+      if (!fullName || !userId || !password) {
+        showToast('⚠️ தயவுசெய்து பெயர், பயனர் ID மற்றும் கடவுச்சொல் ஆகிய அனைத்தையும் உள்ளிடவும்!', 'warn');
+        return;
+      }
+
+      const exists = usersCatalog.some(u => u.userId.toLowerCase() === userId.toLowerCase());
+      if (exists) {
+        showToast('⚠️ இந்த பயனர் ID ஏற்கனவே உள்ளது! வேறொரு ID-ஐத் தேர்வு செய்க.', 'warn');
+        return;
+      }
+
+      const nowStr = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      const newUser = {
+        userId,
+        password,
+        fullName,
+        role,
+        mobileOrEmail: userId,
+        status: 'Active',
+        createdAt: nowStr
+      };
+
+      usersCatalog.push(newUser);
+      saveStoredState();
+      renderAdminUsersTable();
+
+      // Sync to Google Sheet in CEOSVG.IN folder if Google Apps Script Web App URL is set
+      if (gasWebAppUrl) {
+        fetch(gasWebAppUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'registerUser',
+            userId: newUser.userId,
+            password: newUser.password,
+            fullName: newUser.fullName,
+            role: newUser.role,
+            mobileOrEmail: newUser.mobileOrEmail
+          })
+        }).catch(() => {});
+      }
+
+      document.getElementById('regFullName').value = '';
+      document.getElementById('regUserId').value = '';
+      document.getElementById('regPassword').value = '';
+      toggleRegisterModal();
+
+      showToast(`🎉 புதிய பயனர் "${fullName}" (${userId}) பதிவு செய்யப்பட்டு Google Sheet பட்டியலில் சேர்க்கப்பட்டார்!`, 'success');
+      quickLoginAs(role === 'Teacher' ? 'Teacher' : 'Guest', `${fullName} (${userId})`);
+    }
+
+    function renderAdminUsersTable() {
+      const container = document.getElementById('adminUsersTableList');
+      if (!container) return;
+      container.innerHTML = usersCatalog.map(u => `
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs">
+          <div class="min-w-0">
+            <div class="font-extrabold text-slate-800 truncate">${u.fullName}</div>
+            <div class="text-[11px] font-mono text-slate-600">ID: <strong>${u.userId}</strong> • Pass: <strong>${u.password}</strong></div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${u.role === 'Admin' ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-indigo-50 text-indigo-800 border border-indigo-200'}">
+            ${u.role}
+          </span>
+        </div>
+      `).join('');
+    }
+
+    function saveGasWebAppUrl() {
+      const val = (document.getElementById('gasWebAppUrlInput')?.value || '').trim();
+      gasWebAppUrl = val;
+      saveStoredState();
+      showToast('☁️ Google Apps Script Web App URL வெற்றிகரமாகச் சேமிக்கப்பட்டது!', 'success');
+    }
+
+    function syncBookUploadToGoogleDrive(bookObj) {
+      if (!gasWebAppUrl) {
+        showToast('📁 புத்தகம் நூலகத்தில் சேர்க்கப்பட்டது! (Google Drive-ல் தானாகச் சேமிக்க Apps Script URL-ஐ இணைக்கலாம்)', 'info');
+        return;
+      }
+
+      const formatsArr = [];
+      if (bookObj.formats?.flipbook) formatsArr.push('Flipbook');
+      if (bookObj.formats?.pdf) formatsArr.push('PDF');
+      if (bookObj.formats?.html) formatsArr.push('HTML');
+
+      fetch(gasWebAppUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'uploadBook',
+          id: bookObj.id,
+          titleTa: bookObj.titleTa,
+          titleEn: bookObj.titleEn,
+          classLevel: bookObj.classLevel,
+          medium: bookObj.medium,
+          formatsList: formatsArr.join(' | '),
+          pdfBase64: pendingUploadPdfBase64 || '',
+          pdfFileName: bookObj.pdfFileName || (bookObj.titleEn + '.pdf'),
+          pdfExternalUrl: bookObj.pdfExternalUrl || '',
+          htmlContent: bookObj.customHtmlContent || '',
+          flipbookExternalUrl: bookObj.flipbookExternalUrl || '',
+          flipbookImagesBase64: bookObj.customFlipImages || [],
+          coverBase64: (bookObj.cover && bookObj.cover.startsWith('data:image')) ? bookObj.cover : '',
+          uploadedBy: 'admin@ceosvg.in'
+        })
+      }).then(() => {
+        showToast('☁️ புத்தகம் உங்கள் Google Drive (CEOSVG.IN/digitalbooks) கோப்புறைக்கு அனுப்பப்பட்டது!', 'success');
+      }).catch(() => {});
+    }
+
+    function toggleGasModal() {
+      const m = document.getElementById('gasCodeModal');
+      if (m) m.classList.toggle('hidden');
+    }
+
+    function copyGasScriptCode() {
+      const pre = document.getElementById('gasScriptPreBlock');
+      if (!pre) return;
+      const text = pre.innerText || pre.textContent;
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('📋 Google Apps Script நிரல் (Code.gs) நகலெடுக்கப்பட்டது!', 'success');
+      } catch (e) {
+        showToast('நகலெடுக்க முடியவில்லை, நேரடியாகத் தேர்ந்தெடுத்து Copy செய்யவும்.', 'warn');
+      }
+      document.body.removeChild(ta);
     }
 
     // Initialize on DOMContentLoaded
@@ -2206,6 +2886,7 @@
       loadStoredState();
       renderLibraryGrid();
       renderAdminBooksTable();
+      renderAdminUsersTable();
       updateAdminLivePreview();
     });
   </script>
