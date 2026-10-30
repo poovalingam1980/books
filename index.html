@@ -281,42 +281,18 @@
   </main>
 
   <!-- ===================================================================== -->
-  <!-- VIEW 2: ADMIN DASHBOARD (நிர்வாகி முகப்பு - HTML, PDF & FLIPBOOK UPLOAD) -->
+  <!-- VIEW 2: STREAMLINED ADMIN DASHBOARD (நிர்வாகி முகப்பு)                  -->
   <!-- ===================================================================== -->
   <main id="viewAdmin" class="hidden flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 space-y-6">
 
-    <!-- Admin Top Header Banner -->
-    <section class="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 shadow-md border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div class="space-y-1">
-        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-indigo-600/20 text-indigo-300 text-xs font-semibold border border-indigo-600/30">
-          <span>⚙️ library.ceosvg.in • நிர்வாகி கட்டுப்பாட்டு அறை (Admin CMS)</span>
-        </div>
-        <h1 class="text-xl sm:text-2xl font-extrabold">புத்தகப் பதிவேற்றம் மற்றும் மேலாண்மை முகப்பு</h1>
-        <p class="text-xs sm:text-sm text-slate-300">
-          இங்கு <strong>HTML மின்-நூல்கள்</strong>, <strong>PDF புத்தகங்கள்</strong> மற்றும் <strong>3D Flipbook</strong> வடிவிலான புத்தகங்களை நேரடியாகப் பதிவேற்றம் செய்து பயனர் நூலகத்தில் வெளியிடலாம்.
-        </p>
-      </div>
-      <div class="flex flex-wrap items-center gap-2.5">
-        <button type="button" onclick="loadSampleAdminUploadDemo()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-600 text-white text-xs font-bold transition shadow-sm flex items-center gap-1.5">
-          <span>⚡ மாதிரி புத்தகத் தரவை நிரப்புக (Auto-Fill Demo)</span>
-        </button>
-        <button type="button" onclick="exportLibraryCatalogJson()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition flex items-center gap-1.5">
-          <span>📥 நூலக பட்டியல் (JSON)</span>
-        </button>
-        <button type="button" onclick="switchMainView('library')" class="px-3.5 py-2 rounded-xl bg-white text-slate-900 hover:bg-slate-100 text-xs font-bold transition">
-          <span>👁️ பயனர் நூலகத்தைப் பார்க்க</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- Admin Auth Guard Banner (Shown when viewing as Student/Guest) -->
+    <!-- Admin Role Guard Banner (Shown only if non-admin state occurs) -->
     <section id="adminRoleGuardBanner" class="hidden bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div class="flex items-start gap-3">
         <span class="text-2xl">🔒</span>
         <div>
           <h3 class="text-sm font-extrabold text-amber-950">நிர்வாகி அணுகல் பாதுகாப்பு (Admin Role Notice)</h3>
           <p class="text-xs text-amber-900 mt-0.5">
-            நீங்கள் தற்போது <strong>பயனர் (Student / Guest)</strong> நிலையில் உள்ளீர்கள். புத்தகங்களைப் பதிவேற்ற நிர்வாகி கணக்கில் (<strong>Mobile ID:</strong> <code class="bg-white px-1.5 py-0.5 rounded border">9999999999</code> / <strong>Password:</strong> <code class="bg-white px-1.5 py-0.5 rounded border">Admin@2026</code>) உள்நுழையவும்.
+            புத்தகங்களைப் பதிவேற்ற நிர்வாகி கணக்கில் (<strong>Mobile ID:</strong> <code class="bg-white px-1.5 py-0.5 rounded border">9999999999</code> / <strong>Password:</strong> <code class="bg-white px-1.5 py-0.5 rounded border">Admin@2026</code>) உள்நுழையவும்.
           </p>
         </div>
       </div>
@@ -325,119 +301,162 @@
       </button>
     </section>
 
-    <!-- Google Drive (CEOSVG.IN / digitalbooks) & Google Sheet Live Connection Panel -->
-    <section class="bg-white rounded-2xl shadow-sm border border-indigo-200 p-5 space-y-4">
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+    <!-- Streamlined Admin Header + KPI Summary Cards -->
+    <section class="bg-white rounded-3xl shadow-sm border border-slate-200/90 overflow-hidden">
+      <div class="manarkeni-gradient p-5 sm:p-6 text-white flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div class="space-y-1">
-          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-extrabold border border-emerald-200">
-            <span>☁️ Google Drive &amp; Google Sheets நேரடி இணைப்பு</span>
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-white/15 text-amber-200 text-xs font-bold border border-white/20">
+            <span>⚙️ சிவகங்கை கல்விக்களம் • நிர்வாகி கட்டுப்பாட்டு அறை</span>
           </div>
-          <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
-            CEOSVG.IN → digitalbooks கோப்புறை &amp; பயனர் கடவுச்சொல் Google Sheet
-          </h2>
-          <p class="text-xs text-slate-500">
-            நிர்வாகி முகப்பில் பதிவேற்றப்படும் புத்தகங்கள் <strong>digitalbooks</strong> கோப்புறையிலும், பயனர் பதிவு மற்றும் கடவுச்சொல் விவரங்கள் <strong>Google Sheet</strong>-லும் சேமிக்கப்படுகின்றன.
+          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">புத்தகப் பதிவேற்றம் மற்றும் நூலக மேலாண்மை</h1>
+          <p class="text-xs sm:text-sm text-indigo-100">
+            <strong>HTML</strong>, <strong>PDF</strong> மற்றும் <strong>3D Flipbook</strong> புத்தகங்களை <code>CEOSVG.IN/digitalbooks</code> கோப்புறையில் சேமித்து நிர்வகிக்கவும்.
           </p>
         </div>
 
-        <!-- Direct Workspace Links -->
         <div class="flex flex-wrap items-center gap-2">
-          <a href="https://drive.google.com/drive/folders/1w1nM7tekSvSM374CPgcH6_AY1meSZm1z" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 text-slate-800 hover:text-indigo-800 border border-slate-200 text-xs font-bold transition flex items-center gap-1.5">
-            <span>📁 CEOSVG.IN கோப்புறை</span>
-          </a>
-          <a href="https://drive.google.com/drive/folders/1QXOrMIqF_eFaWeWgLFAGzlgvPkqAyNjA" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-extrabold transition flex items-center gap-1.5">
-            <span>📂 digitalbooks கோப்புறை</span>
-          </a>
-          <a href="https://docs.google.com/spreadsheets/d/1KOBO0_plHmDPz5kN2BhzVJfZx1F69aMIaKO50_SlN0E/edit" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold transition flex items-center gap-1.5">
-            <span>📊 பயனர் &amp; நூல்கள் Google Sheet</span>
-          </a>
-          <button type="button" onclick="toggleGasModal()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-extrabold transition flex items-center gap-1.5 shadow-sm">
-            <span>📜 Google Script நிரல் (Code.gs)</span>
+          <button type="button" onclick="loadSampleAdminUploadDemo()" class="px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition shadow-sm flex items-center gap-1.5">
+            <span>⚡ மாதிரி புத்தகத் தரவை நிரப்புக (Auto-Fill Demo)</span>
+          </button>
+          <button type="button" onclick="exportLibraryCatalogJson()" class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/25 text-xs font-bold transition flex items-center gap-1.5">
+            <span>📥 நூலக பட்டியல் (JSON)</span>
+          </button>
+          <button type="button" onclick="switchMainView('library')" class="px-3.5 py-2 rounded-xl bg-white text-indigo-950 hover:bg-indigo-50 text-xs font-extrabold transition shadow-sm">
+            <span>👁️ பயனர் நூலகத்தைப் பார்க்க</span>
           </button>
         </div>
       </div>
 
-      <!-- Apps Script Web App URL Configuration Row -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-        <div class="lg:col-span-4">
-          <label for="gasWebAppUrlInput" class="block text-xs font-extrabold text-slate-800">🔗 Google Apps Script Web App URL:</label>
-          <p class="text-[11px] text-slate-500">Code.gs நிரலை Deploy செய்து கிடைக்கும் <code class="text-indigo-700">/exec</code> இணைப்பை இங்கே சேமிக்கவும்</p>
+      <!-- 4 Clean KPI Cards Bar -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-slate-100 bg-slate-50/60">
+        <div class="p-4 flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-xl font-bold shrink-0">📚</div>
+          <div>
+            <div class="text-[11px] font-bold text-slate-500">மொத்தப் புத்தகங்கள்</div>
+            <div id="adminKpiBooks" class="text-xl font-extrabold text-slate-900">1</div>
+          </div>
         </div>
-        <div class="lg:col-span-6">
-          <input id="gasWebAppUrlInput" type="url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-mono bg-white focus:border-indigo-600 outline-none" />
+        <div class="p-4 flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-bold shrink-0">📖</div>
+          <div>
+            <div class="text-[11px] font-bold text-slate-500">ஆதரவு வடிவங்கள்</div>
+            <div class="text-sm font-extrabold text-slate-900">HTML • PDF • Flipbook</div>
+          </div>
         </div>
-        <div class="lg:col-span-2 flex items-center gap-2">
-          <button type="button" onclick="saveGasWebAppUrl()" class="w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-sm">
-            💾 இணைப்பைச் சேமி
+        <div class="p-4 flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold shrink-0">👥</div>
+          <div>
+            <div class="text-[11px] font-bold text-slate-500">பதிவு செய்த பயனர்கள்</div>
+            <div id="adminKpiUsers" class="text-xl font-extrabold text-slate-900">4</div>
+          </div>
+        </div>
+        <div class="p-4 flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center text-xl font-bold shrink-0">☁️</div>
+          <div class="min-w-0">
+            <div class="text-[11px] font-bold text-slate-500">Google Drive சேமிப்பிடம்</div>
+            <div class="text-xs font-extrabold text-indigo-700 truncate">CEOSVG.IN / digitalbooks</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Streamlined 4-Section Admin Sub-Navigation Bar -->
+      <div class="px-4 py-3 bg-white border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button type="button" id="adminSubTab_upload" onclick="switchAdminSubTab('upload')" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 text-white shadow-sm transition flex items-center gap-1.5">
+            <span>📤 1. புதிய புத்தகம் பதிவேற்றம்</span>
+          </button>
+          <button type="button" id="adminSubTab_books" onclick="switchAdminSubTab('books')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <span>📚 2. புத்தகப் பட்டியல்</span>
+            <span id="adminTotalBooksBadge" class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-900 text-[11px] font-extrabold">1</span>
+          </button>
+          <button type="button" id="adminSubTab_users" onclick="switchAdminSubTab('users')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <span>👥 3. பயனர் &amp; கடவுச்சொல் விவரம்</span>
+          </button>
+          <button type="button" id="adminSubTab_drive" onclick="switchAdminSubTab('drive')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <span>☁️ 4. Google Drive &amp; Script இணைப்பு</span>
           </button>
         </div>
+
+        <button type="button" onclick="toggleGasModal()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-extrabold transition flex items-center gap-1.5 shadow-sm">
+          <span>📜 Google Script நிரல் (Code.gs)</span>
+        </button>
       </div>
     </section>
 
-    <!-- Admin Layout: Left Upload Form (7 cols) + Right Live Preview & Book List (5 cols) -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <!-- =================================================================== -->
+    <!-- ADMIN SUB-PANE 1: UPLOAD NEW BOOK + LIVE PREVIEW                    -->
+    <!-- =================================================================== -->
+    <div id="adminPane_upload" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-      <!-- UPLOAD FORM CARD -->
-      <section class="lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-5">
+      <!-- Left Column (8 cols): Clean Step-by-Step Book Upload Form -->
+      <section class="lg:col-span-8 bg-white rounded-3xl shadow-sm border border-slate-200 p-5 sm:p-7 space-y-6">
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
           <div>
-            <h2 id="adminFormHeading" class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+            <h2 id="adminFormHeading" class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
               <span>📤 புதிய புத்தகம் பதிவேற்றம் (Upload Book)</span>
             </h2>
-            <p class="text-xs text-slate-500 mt-0.5">HTML, PDF மற்றும் Flipbook ஆகிய மூன்று வடிவங்களையும் ஒரே இடத்தில் இணைக்கலாம்</p>
+            <p class="text-xs text-slate-500 mt-0.5">புத்தக விவரங்களை உள்ளிட்டு HTML, PDF மற்றும் Flipbook கோப்புகளை இணைக்கவும்</p>
           </div>
-          <span id="editModeIndicator" class="hidden px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">✏️ திருத்தும் முறை (Edit Mode)</span>
+          <span id="editModeIndicator" class="hidden px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">✏️ திருத்தும் முறை (Edit Mode)</span>
         </div>
 
-        <form id="adminUploadForm" onsubmit="handleAdminBookSubmit(event)" class="space-y-5">
+        <form id="adminUploadForm" onsubmit="handleAdminBookSubmit(event)" class="space-y-6">
           <input type="hidden" id="editBookId" value="" />
 
-          <!-- Basic Metadata Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label for="bookTitleTa" class="block text-xs font-bold text-slate-700 mb-1">புத்தகத்தின் பெயர் (தமிழில்) <span class="text-rose-500">*</span></label>
-              <input id="bookTitleTa" type="text" required placeholder="எ.கா: கணினி அறிவியல்" oninput="updateAdminLivePreview()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 outline-none" />
+          <!-- Step A: Basic Book Info -->
+          <div class="space-y-4">
+            <div class="flex items-center gap-2 text-xs font-extrabold text-indigo-800 uppercase tracking-wider">
+              <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-800 flex items-center justify-center text-[11px]">1</span>
+              <span>புத்தகத்தின் அடிப்படை விவரங்கள்</span>
             </div>
-            <div>
-              <label for="bookTitleEn" class="block text-xs font-bold text-slate-700 mb-1">Book Title (in English) <span class="text-rose-500">*</span></label>
-              <input id="bookTitleEn" type="text" required placeholder="e.g., Computer Science" oninput="updateAdminLivePreview()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 outline-none" />
-            </div>
-          </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label for="bookClass" class="block text-xs font-bold text-slate-700 mb-1">வகுப்பு / பிரிவு (Class) <span class="text-rose-500">*</span></label>
-              <select id="bookClass" onchange="updateAdminLivePreview()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:border-indigo-600 outline-none">
-                <option value="Class XII">வகுப்பு 12 (Class XII)</option>
-                <option value="Class XI">வகுப்பு 11 (Class XI)</option>
-                <option value="Class X">வகுப்பு 10 (Class X - SSLC)</option>
-                <option value="Class VI-IX">வகுப்பு 6–9 (Class VI–IX)</option>
-                <option value="Class I-V">வகுப்பு 1–5 (Class I–V)</option>
-                <option value="Competitive">போட்டித் தேர்வு / CEO வழிகாட்டி</option>
-              </select>
-            </div>
-            <div>
-              <label for="bookMedium" class="block text-xs font-bold text-slate-700 mb-1">பயிற்று மொழி (Medium)</label>
-              <select id="bookMedium" onchange="updateAdminLivePreview()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:border-indigo-600 outline-none">
-                <option value="தமிழ் வழி">தமிழ் வழி (Tamil Medium)</option>
-                <option value="English Medium">ஆங்கில வழி (English Medium)</option>
-                <option value="இருமொழி">இருமொழி (Bilingual)</option>
-              </select>
-            </div>
-            <div>
-              <label for="bookCode" class="block text-xs font-bold text-slate-700 mb-1">புத்தகக் குறியீடு / பக்கங்கள்</label>
-              <input id="bookCode" type="text" placeholder="எ.கா: CEO-SVG-1208 • 240 பக்." class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-600 outline-none" />
-            </div>
-          </div>
-
-          <!-- FORMAT SELECTION & DEDICATED UPLOAD ZONES (HTML, PDF, FLIPBOOK) -->
-          <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/90 space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <h3 class="text-sm font-extrabold text-slate-800">1. புத்தக வடிவங்கள் &amp; கோப்பு பதிவேற்றம் (HTML, PDF &amp; Flipbook)</h3>
-                <p class="text-xs text-slate-500">கீழ்க்காணும் தாவல்களைப் பயன்படுத்தி HTML, PDF மற்றும் Flipbook கோப்புகளைப் பதிவேற்றவும்</p>
+                <label for="bookTitleTa" class="block text-xs font-bold text-slate-700 mb-1">புத்தகத்தின் பெயர் (தமிழில்) <span class="text-rose-500">*</span></label>
+                <input id="bookTitleTa" type="text" required placeholder="எ.கா: 12 NCERT வேதியியல்" oninput="updateAdminLivePreview()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 outline-none" />
               </div>
-              <!-- Enabled Format Checkboxes -->
+              <div>
+                <label for="bookTitleEn" class="block text-xs font-bold text-slate-700 mb-1">Book Title (in English) <span class="text-rose-500">*</span></label>
+                <input id="bookTitleEn" type="text" required placeholder="e.g., Class XII NCERT Chemistry" oninput="updateAdminLivePreview()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 outline-none" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label for="bookClass" class="block text-xs font-bold text-slate-700 mb-1">வகுப்பு / பிரிவு (Class) <span class="text-rose-500">*</span></label>
+                <select id="bookClass" onchange="updateAdminLivePreview()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:border-indigo-600 outline-none">
+                  <option value="Class XII">வகுப்பு 12 (Class XII)</option>
+                  <option value="Class XI">வகுப்பு 11 (Class XI)</option>
+                  <option value="Class X">வகுப்பு 10 (Class X - SSLC)</option>
+                  <option value="Class VI-IX">வகுப்பு 6–9 (Class VI–IX)</option>
+                  <option value="Class I-V">வகுப்பு 1–5 (Class I–V)</option>
+                  <option value="Competitive">போட்டித் தேர்வு / NCERT வழிகாட்டி</option>
+                </select>
+              </div>
+              <div>
+                <label for="bookMedium" class="block text-xs font-bold text-slate-700 mb-1">பயிற்று மொழி (Medium)</label>
+                <select id="bookMedium" onchange="updateAdminLivePreview()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:border-indigo-600 outline-none">
+                  <option value="தமிழ் வழி">தமிழ் வழி (Tamil Medium)</option>
+                  <option value="English Medium">ஆங்கில வழி (English Medium)</option>
+                  <option value="இருமொழி">இருமொழி (Bilingual)</option>
+                </select>
+              </div>
+              <div>
+                <label for="bookCode" class="block text-xs font-bold text-slate-700 mb-1">புத்தகக் குறியீடு / பக்கங்கள்</label>
+                <input id="bookCode" type="text" placeholder="எ.கா: NCERT-12-02 • 240 பக்." class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-indigo-600 outline-none" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Step B: Format Upload Zones (Flipbook, PDF, HTML) -->
+          <div class="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200/90 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="flex items-center gap-2 text-xs font-extrabold text-indigo-800 uppercase tracking-wider">
+                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-800 flex items-center justify-center text-[11px]">2</span>
+                <span>வடிவங்கள் &amp; கோப்பு பதிவேற்றம் (HTML, PDF &amp; Flipbook)</span>
+              </div>
+
+              <!-- Format Checkboxes -->
               <div class="flex items-center gap-3 bg-white px-3 py-1.5 rounded-xl border border-slate-200">
                 <label class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-900 cursor-pointer">
                   <input id="chkFlipbook" type="checkbox" checked onchange="updateAdminLivePreview()" class="rounded text-indigo-600 focus:ring-indigo-600" />
@@ -447,8 +466,8 @@
                   <input id="chkPdf" type="checkbox" checked onchange="updateAdminLivePreview()" class="rounded text-rose-600 focus:ring-rose-500" />
                   <span>PDF</span>
                 </label>
-                <label class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 cursor-pointer">
-                  <input id="chkHtml" type="checkbox" checked onchange="updateAdminLivePreview()" class="rounded text-indigo-600 focus:ring-indigo-500" />
+                <label class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 cursor-pointer">
+                  <input id="chkHtml" type="checkbox" checked onchange="updateAdminLivePreview()" class="rounded text-emerald-600 focus:ring-emerald-500" />
                   <span>HTML</span>
                 </label>
               </div>
@@ -467,36 +486,33 @@
               </button>
             </div>
 
-            <!-- TAB 1: FLIPBOOK UPLOAD & CONFIG -->
+            <!-- TAB 1: FLIPBOOK UPLOAD -->
             <div id="uploadPaneFlipbook" class="space-y-3 bg-white p-4 rounded-xl border border-indigo-100">
               <div class="flex items-start justify-between gap-2">
                 <div>
-                  <h4 class="text-xs font-extrabold text-indigo-900 uppercase tracking-wider">📖 3D Flipbook உருவாக்கம் &amp; பதிவேற்றம்</h4>
-                  <p class="text-xs text-slate-500 mt-0.5">பக்கங்களைப் புரட்டிப் படிக்கும் 3D Flipbook-க்கான படங்கள்/PDF அல்லது வெளிப்புற Flipbook இணைப்பை வழங்கவும்.</p>
+                  <h4 class="text-xs font-extrabold text-indigo-900">📖 3D Flipbook பக்கங்கள் / இணைப்பு</h4>
+                  <p class="text-xs text-slate-500 mt-0.5">பக்கப் படங்கள் (.jpg/.png) அல்லது வெளிப்புற Flipbook இணைப்பை வழங்கலாம்.</p>
                 </div>
-                <span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[11px] font-semibold border border-indigo-200">3D Page Flip</span>
+                <span id="flipbookUploadStatus" class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-bold border border-indigo-200">✓ தானியங்கி 3D தயார்</span>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-indigo-300 rounded-xl bg-indigo-50/40 hover:bg-indigo-50 cursor-pointer transition text-center">
                   <span class="text-2xl mb-1">📚</span>
-                  <span class="text-xs font-bold text-indigo-900">Flipbook பக்கப் படங்கள் / கோப்புகளைத் தேர்ந்தெடுக்க</span>
-                  <span class="text-[11px] text-slate-500 mt-0.5">பல படங்கள் (.jpg, .png) அல்லது .pdf/.html</span>
+                  <span class="text-xs font-bold text-indigo-900">Flipbook பக்கப் படங்களைத் தேர்ந்தெடுக்க</span>
+                  <span class="text-[11px] text-slate-500 mt-0.5">பல படங்கள் (.jpg, .png) அல்லது .pdf</span>
                   <input id="flipbookFilesInput" type="file" multiple accept="image/*,.pdf,.html" onchange="handleFlipbookFilesSelected(event)" class="hidden" />
                 </label>
 
-                <div class="space-y-2 flex flex-col justify-between bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <div class="space-y-2.5 flex flex-col justify-between bg-slate-50 p-3.5 rounded-xl border border-slate-200">
                   <div>
                     <label for="flipbookExternalUrl" class="block text-[11px] font-bold text-slate-700 mb-1">அல்லது Flipbook Embed URL (விருப்பத்தேர்வு)</label>
                     <input id="flipbookExternalUrl" type="url" placeholder="https://library.ceosvg.in/flipbooks/..." class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs outline-none focus:border-indigo-600 bg-white" />
                   </div>
-                  <div class="flex items-center justify-between text-xs pt-1">
-                    <label class="inline-flex items-center gap-1.5 text-slate-700 font-medium cursor-pointer">
-                      <input id="flipSoundCheck" type="checkbox" checked class="rounded text-indigo-600" />
-                      <span>பக்கம் புரட்டும் ஒலி (Flip Sound)</span>
-                    </label>
-                    <span id="flipbookUploadStatus" class="text-[11px] font-bold text-indigo-700">✓ தானியங்கி 3D தயார்</span>
-                  </div>
+                  <label class="inline-flex items-center gap-1.5 text-slate-700 text-xs font-medium cursor-pointer">
+                    <input id="flipSoundCheck" type="checkbox" checked class="rounded text-indigo-600" />
+                    <span>பக்கம் புரட்டும் ஒலி (3D Page Flip Sound)</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -505,10 +521,10 @@
             <div id="uploadPanePdf" class="hidden space-y-3 bg-white p-4 rounded-xl border border-rose-100">
               <div class="flex items-start justify-between gap-2">
                 <div>
-                  <h4 class="text-xs font-extrabold text-rose-700 uppercase tracking-wider">📄 PDF மின்-நூல் கோப்பு பதிவேற்றம் (.pdf)</h4>
-                  <p class="text-xs text-slate-500 mt-0.5">உங்கள் கணினியில் உள்ள PDF பாடநூலைத் தேர்ந்தெடுக்கவும் அல்லது PDF இணைப்பை உள்ளிடவும்.</p>
+                  <h4 class="text-xs font-extrabold text-rose-700">📄 PDF புத்தகக் கோப்பு பதிவேற்றம் (.pdf)</h4>
+                  <p class="text-xs text-slate-500 mt-0.5">கணினியில் உள்ள PDF கோப்பைத் தேர்ந்தெடுத்தால் அது <code>digitalbooks</code> கோப்புறையில் சேமிக்கப்படும்.</p>
                 </div>
-                <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-700 text-[11px] font-semibold border border-rose-200">PDF Reader + Download</span>
+                <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-700 text-[11px] font-semibold border border-rose-200">PDF + Flipbook</span>
               </div>
 
               <label class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-rose-300 rounded-xl bg-rose-50/30 hover:bg-rose-50/70 cursor-pointer transition text-center">
@@ -519,17 +535,17 @@
               </label>
 
               <div>
-                <label for="pdfExternalUrl" class="block text-[11px] font-bold text-slate-700 mb-1">அல்லது நேரடி PDF URL இணைப்பு (Direct PDF Link)</label>
-                <input id="pdfExternalUrl" type="url" placeholder="https://library.ceosvg.in/pdfs/textbook.pdf" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs outline-none focus:border-rose-500" />
+                <label for="pdfExternalUrl" class="block text-[11px] font-bold text-slate-700 mb-1">அல்லது நேரடி Google Drive / PDF URL இணைப்பு</label>
+                <input id="pdfExternalUrl" type="url" placeholder="https://drive.google.com/file/d/.../preview" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs outline-none focus:border-rose-500" />
               </div>
             </div>
 
-            <!-- TAB 3: HTML FILE / INTERACTIVE E-BOOK UPLOAD -->
+            <!-- TAB 3: HTML UPLOAD -->
             <div id="uploadPaneHtml" class="hidden space-y-3 bg-white p-4 rounded-xl border border-indigo-100">
               <div class="flex items-start justify-between gap-2">
                 <div>
-                  <h4 class="text-xs font-extrabold text-indigo-800 uppercase tracking-wider">🌐 HTML வடிவிலான மின்-நூல் பதிவேற்றம் (.html)</h4>
-                  <p class="text-xs text-slate-500 mt-0.5">.html கோப்பை நேரடியாகப் பதிவேற்றலாம் அல்லது கீழே உள்ள HTML ஆசிரியர் பெட்டியில் பாட உள்ளடக்கத்தைத் தொகுக்கலாம்.</p>
+                  <h4 class="text-xs font-extrabold text-indigo-800">🌐 HTML வடிவிலான மின்-நூல் பதிவேற்றம் (.html)</h4>
+                  <p class="text-xs text-slate-500 mt-0.5">.html கோப்பைப் பதிவேற்றலாம் அல்லது நேரடியாக HTML பாட உள்ளடக்கத்தை உள்ளிடலாம்.</p>
                 </div>
                 <button type="button" onclick="insertSampleHtmlChapter()" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-bold border border-indigo-200 transition">
                   ✨ மாதிரி HTML பாடம் நிரப்புக
@@ -544,44 +560,44 @@
               </label>
 
               <div>
-                <label for="htmlContentEditor" class="block text-[11px] font-bold text-slate-700 mb-1">HTML பாட உள்ளடக்கம் (Interactive HTML Book Content):</label>
+                <label for="htmlContentEditor" class="block text-[11px] font-bold text-slate-700 mb-1">HTML பாட உள்ளடக்கம் (Interactive HTML Content):</label>
                 <textarea
                   id="htmlContentEditor"
-                  rows="5"
-                  placeholder="<h2>அலகு 1: அறிமுகம்</h2><p>இங்கு HTML வடிவிலான பாடக் குறிப்புகள், அட்டவணைகள், சூத்திரங்களை உள்ளிடலாம்...</p>"
+                  rows="4"
+                  placeholder="<h2>அலகு 1: அறிமுகம்</h2><p>இங்கு HTML வடிவிலான பாடக் குறிப்புகளை உள்ளிடலாம்...</p>"
                   class="w-full p-3 rounded-xl border border-slate-200 font-mono text-xs bg-slate-50 focus:bg-white focus:border-indigo-500 outline-none"
                 ></textarea>
               </div>
             </div>
           </div>
 
-          <!-- COVER IMAGE UPLOAD -->
-          <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/90 flex flex-col sm:flex-row items-center gap-4">
-            <div class="w-20 h-28 rounded-xl border border-slate-300 bg-white overflow-hidden shrink-0 shadow-sm flex items-center justify-center">
-              <img id="adminCoverPreviewImg" src="data:image/jpeg;base64,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" alt="Cover Preview" class="w-full h-full object-cover" />
-            </div>
-            <div class="flex-1 space-y-2 text-center sm:text-left">
-              <h3 class="text-xs font-extrabold text-slate-800">2. புத்தக அட்டைப்படம் பதிவேற்றம் (Book Cover Thumbnail)</h3>
-              <p class="text-xs text-slate-500">புத்தகத்தின் முகப்பு அட்டைப் படத்தை (.jpg, .png) பதிவேற்றவும் அல்லது வண்ண அட்டையைத் தேர்வு செய்யவும்.</p>
-              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                <label class="px-3 py-1.5 rounded-lg bg-white border border-slate-300 hover:border-indigo-600 text-xs font-bold text-slate-700 cursor-pointer shadow-sm transition">
-                  <span>🖼️ அட்டைப்படம் தேர்வு செய்க</span>
-                  <input id="coverImageInput" type="file" accept="image/*" onchange="handleCoverImageSelected(event)" class="hidden" />
-                </label>
-                <button type="button" onclick="generateStylizedCoverDataUrl()" class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 text-xs font-bold transition">
-                  <span>🎨 தானியங்கி அட்டை உருவாக்கு</span>
-                </button>
+          <!-- Step C: Cover Image + Description -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-slate-50 rounded-2xl p-4 border border-slate-200/90">
+            <div class="md:col-span-5 flex items-center gap-3.5">
+              <div class="w-16 h-22 rounded-xl border border-slate-300 bg-white overflow-hidden shrink-0 shadow-sm">
+                <img id="adminCoverPreviewImg" src="data:image/jpeg;base64,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" alt="Cover Preview" class="w-full h-full object-cover" />
+              </div>
+              <div class="space-y-1.5">
+                <div class="text-xs font-extrabold text-slate-800">3. புத்தக அட்டைப்படம்</div>
+                <div class="flex flex-wrap gap-1.5">
+                  <label class="px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 hover:border-indigo-600 text-[11px] font-bold text-slate-700 cursor-pointer shadow-sm transition">
+                    <span>🖼️ படம் தேர்வு</span>
+                    <input id="coverImageInput" type="file" accept="image/*" onchange="handleCoverImageSelected(event)" class="hidden" />
+                  </label>
+                  <button type="button" onclick="generateStylizedCoverDataUrl()" class="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 text-[11px] font-bold transition">
+                    <span>🎨 தானியங்கி அட்டை உருவாக்கு</span>
+                  </button>
+                </div>
               </div>
             </div>
+
+            <div class="md:col-span-7">
+              <label for="bookDescription" class="block text-xs font-bold text-slate-700 mb-1">4. பாடச் சுருக்கம் / முக்கிய தலைப்புகள்</label>
+              <textarea id="bookDescription" rows="2" placeholder="புத்தகத்தின் முக்கிய அலகுகள் மற்றும் பாடக் குறிப்புகள்..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:border-indigo-600 outline-none"></textarea>
+            </div>
           </div>
 
-          <!-- Short Summary / Chapter Notes for Flipbook Pages -->
-          <div>
-            <label for="bookDescription" class="block text-xs font-bold text-slate-700 mb-1">பாடச் சுருக்கம் / முக்கிய தலைப்புகள் (Flipbook &amp; தேடலுக்காக)</label>
-            <textarea id="bookDescription" rows="2" placeholder="எ.கா: அணிகள் மற்றும் அணிக்கோவைகளின் பயன்பாடுகள், கலப்பெண்கள், வகை நுண்கணிதம்..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:border-indigo-600 outline-none"></textarea>
-          </div>
-
-          <!-- Submit & Reset Buttons -->
+          <!-- Submit & Reset Actions -->
           <div class="flex flex-wrap items-center justify-end gap-3 pt-2 border-t border-slate-100">
             <button type="button" onclick="resetAdminUploadForm()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs sm:text-sm font-bold transition">
               மீட்டமை (Reset)
@@ -593,75 +609,124 @@
         </form>
       </section>
 
-      <!-- RIGHT COLUMN: LIVE CARD PREVIEW + UPLOADED BOOKS MANAGEMENT TABLE -->
-      <section class="lg:col-span-5 space-y-6">
-
-        <!-- Live Preview Card -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
+      <!-- Right Column (4 cols): Sticky Live Card Preview & Quick Storage Status -->
+      <section class="lg:col-span-4 space-y-5">
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-sm font-extrabold text-slate-800">👁️ நேரடி பயனர் முகப்பு முன்னோட்டம் (Live Card Preview)</h3>
-            <span class="text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full">Real-time</span>
+            <h3 class="text-sm font-extrabold text-slate-800">👁️ நேரடி அட்டை முன்னோட்டம்</h3>
+            <span class="text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full">Live Preview</span>
           </div>
 
-          <div class="flex flex-col sm:flex-row items-center gap-5 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-            <!-- Manarkeni-style card preview -->
-            <div class="w-40 bg-white rounded-2xl p-2.5 shadow-sm border border-slate-200/90 text-center shrink-0">
-              <div class="relative rounded-xl overflow-hidden aspect-[3/4] bg-slate-100 mb-2">
+          <div class="flex flex-col items-center bg-slate-50 p-5 rounded-2xl border border-slate-200/80">
+            <div class="w-44 bg-white rounded-2xl p-3 shadow-sm border border-slate-200/90 text-center">
+              <div class="relative rounded-xl overflow-hidden aspect-[3/4] bg-slate-100 mb-2.5">
                 <img id="liveCardCover" src="data:image/jpeg;base64,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" alt="Preview Cover" class="w-full h-full object-cover" />
-                <span id="liveCardClassBadge" class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded bg-slate-900/80 text-white text-[10px] font-bold">Class XII</span>
+                <span id="liveCardClassBadge" class="absolute top-1.5 right-1.5 px-2 py-0.5 rounded bg-slate-900/80 text-white text-[10px] font-bold">Class XII</span>
               </div>
               <div id="liveCardTitleTa" class="text-xs font-bold text-slate-800 truncate">12 NCERT Biology</div>
-              <div id="liveCardFormats" class="flex items-center justify-center gap-1 mt-1.5">
+              <div id="liveCardFormats" class="flex items-center justify-center gap-1 mt-2">
                 <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Flipbook</span>
                 <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-200">PDF</span>
                 <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">HTML</span>
               </div>
             </div>
-
-            <div class="space-y-2 text-xs text-slate-600">
-              <p class="font-bold text-slate-800">பதிவேற்றப்படும் வடிவங்கள்:</p>
-              <ul class="space-y-1.5">
-                <li class="flex items-center gap-1.5"><span>✅</span> <span><strong>3D Flipbook:</strong> பக்கங்களைப் புரட்டும் அனிமேஷன் &amp; ஒலி</span></li>
-                <li class="flex items-center gap-1.5"><span>✅</span> <span><strong>PDF கோப்பு:</strong> நேரடி வாசிப்பு &amp; பதிவிறக்கம்</span></li>
-                <li class="flex items-center gap-1.5"><span>✅</span> <span><strong>HTML மின்-நூல்:</strong> எழுத்துரு அளவு, இரவு முறை &amp; வினாடி-வினா</span></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- Manage Uploaded Books List -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-extrabold text-slate-800">📚 பதிவேற்றப்பட்ட புத்தகங்கள் பட்டியல்</h3>
-              <p class="text-[11px] text-slate-500">எந்தப் புத்தகத்தையும் முன்னோட்டம் பார்க்கலாம், திருத்தலாம் அல்லது நீக்கலாம்</p>
-            </div>
-            <span id="adminTotalBooksBadge" class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-extrabold">1</span>
           </div>
 
-          <div id="adminBooksTableList" class="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
-            <!-- Populated dynamically via JS -->
-          </div>
-        </div>
-
-        <!-- Registered Users & Passwords Management Card (Synced with Google Sheet) -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-extrabold text-slate-800">👥 பயனர் பதிவு &amp; கடவுச்சொல் விவரங்கள் (Users Sheet)</h3>
-              <p class="text-[11px] text-slate-500">தற்காலிக நிர்வாகி, சோதனைப் பயனர் மற்றும் புதிய பதிவுகள்</p>
-            </div>
-            <a href="https://docs.google.com/spreadsheets/d/1KOBO0_plHmDPz5kN2BhzVJfZx1F69aMIaKO50_SlN0E/edit" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold hover:bg-emerald-100">
-              📊 Sheet-ல் திறக்க ↗
-            </a>
-          </div>
-
-          <div id="adminUsersTableList" class="space-y-2 max-h-[280px] overflow-y-auto pr-1">
-            <!-- Populated dynamically via JS -->
+          <div class="p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-950 space-y-1.5">
+            <div class="font-extrabold flex items-center gap-1.5"><span>💡</span> <span>பதிவேற்றக் குறிப்பு:</span></div>
+            <p class="text-[11px] text-slate-600 leading-relaxed">
+              இங்கு பதிவேற்றப்படும் புத்தகம் உடனடியாகப் பயனர் நூலகத்திலும், உங்கள் Google Drive-ன் <strong>digitalbooks</strong> கோப்புறையிலும் சேமிக்கப்படும்.
+            </p>
           </div>
         </div>
       </section>
     </div>
+
+    <!-- =================================================================== -->
+    <!-- ADMIN SUB-PANE 2: MANAGE UPLOADED BOOKS CATALOG                     -->
+    <!-- =================================================================== -->
+    <section id="adminPane_books" class="hidden bg-white rounded-3xl shadow-sm border border-slate-200 p-5 sm:p-7 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+        <div>
+          <h3 class="text-base sm:text-lg font-extrabold text-slate-900">📚 பதிவேற்றப்பட்ட புத்தகங்கள் பட்டியல் (Manage Books)</h3>
+          <p class="text-xs text-slate-500">நூலகத்தில் உள்ள புத்தகங்களை Flipbook, PDF அல்லது HTML வடிவில் சோதிக்கலாம், திருத்தலாம் அல்லது நீக்கலாம்</p>
+        </div>
+        <button type="button" onclick="switchAdminSubTab('upload')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shadow-sm transition">
+          ➕ புதிய புத்தகம் சேர்க்க
+        </button>
+      </div>
+
+      <div id="adminBooksTableList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- ADMIN SUB-PANE 3: REGISTERED USERS & PASSWORDS                      -->
+    <!-- =================================================================== -->
+    <section id="adminPane_users" class="hidden bg-white rounded-3xl shadow-sm border border-slate-200 p-5 sm:p-7 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+        <div>
+          <h3 class="text-base sm:text-lg font-extrabold text-slate-900">👥 பயனர் பதிவு &amp; கடவுச்சொல் விவரங்கள் (Users Sheet)</h3>
+          <p class="text-xs text-slate-500">10 இலக்க கைபேசி எண் (User ID), பயனர் வகை (மாணவர் / ஆசிரியர் / விருந்தினர்), மின்னஞ்சல் மற்றும் கடவுச்சொல் பட்டியல்</p>
+        </div>
+        <a href="https://docs.google.com/spreadsheets/d/1KOBO0_plHmDPz5kN2BhzVJfZx1F69aMIaKO50_SlN0E/edit" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-sm transition inline-flex items-center gap-1.5">
+          <span>📊 Google Sheet-ல் திறக்க ↗</span>
+        </a>
+      </div>
+
+      <div id="adminUsersTableList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- ADMIN SUB-PANE 4: GOOGLE DRIVE, SHEET & APPS SCRIPT SETUP           -->
+    <!-- =================================================================== -->
+    <section id="adminPane_drive" class="hidden bg-white rounded-3xl shadow-sm border border-indigo-200 p-5 sm:p-7 space-y-5">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-extrabold border border-emerald-200">
+            <span>☁️ Google Drive &amp; Google Sheets நேரடி இணைப்பு</span>
+          </div>
+          <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
+            CEOSVG.IN → digitalbooks கோப்புறை &amp; பயனர் கடவுச்சொல் Google Sheet
+          </h2>
+          <p class="text-xs text-slate-500">
+            உங்கள் கணக்கில் உருவாக்கப்பட்டுள்ள Google Drive கோப்புறைகள் மற்றும் Google Sheet-க்கான நேரடி இணைப்புகள்:
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <a href="https://drive.google.com/drive/folders/1w1nM7tekSvSM374CPgcH6_AY1meSZm1z" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 text-slate-800 hover:text-indigo-800 border border-slate-200 text-xs font-bold transition flex items-center gap-1.5">
+            <span>📁 CEOSVG.IN கோப்புறை</span>
+          </a>
+          <a href="https://drive.google.com/drive/folders/1QXOrMIqF_eFaWeWgLFAGzlgvPkqAyNjA" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-extrabold transition flex items-center gap-1.5">
+            <span>📂 digitalbooks கோப்புறை</span>
+          </a>
+          <a href="https://docs.google.com/spreadsheets/d/1KOBO0_plHmDPz5kN2BhzVJfZx1F69aMIaKO50_SlN0E/edit" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold transition flex items-center gap-1.5">
+            <span>📊 பயனர் &amp; நூல்கள் Google Sheet</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Apps Script Web App URL Configuration -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center bg-slate-50 p-4 rounded-2xl border border-slate-200">
+        <div class="lg:col-span-4">
+          <label for="gasWebAppUrlInput" class="block text-xs font-extrabold text-slate-800">🔗 Google Apps Script Web App URL:</label>
+          <p class="text-[11px] text-slate-500 mt-0.5">Code.gs நிரலை Deploy செய்து கிடைக்கும் <code class="text-indigo-700">/exec</code> இணைப்பை இங்கே சேமிக்கவும்</p>
+        </div>
+        <div class="lg:col-span-6">
+          <input id="gasWebAppUrlInput" type="url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono bg-white focus:border-indigo-600 outline-none" />
+        </div>
+        <div class="lg:col-span-2">
+          <button type="button" onclick="saveGasWebAppUrl()" class="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold transition shadow-sm">
+            💾 இணைப்பைச் சேமி
+          </button>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ===================================================================== -->
@@ -1599,6 +1664,26 @@ function jsonResponse(obj) {
       if (elFlip) elFlip.textContent = String(flipCount);
       if (elHtmlPdf) elHtmlPdf.textContent = String(htmlPdfCount);
       if (elAdminBadge) elAdminBadge.textContent = String(total);
+      const kpiBooks = document.getElementById('adminKpiBooks');
+      if (kpiBooks) kpiBooks.textContent = String(total);
+      const kpiUsers = document.getElementById('adminKpiUsers');
+      if (kpiUsers) kpiUsers.textContent = String(usersCatalog.length);
+    }
+
+    function switchAdminSubTab(tabName) {
+      const tabs = ['upload', 'books', 'users', 'drive'];
+      tabs.forEach(t => {
+        const pane = document.getElementById('adminPane_' + t);
+        const btn = document.getElementById('adminSubTab_' + t);
+        if (pane) pane.classList.toggle('hidden', t !== tabName);
+        if (btn) {
+          if (t === tabName) {
+            btn.className = 'px-4 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 text-white shadow-sm transition flex items-center gap-1.5';
+          } else {
+            btn.className = 'px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-1.5';
+          }
+        }
+      });
     }
 
     // Filter Controls
@@ -2654,6 +2739,7 @@ function jsonResponse(obj) {
     function editBookInAdmin(bookId) {
       const book = booksCatalog.find(b => b.id === bookId);
       if (!book) return;
+      switchAdminSubTab('upload');
 
       document.getElementById('editBookId').value = book.id;
       document.getElementById('bookTitleTa').value = book.titleTa;
