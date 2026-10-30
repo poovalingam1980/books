@@ -766,7 +766,7 @@
   <div id="readerModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex flex-col">
 
     <!-- Reader Top Bar -->
-    <div class="bg-slate-900 text-white px-4 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+    <div id="readerTopBar" class="bg-slate-900 text-white px-4 py-2.5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3 min-w-0">
         <button type="button" onclick="closeReaderModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition">
           <span>← நூலகத்திற்குத் திரும்பு</span>
@@ -851,33 +851,28 @@
     </div>
 
     <!-- MODE B: PDF VIEWER PANE -->
-    <div id="readerPanePdf" class="hidden flex-1 flex flex-col items-center p-3 sm:p-6 overflow-y-auto">
-      <div id="pdfViewerContainer" class="w-full max-w-4xl flex-1 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+    <div id="readerPanePdf" class="hidden flex-1 w-full h-full flex flex-col bg-slate-900 overflow-hidden">
+      <div id="pdfViewerContainer" class="w-full h-full flex-1 bg-white overflow-hidden flex flex-col">
         <!-- Populated dynamically with either uploaded PDF iframe/object or printable A4 textbook PDF layout -->
       </div>
     </div>
 
-    <!-- MODE C: INTERACTIVE HTML READER PANE -->
-    <div id="readerPaneHtml" class="hidden flex-1 flex flex-col items-center p-3 sm:p-6 overflow-y-auto">
-      <div id="htmlReaderWrapper" class="w-full max-w-4xl bg-white text-slate-800 rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
-        <!-- HTML Reader Toolbar -->
-        <div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-slate-600">எழுத்துரு அளவு:</span>
-            <button type="button" onclick="adjustHtmlFontSize(-2)" class="px-2.5 py-1 rounded bg-white border border-slate-300 font-bold hover:bg-slate-50">A-</button>
-            <button type="button" onclick="adjustHtmlFontSize(0)" class="px-2.5 py-1 rounded bg-white border border-slate-300 font-bold hover:bg-slate-50">A</button>
-            <button type="button" onclick="adjustHtmlFontSize(2)" class="px-2.5 py-1 rounded bg-white border border-slate-300 font-bold hover:bg-slate-50">A+</button>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="font-bold text-slate-600">பின்னணி:</span>
-            <button type="button" onclick="setHtmlReaderTheme('light')" class="px-2.5 py-1 rounded bg-white border border-slate-300 text-slate-800 font-semibold">☀️ பகல்</button>
-            <button type="button" onclick="setHtmlReaderTheme('sepia')" class="px-2.5 py-1 rounded bg-[#f8f1e4] border border-amber-300 text-amber-950 font-semibold">📜 செப்பியா</button>
-            <button type="button" onclick="setHtmlReaderTheme('dark')" class="px-2.5 py-1 rounded bg-slate-900 text-white font-semibold">🌙 இரவு</button>
-          </div>
-        </div>
+    <!-- MODE C: FULL-SCREEN NATIVE WEB VIEW FOR HTML BOOKS -->
+    <div id="readerPaneHtml" class="hidden flex-1 w-full h-full flex flex-col bg-white overflow-hidden relative">
+      <!-- Floating minimal return pill at bottom-left so the HTML book's own top header is 100% unobstructed -->
+      <div id="htmlFloatingControls" class="fixed bottom-4 left-4 z-50 flex items-center gap-1.5 bg-slate-900/90 hover:bg-slate-900 text-white px-3 py-1.5 rounded-full shadow-xl border border-white/15 backdrop-blur-sm transition">
+        <button type="button" onclick="closeReaderModal()" class="text-xs font-extrabold flex items-center gap-1 text-amber-300 hover:text-white">
+          <span>← நூலகம்</span>
+        </button>
+        <span class="text-slate-600">|</span>
+        <button type="button" onclick="openHtmlBookInNewTab()" class="text-[11px] font-bold text-indigo-200 hover:text-white flex items-center gap-1" title="புதிய உலாவித் தாவலில் முழு இணையப்பக்கமாகத் திறக்க">
+          <span>↗ தனித் தாவல்</span>
+        </button>
+      </div>
 
-        <!-- Rendered HTML Content Body -->
-        <div id="htmlReaderContent" class="p-6 sm:p-10 space-y-5 leading-relaxed text-base overflow-y-auto max-h-[72vh]">
+      <!-- Edge-to-Edge Full Viewport HTML Container -->
+      <div id="htmlReaderWrapper" class="w-full h-full flex-1 flex flex-col overflow-hidden">
+        <div id="htmlReaderContent" class="w-full h-full flex-1 overflow-y-auto">
           <!-- Populated dynamically -->
         </div>
       </div>
@@ -1599,7 +1594,7 @@ function jsonResponse(obj) {
         const hasHtml = book.formats && book.formats.html;
 
         return `
-          <article class="book-card bg-white rounded-2xl p-2.5 border border-slate-200/90 shadow-sm flex flex-col justify-between group cursor-pointer" onclick="openBookReader('${book.id}', 'FLIPBOOK')">
+          <article class="book-card bg-white rounded-2xl p-2.5 border border-slate-200/90 shadow-sm flex flex-col justify-between group cursor-pointer" onclick="openBookReader('${book.id}', '${(book.customHtmlContent && book.formats?.html) ? 'HTML' : (book.formats?.flipbook ? 'FLIPBOOK' : (book.formats?.pdf ? 'PDF' : 'HTML'))}')">
             <div>
               <!-- Book Cover Image Container -->
               <div class="relative rounded-xl overflow-hidden aspect-[3/4.1] bg-slate-100 border border-slate-100">
@@ -1727,6 +1722,13 @@ function jsonResponse(obj) {
           }
         }
       });
+
+      const topBar = document.getElementById('readerTopBar');
+      if (topBar) {
+        // Hide the dark modal top bar when viewing a full uploaded HTML book so it looks 100% like a native website
+        const isFullUploadedHtml = (fmt === 'HTML' && currentReaderBook && currentReaderBook.customHtmlContent && currentReaderBook.customHtmlContent.trim());
+        topBar.classList.toggle('hidden', !!isFullUploadedHtml);
+      }
 
       if (fmt === 'FLIPBOOK') {
         renderFlipbookSpread();
@@ -2060,7 +2062,20 @@ function jsonResponse(obj) {
       `;
     }
 
-    // RENDER INTERACTIVE HTML READER PANE
+    // Open uploaded HTML book in a standalone native browser tab if desired
+    function openHtmlBookInNewTab() {
+      if (!currentReaderBook) return;
+      const rawHtml = (currentReaderBook.customHtmlContent || '').trim();
+      if (rawHtml) {
+        const blob = new Blob([rawHtml], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      } else {
+        downloadCurrentBookFile();
+      }
+    }
+
+    // RENDER INTERACTIVE HTML READER PANE (100% Full-Screen Native Webpage View)
     function renderHtmlReaderPane() {
       const contentEl = document.getElementById('htmlReaderContent');
       if (!contentEl || !currentReaderBook) return;
@@ -2068,15 +2083,16 @@ function jsonResponse(obj) {
 
       if (book.customHtmlContent && book.customHtmlContent.trim()) {
         const rawHtml = book.customHtmlContent.trim();
-        if (/<!doctype|<html|<body|<script/i.test(rawHtml)) {
-          contentEl.innerHTML = '<iframe id="customHtmlBookIframe" class="w-full min-h-[62vh] border-0 rounded-xl bg-white"></iframe>';
-          const ifr = document.getElementById('customHtmlBookIframe');
-          if (ifr) ifr.srcdoc = rawHtml;
-        } else {
-          contentEl.innerHTML = rawHtml;
+        contentEl.className = 'w-full h-full flex-1 overflow-hidden p-0 m-0';
+        contentEl.innerHTML = '<iframe id="customHtmlBookIframe" class="w-full h-full border-0 block bg-white" style="width:100vw;height:100vh;border:none;display:block;"></iframe>';
+        const ifr = document.getElementById('customHtmlBookIframe');
+        if (ifr) {
+          ifr.srcdoc = rawHtml;
         }
         return;
       }
+
+      contentEl.className = 'w-full max-w-5xl mx-auto p-6 sm:p-10 space-y-5 leading-relaxed text-base overflow-y-auto h-full';
 
       const unitsSections = (book.units || []).map((u, idx) => `
         <section class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
