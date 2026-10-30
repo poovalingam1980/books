@@ -92,46 +92,36 @@
 
   <!-- TOP GLOBAL NAVIGATION BAR (Hidden on Login screen; shown only after signing in) -->
   <header id="mainTopHeader" class="hidden sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-indigo-100 shadow-sm">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
-      <!-- Brand / Domain Identity -->
-      <div class="flex items-center gap-3 min-w-0 cursor-pointer" onclick="switchMainView('library')">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand / Domain Identity (Fully visible without truncation or overlap) -->
+      <div class="flex items-center gap-3 cursor-pointer" onclick="switchMainView('library')">
         <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white font-extrabold text-lg flex items-center justify-center shadow-sm shrink-0">📘</div>
-        <div class="min-w-0">
-          <div class="flex items-center gap-2">
-            <span class="font-extrabold text-base sm:text-lg tracking-tight text-indigo-900 truncate">சிவகங்கை கல்விக்களம்</span>
-            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">library.ceosvg.in</span>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-extrabold text-base sm:text-lg tracking-tight text-indigo-900">சிவகங்கை கல்விக்களம்</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">library.ceosvg.in</span>
           </div>
-          <p class="text-xs text-slate-500 truncate">முதன்மைக் கல்வி அலுவலக மின்-நூலகம் • சிவகங்கை கல்விக்களம் (CEO Sivaganga)</p>
+          <p class="text-xs text-slate-600 font-medium mt-0.5">முதன்மைக் கல்வி அலுவலக மின்-நூலகம் • சிவகங்கை கல்விக்களம் (CEO Sivaganga)</p>
         </div>
       </div>
 
-      <!-- Mode Switcher Tabs (User Library / Admin Upload / Login) -->
-      <nav class="flex items-center gap-1 sm:gap-2 bg-slate-100/90 p-1 rounded-xl border border-slate-200/80">
-        <button id="navBtnLibrary" type="button" onclick="switchMainView('library')" class="px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm">
-          <span>📚</span>
-          <span>பயனர் நூலகம்</span>
-          <span class="hidden lg:inline text-[11px] opacity-85">(User UI)</span>
-        </button>
-        <button id="navBtnAdmin" type="button" onclick="switchMainView('admin')" class="px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 text-slate-600 hover:text-indigo-700 hover:bg-white">
-          <span>⚙️</span>
-          <span>நிர்வாகி முகப்பு</span>
-          <span class="hidden lg:inline text-[11px] opacity-75">(Admin Upload)</span>
-        </button>
-        <button id="navBtnLogin" type="button" onclick="handleUserLogout()" class="px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white border border-rose-200">
-          <span>🚪</span>
-          <span>வெளியேறு</span>
-          <span class="hidden lg:inline text-[11px] opacity-85">(Logout)</span>
-        </button>
-      </nav>
-
-      <!-- Active Role Badge & Quick Upload CTA -->
-      <div class="hidden xl:flex items-center gap-2.5 shrink-0">
-        <div id="activeUserBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-xs font-medium text-indigo-900">
+      <!-- Right Controls: Active User Badge, Admin Button (for Admin only), and Logout -->
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <div id="activeUserBadge" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-xs font-medium text-indigo-900">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span id="activeUserLabel">மாணவர் / ஆசிரியர் பார்வை</span>
         </div>
-        <button id="headerQuickUploadBtn" type="button" onclick="openQuickUploadFromNav()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs shadow-sm transition flex items-center gap-1.5">
+        <button id="navBtnAdmin" type="button" onclick="switchMainView('admin')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:text-indigo-700 hover:bg-indigo-50 border border-slate-200">
+          <span>⚙️</span>
+          <span>நிர்வாகி முகப்பு</span>
+        </button>
+        <button id="headerQuickUploadBtn" type="button" onclick="openQuickUploadFromNav()" class="hidden px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs shadow-sm transition items-center gap-1.5">
           <span>➕ புத்தகம் பதிவேற்றுக</span>
+        </button>
+        <button id="navBtnLogin" type="button" onclick="handleUserLogout()" class="px-3 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white border border-rose-200">
+          <span>🚪</span>
+          <span>வெளியேறு</span>
+          <span class="hidden lg:inline text-[11px] opacity-85">(Logout)</span>
         </button>
       </div>
     </div>
@@ -142,21 +132,8 @@
   <!-- ===================================================================== -->
   <main id="viewLibrary" class="hidden flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 space-y-6">
 
-    <!-- Section Heading (Matches Reference Image 2: "Class XII - Subjects") -->
+    <!-- BOOK GRID -->
     <section class="space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div class="flex items-center gap-3">
-          <h2 id="currentSectionHeading" class="text-xl sm:text-2xl font-bold text-indigo-800">
-            Class XII – Subjects (வகுப்பு 12 பாடநூல்கள் &amp; மின்-நூல்கள்)
-          </h2>
-          <span id="filteredCountBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-900">1 நூல்</span>
-        </div>
-        <p class="text-xs text-slate-500">
-          💡 புத்தக அட்டையைச் சொடுக்கி <strong>3D Flipbook</strong>, <strong>PDF</strong> அல்லது <strong>HTML</strong> வடிவில் படிக்கலாம்
-        </p>
-      </div>
-
-      <!-- BOOK GRID (Matches Reference Image 2 6-column layout on large screens) -->
       <div id="booksGridContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-5">
         <!-- Populated dynamically via JS -->
       </div>
@@ -1507,7 +1484,6 @@ function jsonResponse(obj) {
         login: document.getElementById('viewLogin')
       };
       const btns = {
-        library: document.getElementById('navBtnLibrary'),
         admin: document.getElementById('navBtnAdmin'),
         login: document.getElementById('navBtnLogin')
       };
@@ -1605,14 +1581,9 @@ function jsonResponse(obj) {
       updateHeroStats();
       const container = document.getElementById('booksGridContainer');
       const emptyState = document.getElementById('emptyLibraryState');
-      const badgeEl = document.getElementById('filteredCountBadge');
       if (!container) return;
 
       const filtered = [...booksCatalog];
-
-      if (badgeEl) {
-        badgeEl.textContent = `${filtered.length} நூல்கள்`;
-      }
 
       if (filtered.length === 0) {
         container.innerHTML = '';
