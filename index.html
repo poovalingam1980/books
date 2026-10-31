@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>சிவகங்கை கல்விக்களம் | library.ceosvg.in — முதன்மைக் கல்வி அலுவலக மின்-நூலகம்</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -406,9 +412,18 @@
               </div>
             </div>
 
-            <div class="md:col-span-7">
-              <label for="bookDescription" class="block text-xs font-bold text-slate-700 mb-1">4. பாடச் சுருக்கம் / முக்கிய தலைப்புகள்</label>
-              <textarea id="bookDescription" rows="2" placeholder="புத்தகத்தின் முக்கிய அலகுகள் மற்றும் பாடக் குறிப்புகள்..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:border-indigo-600 outline-none"></textarea>
+            <div class="md:col-span-7 space-y-2.5">
+              <div>
+                <label for="bookDescription" class="block text-xs font-bold text-slate-700 mb-1">4. பாடச் சுருக்கம் / முக்கிய தலைப்புகள்</label>
+                <textarea id="bookDescription" rows="2" placeholder="புத்தகத்தின் முக்கிய அலகுகள் மற்றும் பாடக் குறிப்புகள்..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:border-indigo-600 outline-none"></textarea>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label for="bookIndexChapters" class="block text-xs font-extrabold text-indigo-900">5. பொருளடக்கம் (Index) — பாடத்தலைப்பு &amp; பக்க எண் (ஒரு வரிக்கு ஒன்று):</label>
+                  <button type="button" onclick="insertSampleIndexList()" class="text-[11px] font-bold text-indigo-600 hover:underline">✨ மாதிரி Index நிரப்புக</button>
+                </div>
+                <textarea id="bookIndexChapters" rows="3" placeholder="அத்தியாயம் 1: பூக்கும் தாவரங்களில் பாலினப்பெருக்கம் | 3&#10;அத்தியாயம் 2: மனித இனப்பெருக்கம் | 18&#10;அத்தியாயம் 3: இனப்பெருக்க நலன் | 35" class="w-full px-3 py-2 rounded-xl border border-indigo-200 font-mono text-xs bg-white focus:border-indigo-600 outline-none"></textarea>
+              </div>
             </div>
           </div>
 
@@ -834,13 +849,37 @@
         </button>
       </div>
 
+      <!-- Interactive Index (பொருளடக்கம்) Drawer Modal inside Flipbook -->
+      <div id="flipIndexDrawer" class="hidden w-full max-w-3xl bg-white text-slate-800 rounded-2xl shadow-2xl border-2 border-indigo-500 p-4 sm:p-5 mt-3 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">📑</span>
+            <div>
+              <h4 class="text-xs sm:text-sm font-extrabold text-indigo-950">பொருளடக்கம் (Interactive Index — பாடத்தலைப்பைத் தொட்டு அந்தப் பக்கத்திற்குச் செல்லவும்)</h4>
+              <p class="text-[11px] text-slate-500">எந்தப் பாடத்தலைப்பைச் சொடுக்கினாலும் நேரடியாக அந்தப் பக்கத்திற்குப் புரளும்</p>
+            </div>
+          </div>
+          <button type="button" onclick="toggleFlipIndexDrawer()" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 font-bold text-xs flex items-center justify-center">✕</button>
+        </div>
+        <div id="flipIndexDrawerList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
+          <!-- Populated dynamically with clickable chapter items -->
+        </div>
+      </div>
+
       <!-- Bottom Flipbook Controls Bar -->
-      <div class="w-full max-w-3xl bg-slate-900/90 border border-slate-700 rounded-2xl px-4 py-2.5 mt-4 flex flex-wrap items-center justify-between gap-3 text-white text-xs">
-        <div class="flex items-center gap-2">
-          <button type="button" onclick="jumpFlipbookSpread(0)" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700">⏮️ அட்டைப்படம்</button>
+      <div class="w-full max-w-4xl bg-slate-900/90 border border-slate-700 rounded-2xl px-4 py-2.5 mt-4 flex flex-wrap items-center justify-between gap-3 text-white text-xs">
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="jumpFlipbookSpread(0)" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700" title="முதல் பக்கம் / அட்டைப்படம்">⏮️ அட்டைப்படம்</button>
+          <button type="button" onclick="goToFlipbookIndexPage()" class="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold transition flex items-center gap-1 shadow-sm" title="பொருளடக்கம் (Index) பக்கத்திற்குச் செல்ல">
+            <span>📑 பொருளடக்கம் (Index)</span>
+          </button>
           <button type="button" onclick="turnFlipbookPage(-1)" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700">◀ முந்தைய</button>
           <span id="flipPageIndicator" class="font-bold text-amber-300 px-2">பக்கம் 1–2 / 6</span>
           <button type="button" onclick="turnFlipbookPage(1)" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700">அடுத்த ▶</button>
+          <div class="flex items-center gap-1 ml-1 pl-2 border-l border-slate-700">
+            <input id="flipJumpPageInput" type="number" min="1" placeholder="பக்." class="w-14 px-2 py-0.5 rounded bg-slate-800 border border-slate-600 text-white text-xs text-center outline-none focus:border-amber-400" />
+            <button type="button" onclick="jumpToSpecificFlipPage()" class="px-2 py-0.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px]">செல்</button>
+          </div>
         </div>
         <div class="flex items-center gap-2">
           <button type="button" id="autoFlipBtn" onclick="toggleAutoFlip()" class="px-3 py-1 rounded-lg bg-indigo-600/30 border border-indigo-600/40 text-indigo-200 hover:bg-indigo-600 hover:text-white font-semibold transition">
@@ -860,9 +899,13 @@
     <!-- MODE C: FULL-SCREEN NATIVE WEB VIEW FOR HTML BOOKS -->
     <div id="readerPaneHtml" class="hidden flex-1 w-full h-full flex flex-col bg-white overflow-hidden relative">
       <!-- Floating minimal return pill at bottom-left so the HTML book's own top header is 100% unobstructed -->
-      <div id="htmlFloatingControls" class="fixed bottom-4 left-4 z-50 flex items-center gap-1.5 bg-slate-900/90 hover:bg-slate-900 text-white px-3 py-1.5 rounded-full shadow-xl border border-white/15 backdrop-blur-sm transition">
+      <div id="htmlFloatingControls" class="fixed bottom-4 left-4 z-50 flex items-center gap-2 bg-slate-900/90 hover:bg-slate-900 text-white px-3.5 py-1.5 rounded-full shadow-xl border border-white/15 backdrop-blur-sm transition">
         <button type="button" onclick="closeReaderModal()" class="text-xs font-extrabold flex items-center gap-1 text-amber-300 hover:text-white">
           <span>← நூலகம்</span>
+        </button>
+        <span class="text-slate-600">|</span>
+        <button type="button" onclick="switchReaderFormat('FLIPBOOK')" class="text-[11px] font-extrabold text-emerald-300 hover:text-white flex items-center gap-1" title="இதே HTML புத்தகத்தை 3D Flipbook வடிவில் பக்கங்களாகப் புரட்டிப் படிக்க">
+          <span>📖 3D Flipbook</span>
         </button>
         <span class="text-slate-600">|</span>
         <button type="button" onclick="openHtmlBookInNewTab()" class="text-[11px] font-bold text-indigo-200 hover:text-white flex items-center gap-1" title="புதிய உலாவித் தாவலில் முழு இணையப்பக்கமாகத் திறக்க">
@@ -1250,6 +1293,15 @@ function jsonResponse(obj) {
           'அலகு IX (UNIT IX): உயிரித்தொழில்நுட்பவியல் (BIOTECHNOLOGY — அத்தியாயங்கள் 9–10)',
           'அலகு X (UNIT X): சூழ்நிலையியல் (ECOLOGY — அத்தியாயங்கள் 11–13)'
         ],
+        indexEntries: [
+          { title: 'அலகு VI: பூக்கும் தாவரங்களில் பாலினப்பெருக்கம் (Ch 1)', page: 3 },
+          { title: 'அலகு VI: மனித இனப்பெருக்கம் & இனப்பெருக்க நலன் (Ch 2–3)', page: 4 },
+          { title: 'அலகு VII: மரபுக் கடத்தலின் கொள்கைகள் & மூலக்கூறு மரபியல் (Ch 4–5)', page: 5 },
+          { title: 'அலகு VII: பரிணாமம் (Evolution — Ch 6)', page: 6 },
+          { title: 'அலகு VIII: மனித நலன், நோய்கள் & நுண்ணுயிரிகள் (Ch 7–8)', page: 7 },
+          { title: 'அலகு IX: உயிரித்தொழில்நுட்பவியல் கொள்கைகளும் பயன்பாடுகளும் (Ch 9–10)', page: 8 },
+          { title: 'அலகு X: சூழ்நிலையியல் மற்றும் உயிரிய பல்வகைமை பாதுகாப்பு (Ch 11–13)', page: 9 }
+        ],
         formulaHighlight: 'NCERT 12-ஆம் வகுப்பு உயிரியல் முழுப் பாடநூல் (அத்தியாயங்கள் 1–13 • தமிழ் & English Bilingual Edition).'
       }
     ];
@@ -1324,6 +1376,9 @@ function jsonResponse(obj) {
     let currentReaderFormat = 'FLIPBOOK';
     let activeHtmlBlobUrl = '';
     let currentFlipSpread = 0;
+    let activePdfDoc = null;
+    let activePdfTotalPages = 0;
+    let activePdfBookId = '';
     let flipSoundEnabled = true;
     let autoFlipTimer = null;
     let htmlFontSize = 16;
@@ -1891,6 +1946,7 @@ function jsonResponse(obj) {
 
       currentReaderBook = book;
       currentFlipSpread = 0;
+      if (activePdfBookId !== book.id) { activePdfDoc = null; activePdfTotalPages = 0; activePdfBookId = ''; }
 
       // Determine available format fallback
       let fmt = initialFormat || 'FLIPBOOK';
@@ -1963,8 +2019,210 @@ function jsonResponse(obj) {
       }
     }
 
-    // Build 6 rich pages (3 spreads) for any book in the 3D Flipbook
+    // Cache of parsed HTML-to-Flipbook pages keyed by book.id + content length
+    const parsedHtmlFlipbookCache = {};
+
+    // Automatically convert any uploaded .html file (customHtmlContent) into Flipbook Pages + Clickable Index!
+    function parseUploadedHtmlToFlipbookPages(book) {
+      if (!book || !book.customHtmlContent || !book.customHtmlContent.trim()) return null;
+      const rawHtml = book.customHtmlContent.trim();
+      const cacheKey = book.id + '_' + rawHtml.length;
+      if (parsedHtmlFlipbookCache[cacheKey]) {
+        book.indexEntries = parsedHtmlFlipbookCache[cacheKey].indexEntries;
+        return parsedHtmlFlipbookCache[cacheKey].pages;
+      }
+
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(rawHtml, 'text/html');
+
+        // Extract inline <style> rules from the HTML book, removing rules that hide non-active sections
+        const styles = Array.from(doc.querySelectorAll('style')).map(st => {
+          let css = st.textContent || '';
+          css = css.replace(/display\s*:\s*none\s*!important/gi, '');
+          css = css.replace(/main\s*>\s*\.page-section[^{]*\{[^}]*\}/gi, '');
+          return css;
+        }).join('\n');
+
+        const scopedStyleBlock = styles ? `<style>${styles} .flip-html-page-body .page-section, .flip-html-page-body .chapter-banner { display: block !important; }</style>` : '';
+
+        // Find page units inside the uploaded HTML file:
+        // Priority 1: .chapter-banner and .page-card (used in NCERT 12 Biology HTML textbook)
+        // Priority 2: <section> or <article> blocks
+        // Priority 3: Top-level children in <main> or <body>
+        let rawBlocks = Array.from(doc.querySelectorAll('.chapter-banner, .page-card'));
+        if (rawBlocks.length === 0) {
+          rawBlocks = Array.from(doc.querySelectorAll('main section, main article, body > section, body > article'));
+        }
+        if (rawBlocks.length === 0) {
+          const container = doc.querySelector('main') || doc.body;
+          if (container) {
+            rawBlocks = Array.from(container.children).filter(el =>
+              !['NAV', 'HEADER', 'FOOTER', 'SCRIPT', 'STYLE', 'ASIDE'].includes(el.tagName)
+            );
+          }
+        }
+
+        if (rawBlocks.length === 0) return null;
+
+        const extractedIndex = [];
+        const contentPagesHtml = [];
+
+        rawBlocks.forEach((block) => {
+          // Clone and strip scripts/fixed navs inside individual flipbook page cards
+          const clone = block.cloneNode(true);
+          clone.querySelectorAll('script, nav, aside').forEach(n => n.remove());
+          clone.style.display = 'block';
+
+          const targetPageNumber = contentPagesHtml.length + 3; // Page 1 = Cover, Page 2 = Index, Pages 3+ = Content
+
+          // Check if this block is a chapter banner or has a primary chapter/section heading for the Index
+          const isBanner = block.classList.contains('chapter-banner');
+          const headingEl = block.querySelector('h1, h2, h3, .font-extrabold');
+          if (isBanner || (headingEl && extractedIndex.length < 40)) {
+            const rawTitle = (headingEl ? headingEl.textContent : block.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 85);
+            if (rawTitle && (isBanner || rawTitle.includes('அலகு') || rawTitle.includes('அத்தியாயம்') || rawTitle.includes('Chapter') || rawTitle.includes('Unit') || extractedIndex.length < 18)) {
+              if (!extractedIndex.some(e => e.title === rawTitle)) {
+                extractedIndex.push({ title: rawTitle, page: targetPageNumber });
+              }
+            }
+          }
+
+          contentPagesHtml.push({
+            pageNumber: targetPageNumber,
+            title: headingEl ? headingEl.textContent.replace(/\s+/g, ' ').trim().slice(0, 60) : book.titleTa,
+            innerHtml: clone.outerHTML
+          });
+        });
+
+        if (contentPagesHtml.length === 0) return null;
+
+        if (extractedIndex.length > 0) {
+          book.indexEntries = extractedIndex;
+        }
+
+        const chapters = getBookIndexEntries(book);
+        const clickableIndexHtml = chapters.map((item, idx) => `
+          <li>
+            <button
+              type="button"
+              onclick="event.stopPropagation(); jumpToFlipbookPageNumber(${item.page}, '${item.title.replace(/'/g, "\\'")}')"
+              class="w-full text-left flex items-center justify-between gap-2 p-2 rounded-xl hover:bg-indigo-50 border border-transparent hover:border-indigo-200 transition group"
+            >
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="px-1.5 py-0.5 rounded bg-indigo-700 group-hover:bg-amber-500 text-white group-hover:text-slate-950 font-bold text-[10px] shrink-0">${idx + 1}</span>
+                <span class="font-bold text-xs text-slate-800 group-hover:text-indigo-900 truncate">${item.title}</span>
+              </div>
+              <span class="px-2 py-0.5 rounded-full bg-slate-100 group-hover:bg-indigo-600 text-slate-600 group-hover:text-white text-[10px] font-extrabold shrink-0">
+                பக். ${item.page} →
+              </span>
+            </button>
+          </li>
+        `).join('');
+
+        const finalPages = [
+          // Page 1: Cover Page
+          {
+            pageNumber: 1,
+            html: `
+              <div class="h-full flex flex-col justify-between">
+                ${scopedStyleBlock}
+                <div class="flex items-center justify-between text-[11px] text-slate-500 border-b border-amber-900/15 pb-2">
+                  <span>சிவகங்கை கல்விக்களம் • HTML 3D Flipbook</span>
+                  <span class="font-bold text-indigo-900">${book.classLevel}</span>
+                </div>
+                <div class="my-auto flex flex-col items-center text-center py-3 space-y-3">
+                  <img src="${book.cover}" alt="${book.titleTa}" class="w-36 h-48 object-cover rounded-xl shadow-md border border-slate-300" />
+                  <div>
+                    <h4 class="text-lg font-extrabold text-slate-900">${book.titleTa}</h4>
+                    <p class="text-xs font-semibold text-indigo-700">${book.titleEn}</p>
+                    <p class="text-[11px] text-slate-500 mt-1">மொத்தம் ${contentPagesHtml.length + 2} Flipbook பக்கங்கள்</p>
+                  </div>
+                </div>
+                <div class="text-[11px] text-center text-slate-500 border-t border-amber-900/15 pt-2">
+                  பக்கம் 1 • வலதுபுறம் பொருளடக்கத்தில் (Index) பாடத்தைத் தொட்டுச் செல்லலாம் ❯
+                </div>
+              </div>
+            `
+          },
+          // Page 2: Interactive Auto-Extracted Index Page
+          {
+            pageNumber: 2,
+            html: `
+              <div class="h-full flex flex-col justify-between" onclick="event.stopPropagation()">
+                <div>
+                  <div class="flex items-center justify-between text-[11px] text-slate-500 border-b border-amber-900/15 pb-2">
+                    <span class="font-extrabold text-indigo-900">📑 பொருளடக்கம் (HTML Flipbook Index)</span>
+                    <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">${chapters.length} பிரிவுகள்</span>
+                  </div>
+                  <ul class="mt-2 space-y-1 max-h-[340px] overflow-y-auto pr-1">
+                    ${clickableIndexHtml}
+                  </ul>
+                </div>
+                <div class="text-[11px] text-right text-slate-400 pt-2 border-t border-amber-900/10">பக்கம் 2 (Index) • பாடத்தலைப்பைத் தொட்டுச் செல்லவும் ❯</div>
+              </div>
+            `
+          }
+        ];
+
+        contentPagesHtml.forEach((cp) => {
+          finalPages.push({
+            pageNumber: cp.pageNumber,
+            html: `
+              <div class="h-full flex flex-col justify-between" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-between text-[11px] text-slate-500 border-b border-amber-900/15 pb-1.5 mb-2">
+                  <span class="font-bold text-indigo-900 truncate max-w-[200px]">${cp.title}</span>
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <button type="button" onclick="goToFlipbookIndexPage()" class="px-2 py-0.5 rounded bg-amber-100 hover:bg-amber-400 text-amber-950 font-bold text-[10px] transition">
+                      📑 Index
+                    </button>
+                    <button type="button" onclick="switchReaderFormat('HTML')" class="px-2 py-0.5 rounded bg-indigo-50 hover:bg-indigo-600 text-indigo-800 hover:text-white font-bold text-[10px] transition" title="முழுத்திரை இணையப்பக்க வடிவில் திறக்க">
+                      🌐 முழுத்திரை
+                    </button>
+                  </div>
+                </div>
+                <div class="flip-html-page-body flex-1 overflow-y-auto max-h-[360px] pr-1 text-xs leading-relaxed">
+                  ${cp.innerHtml}
+                </div>
+                <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1.5 mt-1 border-t border-amber-900/10">
+                  <button type="button" onclick="turnFlipbookPage(-1)" class="hover:text-indigo-700 font-bold">◀ முந்தைய</button>
+                  <span class="font-bold text-slate-600">பக்கம் ${cp.pageNumber} / ${contentPagesHtml.length + 2}</span>
+                  <button type="button" onclick="turnFlipbookPage(1)" class="hover:text-indigo-700 font-bold">அடுத்த ▶</button>
+                </div>
+              </div>
+            `
+          });
+        });
+
+        if (finalPages.length % 2 !== 0) {
+          finalPages.push({
+            pageNumber: finalPages.length + 1,
+            html: `<div class="h-full flex flex-col items-center justify-center text-center gap-2 text-xs text-slate-400">
+              <div>நூலின் இறுதிப் பக்கம்</div>
+              <button type="button" onclick="goToFlipbookIndexPage()" class="px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 font-bold">📑 பொருளடக்கம் (Index) பக்கத்திற்குச் செல்ல</button>
+            </div>`
+          });
+        }
+
+        parsedHtmlFlipbookCache[cacheKey] = {
+          pages: finalPages,
+          indexEntries: book.indexEntries
+        };
+        return finalPages;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    // Build pages for any book in the 3D Flipbook (supports Custom Images, Uploaded HTML File auto-splitting, or Default Syllabus Units)
     function buildBookPagesData(book) {
+      // 1. If the book has an uploaded .html file (customHtmlContent), automatically convert its cards/sections into real 3D Flipbook pages!
+      if (book && book.customHtmlContent && book.customHtmlContent.trim()) {
+        const htmlFlipPages = parseUploadedHtmlToFlipbookPages(book);
+        if (Array.isArray(htmlFlipPages) && htmlFlipPages.length > 0) {
+          return htmlFlipPages;
+        }
+      }
       // If user uploaded custom flipbook page images, include them!
       if (Array.isArray(book.customFlipImages) && book.customFlipImages.length > 0) {
         const imgPages = book.customFlipImages.map((imgSrc, idx) => ({
@@ -1991,26 +2249,34 @@ function jsonResponse(obj) {
         return imgPages;
       }
 
-      const unitsList = (book.units || [
-        'அலகு 1: அடிப்படைக் கோட்பாடுகள் மற்றும் அறிமுகம்',
-        'அலகு 2: விரிவான பாட விளக்கங்கள் மற்றும் எடுத்துக்காட்டுகள்',
-        'அலகு 3: பயன்பாட்டுக் கணக்குகள் மற்றும் செய்முறைப் பயிற்சிகள்',
-        'அலகு 4: மாதிரி வினாத்தாள்கள் மற்றும்த் தீர்வுகள்'
-      ]).map((u, idx) => `
-        <li class="flex items-start gap-2 py-1.5 border-b border-amber-900/10 text-xs">
-          <span class="px-1.5 py-0.5 rounded bg-indigo-700 text-white font-bold text-[10px]">0${idx + 1}</span>
-          <span class="font-medium text-slate-700">${u}</span>
+      const chapters = getBookIndexEntries(book);
+
+      const clickableIndexHtml = chapters.map((item, idx) => `
+        <li>
+          <button
+            type="button"
+            onclick="event.stopPropagation(); jumpToFlipbookPageNumber(${item.page}, '${item.title.replace(/'/g, "\'")}')"
+            class="w-full text-left flex items-center justify-between gap-2 p-2 rounded-xl hover:bg-indigo-50 border border-transparent hover:border-indigo-200 transition group"
+          >
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="px-1.5 py-0.5 rounded bg-indigo-700 group-hover:bg-amber-500 text-white group-hover:text-slate-950 font-bold text-[10px] shrink-0">0${idx + 1}</span>
+              <span class="font-bold text-xs text-slate-800 group-hover:text-indigo-900 truncate">${item.title}</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-full bg-slate-100 group-hover:bg-indigo-600 text-slate-600 group-hover:text-white text-[10px] font-extrabold shrink-0">
+              பக். ${item.page} →
+            </span>
+          </button>
         </li>
       `).join('');
 
-      return [
+      const generatedPages = [
         // Page 1: Title & Official Cover Page
         {
           pageNumber: 1,
           html: `
             <div class="h-full flex flex-col justify-between">
               <div class="flex items-center justify-between text-[11px] text-slate-500 border-b border-amber-900/15 pb-2">
-                <span>பள்ளிக்கல்வித்துறை • தமிழ்நாடு அரசு</span>
+                <span>சிவகங்கை கல்விக்களம் • library.ceosvg.in</span>
                 <span class="font-bold text-indigo-900">${book.classLevel}</span>
               </div>
               <div class="my-auto flex flex-col items-center text-center py-3 space-y-3">
@@ -2022,95 +2288,215 @@ function jsonResponse(obj) {
                 </div>
               </div>
               <div class="text-[11px] text-center text-slate-500 border-t border-amber-900/15 pt-2">
-                முதன்மைக் கல்வி அலுவலக மின்-நூலகம் (library.ceosvg.in) • பக்கம் 1
+                முதன்மைக் கல்வி அலுவலக மின்-நூலகம் • பக்கம் 1
               </div>
             </div>
           `
         },
-        // Page 2: Table of Contents (பொருளடக்கம்)
+        // Page 2: Interactive Table of Contents (பொருளடக்கம் - Click any Lesson Title to jump to its page!)
         {
           pageNumber: 2,
           html: `
-            <div class="h-full flex flex-col justify-between">
+            <div class="h-full flex flex-col justify-between" onclick="event.stopPropagation()">
               <div>
                 <div class="flex items-center justify-between text-[11px] text-slate-500 border-b border-amber-900/15 pb-2">
-                  <span class="font-bold text-indigo-900">பொருளடக்கம் (Table of Contents)</span>
-                  <span>${book.titleTa}</span>
+                  <span class="font-extrabold text-indigo-900">📑 பொருளடக்கம் (Interactive Index)</span>
+                  <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">பாடத்தைத் தொட்டுச் செல்லவும்</span>
                 </div>
-                <p class="text-xs text-slate-600 mt-3 leading-relaxed">${book.description || ''}</p>
-                <ul class="mt-3 space-y-1">
-                  ${unitsList}
+                <ul class="mt-2.5 space-y-1 max-h-[320px] overflow-y-auto pr-1">
+                  ${clickableIndexHtml}
                 </ul>
               </div>
-              <div class="bg-indigo-50/80 border border-indigo-200 rounded-xl p-3 mt-3 text-xs text-indigo-950">
-                <div class="font-bold">💡 கற்றல் நோக்கங்கள்:</div>
-                <p class="text-[11px] mt-0.5">மாணவர்கள் பாடக் கருத்துகளை எளிமையாகப் புரிந்துகொண்டு அரசுப் பொதுத்தேர்வு மற்றும் போட்டித் தேர்வுகளில் சிறப்பிடம் பெறுதல்.</p>
-              </div>
-              <div class="text-[11px] text-right text-slate-400 pt-2">பக்கம் 2 • அடுத்த பக்கத்திற்குச் சொடுக்கவும் ❯</div>
-            </div>
-          `
-        },
-        // Page 3: Unit 1 Core Concepts & Formulas
-        {
-          pageNumber: 3,
-          html: `
-            <div class="h-full flex flex-col justify-between">
-              <div class="space-y-3">
-                <div class="flex items-center justify-between text-[11px] text-slate-500 border-b border-amber-900/15 pb-2">
-                  <span class="font-bold text-indigo-900">அத்தியாயம் 1 • பாட விரிவாக்கம்</span>
-                  <span>${book.classLevel}</span>
-                </div>
-                <h4 class="text-sm font-extrabold text-slate-900">${(book.units && book.units[0]) || 'அலகு 1: அடிப்படைக் கோட்பாடுகள்'}</h4>
-                <p class="text-xs text-slate-700 leading-relaxed">
-                  இந்த அத்தியாயத்தில் ${book.titleTa} பாடத்தின் அடிப்படை வரையறைகள், தேற்றங்கள் மற்றும் நடைமுறைப் பயன்பாடுகள் விளக்கப்பட்டுள்ளன. மாணவர்கள் ஒவ்வொரு கருத்தையும் நிஜ வாழ்க்கை எடுத்துக்காட்டுகளுடன் ஒப்பிட்டுப் பயிலலாம்.
-                </p>
-                <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl space-y-1">
-                  <div class="text-xs font-extrabold text-amber-900">📌 முக்கிய சூத்திரம் / விதி (Key Highlight):</div>
-                  <div class="text-xs font-mono font-bold text-slate-800">${book.formulaHighlight || 'அடிப்படை விதிகள் மற்றும் சமன்பாடுகள்'}</div>
-                </div>
-                <div class="bg-white border border-slate-200 rounded-xl p-3 text-xs space-y-1">
-                  <div class="font-bold text-indigo-900">எடுத்துக்காட்டு 1.1:</div>
-                  <p class="text-slate-600 text-[11px]">கொடுக்கப்பட்ட தரவுகளைப் பயன்படுத்தி சமன்பாட்டின் தீர்வைப் படிப்படியாகக் காண்க. விடை சரிபார்ப்பு முறையில் உறுதிப்படுத்தப்பட்டுள்ளது.</p>
-                </div>
-              </div>
-              <div class="text-[11px] text-left text-slate-400 pt-2">❮ பக்கம் 3 • library.ceosvg.in</div>
-            </div>
-          `
-        },
-        // Page 4: Diagrams / Interactive Summary & Custom HTML Excerpt
-        {
-          pageNumber: 4,
-          html: `
-            <div class="h-full flex flex-col justify-between">
-              <div class="space-y-3">
-                <div class="flex items-center justify-between text-[11px] text-slate-500 border-b border-amber-900/15 pb-2">
-                  <span class="font-bold text-indigo-900">பயிற்சி வினாக்கள் &amp; சுருக்கம்</span>
-                  <span>${book.titleTa}</span>
-                </div>
-                <h4 class="text-sm font-extrabold text-slate-900">மதிப்பீடு மற்றும் மாதிரி வினாக்கள்</h4>
-                <div class="space-y-2 text-xs text-slate-700">
-                  <div class="p-2.5 rounded-lg bg-slate-100/80 border border-slate-200">
-                    <strong>1. சரியான விடையைத் தேர்ந்தெடுத்து எழுதுக (1 மதிப்பெண்):</strong>
-                    <p class="text-[11px] text-slate-600 mt-0.5">பாடப்பகுதியின் முக்கிய வரையறை மற்றும் சூத்திரத்தின் அடிப்படையில் கேட்கப்படும் பலவுள் தெரிவு வினாக்கள்.</p>
-                  </div>
-                  <div class="p-2.5 rounded-lg bg-slate-100/80 border border-slate-200">
-                    <strong>2. குறுவினாக்கள் &amp; சிறுவினாக்கள் (2 &amp; 3 மதிப்பெண்கள்):</strong>
-                    <p class="text-[11px] text-slate-600 mt-0.5">வரையறை தருக, வேறுபடுத்துக மற்றும் காரணம் கூறுக வகை வினாக்கள்.</p>
-                  </div>
-                  <div class="p-2.5 rounded-lg bg-slate-100/80 border border-slate-200">
-                    <strong>3. நெடுவினாக்கள் (5 மதிப்பெண்கள்):</strong>
-                    <p class="text-[11px] text-slate-600 mt-0.5">படம் வரைந்து பாகங்களைக் குறித்தல் மற்றும் விரிவான நிரூபணங்கள்.</p>
-                  </div>
-                </div>
-              </div>
-              <div class="text-[11px] text-right text-slate-400 pt-2">பக்கம் 4 • 3D Flipbook வடிவம்</div>
+              <div class="text-[11px] text-right text-slate-400 pt-2 border-t border-amber-900/10">பக்கம் 2 (Index) • பாடத்தலைப்பைச் சொடுக்கவும் ❯</div>
             </div>
           `
         }
       ];
+
+      // Generate dedicated lesson pages for each chapter in chapters
+      chapters.forEach((ch, idx) => {
+        const pNum = generatedPages.length + 1;
+        generatedPages.push({
+          pageNumber: pNum,
+          html: `
+            <div class="h-full flex flex-col justify-between" onclick="event.stopPropagation()">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between text-[11px] text-slate-500 border-b border-amber-900/15 pb-2">
+                  <span class="font-bold text-indigo-900">பாடம் 0${idx + 1}</span>
+                  <button type="button" onclick="goToFlipbookIndexPage()" class="px-2 py-0.5 rounded bg-indigo-50 hover:bg-indigo-600 text-indigo-800 hover:text-white font-bold text-[10px] transition">
+                    📑 பொருளடக்கம் (Index) ↩
+                  </button>
+                </div>
+                <h4 class="text-sm sm:text-base font-extrabold text-slate-900">${ch.title}</h4>
+                <p class="text-xs text-slate-700 leading-relaxed">
+                  <strong>${book.titleTa}</strong> பாடநூலின் <em>"${ch.title}"</em> பகுதிக்கான முக்கிய வரையறைகள், விளக்கப்படங்கள், பாடக் குறிப்புகள் மற்றும் மாதிரி வினா-விடைகள் இப்பகுதியில் இடம்பெற்றுள்ளன.
+                </p>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl space-y-1">
+                  <div class="text-xs font-extrabold text-amber-900">📌 முக்கிய பாடக் குறிப்பு:</div>
+                  <div class="text-xs font-mono font-bold text-slate-800">${book.formulaHighlight || book.description || ''}</div>
+                </div>
+                ${(book.customHtmlContent || book.hasCustomHtml) ? `
+                  <div class="pt-2">
+                    <button type="button" onclick="switchReaderFormat('HTML')" class="w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shadow transition">
+                      🌐 இப்பாடத்தை முழுத்திரை HTML வடிவில் படிக்க →
+                    </button>
+                  </div>
+                ` : ''}
+              </div>
+              <div class="flex items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-amber-900/10">
+                <button type="button" onclick="goToFlipbookIndexPage()" class="text-indigo-700 font-bold hover:underline">↩ Index பக்கம்</button>
+                <span>பக்கம் ${pNum}</span>
+              </div>
+            </div>
+          `
+        });
+      });
+
+      if (generatedPages.length % 2 !== 0) {
+        generatedPages.push({
+          pageNumber: generatedPages.length + 1,
+          html: `<div class="h-full flex flex-col items-center justify-center text-center gap-2 text-xs text-slate-400">
+            <div>நூலின் இறுதிப் பக்கம்</div>
+            <button type="button" onclick="goToFlipbookIndexPage()" class="px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 font-bold">📑 பொருளடக்கம் (Index) பக்கத்திற்குச் செல்ல</button>
+          </div>`
+        });
+      }
+
+      return generatedPages;
+    }
+
+    // Render a single PDF page onto a canvas element inside the 3D Flipbook
+    function renderPdfPageToCanvas(pdfDoc, pageNum, canvasId, pageLabel) {
+      pdfDoc.getPage(pageNum).then(page => {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const unscaledViewport = page.getViewport({ scale: 1 });
+        const scale = Math.min(1.45, 520 / unscaledViewport.width);
+        const viewport = page.getViewport({ scale: scale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        page.render({ canvasContext: ctx, viewport: viewport });
+      }).catch(() => {});
+    }
+
+    function renderPdfFlipbookSpread() {
+      if (!activePdfDoc) return;
+      const totalPages = activePdfTotalPages;
+      const totalSpreads = Math.ceil(totalPages / 2);
+      if (currentFlipSpread < 0) currentFlipSpread = 0;
+      if (currentFlipSpread >= totalSpreads) currentFlipSpread = totalSpreads - 1;
+
+      const leftPageNum = currentFlipSpread * 2 + 1;
+      const rightPageNum = leftPageNum + 1;
+
+      const leftEl = document.getElementById('flipLeftPage');
+      const rightEl = document.getElementById('flipRightPage');
+      const indicatorEl = document.getElementById('flipPageIndicator');
+
+      if (leftEl) {
+        leftEl.innerHTML = `
+          <div class="h-full flex flex-col justify-between items-center">
+            <div class="w-full text-[11px] font-bold text-indigo-800 flex justify-between border-b border-slate-200 pb-1 mb-2">
+              <span class="truncate">${currentReaderBook.titleTa}</span>
+              <span>பக்கம் ${leftPageNum}</span>
+            </div>
+            <div class="my-auto flex items-center justify-center w-full overflow-hidden">
+              <canvas id="pdfFlipCanvasLeft" class="max-w-full max-h-[410px] w-auto h-auto rounded shadow-sm bg-white"></canvas>
+            </div>
+          </div>
+        `;
+        renderPdfPageToCanvas(activePdfDoc, leftPageNum, 'pdfFlipCanvasLeft', leftPageNum);
+      }
+
+      if (rightEl) {
+        if (rightPageNum <= totalPages) {
+          rightEl.innerHTML = `
+            <div class="h-full flex flex-col justify-between items-center">
+              <div class="w-full text-[11px] font-bold text-indigo-800 flex justify-between border-b border-slate-200 pb-1 mb-2">
+                <span>பக்கம் ${rightPageNum}</span>
+                <span>3D PDF Flipbook ❯</span>
+              </div>
+              <div class="my-auto flex items-center justify-center w-full overflow-hidden">
+                <canvas id="pdfFlipCanvasRight" class="max-w-full max-h-[410px] w-auto h-auto rounded shadow-sm bg-white"></canvas>
+              </div>
+            </div>
+          `;
+          renderPdfPageToCanvas(activePdfDoc, rightPageNum, 'pdfFlipCanvasRight', rightPageNum);
+        } else {
+          rightEl.innerHTML = `<div class="h-full flex items-center justify-center text-xs text-slate-400 font-semibold">நூலின் இறுதிப் பக்கம் (${totalPages} பக்கங்கள்)</div>`;
+        }
+      }
+
+      if (indicatorEl) {
+        const p2 = Math.min(rightPageNum, totalPages);
+        indicatorEl.textContent = `பக்கம் ${leftPageNum}–${p2} / ${totalPages}`;
+      }
+    }
+
+    function getTotalSpreadsForCurrentBook() {
+      if (activePdfDoc && activePdfTotalPages > 0) {
+        return Math.ceil(activePdfTotalPages / 2);
+      }
+      const pages = buildBookPagesData(currentReaderBook);
+      return Math.ceil(pages.length / 2);
     }
 
     function renderFlipbookSpread() {
+      if (!currentReaderBook) return;
+      const pdfSource = currentReaderBook.pdfBlobUrl || currentReaderBook.pdfDataUrl;
+
+      // If the book has an uploaded PDF file and PDF.js is available, render all pages natively in 3D Flipbook!
+      if (pdfSource && window.pdfjsLib) {
+        if (activePdfDoc && activePdfBookId === currentReaderBook.id) {
+          renderPdfFlipbookSpread();
+          return;
+        }
+        const leftEl = document.getElementById('flipLeftPage');
+        const rightEl = document.getElementById('flipRightPage');
+        if (leftEl) leftEl.innerHTML = `<div class="h-full flex items-center justify-center text-xs font-bold text-indigo-700">⏳ PDF பக்கங்கள் 3D Flipbook-ஆக மாற்றப்படுகின்றன...</div>`;
+        if (rightEl) rightEl.innerHTML = `<div class="h-full flex items-center justify-center text-xs text-slate-400">சிறிது காத்திருக்கவும்...</div>`;
+
+        window.pdfjsLib.getDocument(pdfSource).promise.then(pdfDoc => {
+          activePdfDoc = pdfDoc;
+          activePdfTotalPages = pdfDoc.numPages;
+          activePdfBookId = currentReaderBook.id;
+          // Auto-extract embedded PDF bookmarks/outline into clickable Index entries if none were manually specified
+          if (!currentReaderBook.indexEntries || currentReaderBook.indexEntries.length === 0) {
+            pdfDoc.getOutline().then(outline => {
+              if (Array.isArray(outline) && outline.length > 0) {
+                Promise.all(outline.slice(0, 20).map(item => {
+                  if (item.dest) {
+                    const destPromise = typeof item.dest === 'string' ? pdfDoc.getDestination(item.dest) : Promise.resolve(item.dest);
+                    return destPromise.then(dest => {
+                      if (Array.isArray(dest) && dest[0]) {
+                        return pdfDoc.getPageIndex(dest[0]).then(idx => ({ title: item.title, page: idx + 1 }));
+                      }
+                      return { title: item.title, page: 1 };
+                    }).catch(() => ({ title: item.title, page: 1 }));
+                  }
+                  return Promise.resolve({ title: item.title, page: 1 });
+                })).then(extracted => {
+                  if (extracted.length > 0) {
+                    currentReaderBook.indexEntries = extracted;
+                    renderFlipIndexDrawerItems();
+                  }
+                });
+              }
+            }).catch(() => {});
+          }
+          renderPdfFlipbookSpread();
+        }).catch(() => {
+          activePdfDoc = null;
+          renderStandardHtmlFlipbookSpread();
+        });
+        return;
+      }
+
+      renderStandardHtmlFlipbookSpread();
+    }
+
+    function renderStandardHtmlFlipbookSpread() {
       if (!currentReaderBook) return;
       const pages = buildBookPagesData(currentReaderBook);
       const totalSpreads = Math.ceil(pages.length / 2);
@@ -2143,8 +2529,7 @@ function jsonResponse(obj) {
 
     function turnFlipbookPage(delta) {
       if (!currentReaderBook) return;
-      const pages = buildBookPagesData(currentReaderBook);
-      const totalSpreads = Math.ceil(pages.length / 2);
+      const totalSpreads = getTotalSpreadsForCurrentBook();
       const nextSpread = currentFlipSpread + delta;
 
       if (nextSpread < 0 || nextSpread >= totalSpreads) {
@@ -2173,6 +2558,96 @@ function jsonResponse(obj) {
       renderFlipbookSpread();
     }
 
+    // Extract or build structured Index Entries [{ title, page }] for any book
+    function getBookIndexEntries(book) {
+      if (!book) return [];
+      if (Array.isArray(book.indexEntries) && book.indexEntries.length > 0) {
+        return book.indexEntries;
+      }
+      const units = book.units || [
+        'அலகு 1: அறிமுகம் மற்றும் அடிப்படைக் கோட்பாடுகள்',
+        'அலகு 2: விரிவான பாட விளக்கம் மற்றும் செயல்முறைகள்',
+        'அலகு 3: பயன்பாடுகள் மற்றும் மாதிரி கணக்குகள்',
+        'அலகு 4: அரசுப் பொதுத்தேர்வு வினா-விடைத் தொகுப்பு'
+      ];
+      return units.map((u, idx) => ({
+        title: u,
+        page: idx + 3
+      }));
+    }
+
+    function renderFlipIndexDrawerItems() {
+      const listEl = document.getElementById('flipIndexDrawerList');
+      if (!listEl || !currentReaderBook) return;
+      const entries = getBookIndexEntries(currentReaderBook);
+      listEl.innerHTML = entries.map((item, idx) => `
+        <button
+          type="button"
+          onclick="jumpToFlipbookPageNumber(${item.page}, '${item.title.replace(/'/g, "\'")}')"
+          class="p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-600 text-slate-800 hover:text-white border border-slate-200 hover:border-indigo-600 flex items-center justify-between gap-2 text-left transition group"
+        >
+          <span class="text-xs font-bold truncate"><strong class="text-indigo-600 group-hover:text-amber-300">0${idx + 1}.</strong> ${item.title}</span>
+          <span class="px-2 py-0.5 rounded bg-white/90 text-indigo-900 text-[10px] font-extrabold shrink-0">பக். ${item.page}</span>
+        </button>
+      `).join('');
+    }
+
+    function toggleFlipIndexDrawer() {
+      const drawer = document.getElementById('flipIndexDrawer');
+      if (!drawer) return;
+      renderFlipIndexDrawerItems();
+      drawer.classList.toggle('hidden');
+    }
+
+    // Jump to Index Page (Spread 0 where Page 2 is the Index, AND toggle the interactive Index Drawer for PDF books!)
+    function goToFlipbookIndexPage() {
+      if (!currentReaderBook) return;
+      jumpFlipbookSpread(0);
+      if (activePdfDoc) {
+        toggleFlipIndexDrawer();
+      } else {
+        renderFlipIndexDrawerItems();
+        const drawer = document.getElementById('flipIndexDrawer');
+        if (drawer) drawer.classList.remove('hidden');
+      }
+      showToast('📑 பொருளடக்கம் (Index): பாடத்தலைப்பைத் தொட்டு அந்தப் பக்கத்திற்குச் செல்லலாம்!', 'info');
+    }
+
+    function jumpToFlipbookPageNumber(pageNum, chapterTitle) {
+      const p = parseInt(pageNum, 10);
+      if (!p || p < 1) return;
+      const targetSpread = Math.floor((p - 1) / 2);
+      const totalSpreads = getTotalSpreadsForCurrentBook();
+      const clampedSpread = Math.min(Math.max(0, targetSpread), Math.max(0, totalSpreads - 1));
+
+      const drawer = document.getElementById('flipIndexDrawer');
+      if (drawer) drawer.classList.add('hidden');
+
+      const inp = document.getElementById('flipJumpPageInput');
+      if (inp) inp.value = String(p);
+
+      jumpFlipbookSpread(clampedSpread);
+      if (chapterTitle) {
+        showToast(`📖 "${chapterTitle}" — பக்கம் ${p}-க்குத் தாவியது!`, 'success');
+      } else {
+        showToast(`📖 பக்கம் ${p}-க்குத் தாவியது!`, 'info');
+      }
+    }
+
+    function jumpToSpecificFlipPage() {
+      const inp = document.getElementById('flipJumpPageInput');
+      if (!inp) return;
+      const pageNum = parseInt(inp.value, 10);
+      if (!pageNum || pageNum < 1) return;
+      const targetSpread = Math.floor((pageNum - 1) / 2);
+      const totalSpreads = getTotalSpreadsForCurrentBook();
+      if (targetSpread >= totalSpreads) {
+        showToast('அந்தப் பக்க எண் புத்தகத்தில் இல்லை!', 'warn');
+        return;
+      }
+      jumpToFlipbookPageNumber(pageNum);
+    }
+
     function toggleFlipSound() {
       flipSoundEnabled = !flipSoundEnabled;
       const btn = document.getElementById('soundToggleBtn');
@@ -2189,8 +2664,7 @@ function jsonResponse(obj) {
         if (btn) btn.textContent = '⏸️ தானியங்கி நிறுத்து (Stop)';
         autoFlipTimer = setInterval(() => {
           if (!currentReaderBook) return stopAutoFlip();
-          const pages = buildBookPagesData(currentReaderBook);
-          const totalSpreads = Math.ceil(pages.length / 2);
+          const totalSpreads = getTotalSpreadsForCurrentBook();
           if (currentFlipSpread + 1 < totalSpreads) {
             turnFlipbookPage(1);
           } else {
@@ -2693,6 +3167,19 @@ function jsonResponse(obj) {
       reader.readAsText(file);
     }
 
+    function insertSampleIndexList() {
+      const area = document.getElementById('bookIndexChapters');
+      if (!area) return;
+      area.value = [
+        'அத்தியாயம் 1: உயிரிகளில் இனப்பெருக்கம் | 3',
+        'அத்தியாயம் 2: பூக்கும் தாவரங்களில் பாலினப்பெருக்கம் | 15',
+        'அத்தியாயம் 3: மனித இனப்பெருக்கம் | 32',
+        'அத்தியாயம் 4: மரபுக் கடத்தலின் கொள்கைகள் | 50',
+        'அத்தியாயம் 5: மூலக்கூறு அடிப்படையிலான பாரம்பரியம் | 74'
+      ].join('\n');
+      showToast('✨ மாதிரி பொருளடக்கம் (Index & பக்க எண்கள்) நிரப்பப்பட்டது!', 'info');
+    }
+
     function insertSampleHtmlChapter() {
       const titleTa = document.getElementById('bookTitleTa')?.value || 'புதிய பாடநூல்';
       const sample = `<div class="space-y-4">
@@ -2884,6 +3371,16 @@ function jsonResponse(obj) {
       const pdfExtUrl = (document.getElementById('pdfExternalUrl')?.value || '').trim();
       const flipExtUrl = (document.getElementById('flipbookExternalUrl')?.value || '').trim();
 
+      const rawIndexText = (document.getElementById('bookIndexChapters')?.value || '').trim();
+      const parsedIndexEntries = rawIndexText
+        ? rawIndexText.split(/\r?\n/).map((line, i) => {
+            const parts = line.split('|');
+            const title = (parts[0] || '').trim();
+            const page = parseInt((parts[1] || '').trim(), 10) || (i + 3);
+            return title ? { title, page } : null;
+          }).filter(Boolean)
+        : [];
+
       const existingBook = editId ? booksCatalog.find(b => b.id === editId) : null;
 
       const newBookObj = {
@@ -2908,12 +3405,15 @@ function jsonResponse(obj) {
         pdfExternalUrl: pdfExtUrl || (existingBook ? existingBook.pdfExternalUrl : ''),
         flipbookExternalUrl: flipExtUrl || (existingBook ? existingBook.flipbookExternalUrl : ''),
         customFlipImages: pendingUploadFlipbookImages.length > 0 ? [...pendingUploadFlipbookImages] : (existingBook ? existingBook.customFlipImages : undefined),
-        units: [
-          `அலகு 1: ${titleTa} — அறிமுகம் மற்றும் அடிப்படைக் கோட்பாடுகள்`,
-          `அலகு 2: விரிவான பாட விளக்கம் மற்றும் செயல்முறைகள்`,
-          `அலகு 3: பயன்பாடுகள் மற்றும் மாதிரி கணக்குகள்`,
-          `அலகு 4: அரசுப் பொதுத்தேர்வு வினா-விடைத் தொகுப்பு`
-        ],
+        units: parsedIndexEntries.length > 0
+          ? parsedIndexEntries.map(e => `${e.title} (பக். ${e.page})`)
+          : [
+              `அலகு 1: ${titleTa} — அறிமுகம் மற்றும் அடிப்படைக் கோட்பாடுகள்`,
+              `அலகு 2: விரிவான பாட விளக்கம் மற்றும் செயல்முறைகள்`,
+              `அலகு 3: பயன்பாடுகள் மற்றும் மாதிரி கணக்குகள்`,
+              `அலகு 4: அரசுப் பொதுத்தேர்வு வினா-விடைத் தொகுப்பு`
+            ],
+        indexEntries: parsedIndexEntries.length > 0 ? parsedIndexEntries : (existingBook ? existingBook.indexEntries : undefined),
         formulaHighlight: `${titleTa} (${titleEn}) — சிவகங்கை கல்விக்களம் (library.ceosvg.in)`
       };
 
@@ -2974,6 +3474,12 @@ function jsonResponse(obj) {
       document.getElementById('bookMedium').value = book.medium;
       document.getElementById('bookCode').value = book.code || '';
       document.getElementById('bookDescription').value = book.description || '';
+      const idxArea = document.getElementById('bookIndexChapters');
+      if (idxArea) {
+        idxArea.value = Array.isArray(book.indexEntries)
+          ? book.indexEntries.map(e => `${e.title} | ${e.page}`).join('\n')
+          : '';
+      }
       document.getElementById('chkFlipbook').checked = !!(book.formats && book.formats.flipbook);
       document.getElementById('chkPdf').checked = !!(book.formats && book.formats.pdf);
       document.getElementById('chkHtml').checked = !!(book.formats && book.formats.html);
