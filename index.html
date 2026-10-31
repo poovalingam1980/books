@@ -72,7 +72,33 @@
       transform: rotateY(12deg) scale(0.985);
     }
     .spine-shadow {
-      background: linear-gradient(90deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.12) 48%, rgba(255,255,255,0.25) 51%, rgba(0,0,0,0.08) 54%, rgba(0,0,0,0.01) 100%);
+      background: linear-gradient(90deg, rgba(0,0,0,0.01) 0%, rgba(0,0,0,0.09) 42%, rgba(0,0,0,0.22) 49%, rgba(255,255,255,0.35) 50.5%, rgba(0,0,0,0.14) 53%, rgba(0,0,0,0.01) 100%);
+    }
+    .corner-bracket-box {
+      position: relative;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(15, 23, 42, 0.12);
+    }
+    .corner-bracket-box::before,
+    .corner-bracket-box::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-color: #0f172a;
+      pointer-events: none;
+    }
+    .corner-bracket-box::before {
+      top: -2px;
+      left: -2px;
+      border-top: 3.5px solid #0f172a;
+      border-left: 3.5px solid #0f172a;
+    }
+    .corner-bracket-box::after {
+      bottom: -2px;
+      right: -2px;
+      border-bottom: 3.5px solid #0f172a;
+      border-right: 3.5px solid #0f172a;
     }
     .page-curl-right {
       background: linear-gradient(135deg, transparent 75%, rgba(15, 23, 42, 0.06) 88%, rgba(255, 255, 255, 0.9) 92%, rgba(15, 23, 42, 0.14) 100%);
@@ -185,6 +211,9 @@
         <div class="flex flex-wrap items-center gap-1.5">
           <button type="button" id="adminSubTab_upload" onclick="switchAdminSubTab('upload')" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 text-white shadow-sm transition flex items-center gap-1.5">
             <span>📤 1. புதிய புத்தகம் பதிவேற்றம்</span>
+          </button>
+          <button type="button" id="adminSubTab_studio" onclick="switchAdminSubTab('studio')" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-amber-100 text-amber-950 hover:bg-amber-200 border border-amber-300 transition flex items-center gap-1.5">
+            <span>🎨 HTML → Flipbook Studio (உருவாக்கி)</span>
           </button>
           <button type="button" id="adminSubTab_books" onclick="switchAdminSubTab('books')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-1.5">
             <span>📚 2. புத்தகப் பட்டியல்</span>
@@ -482,6 +511,203 @@
         </div>
       </section>
     </div>
+
+    <!-- =================================================================== -->
+    <!-- ADMIN SUB-PANE STUDIO: HTML → FLIPBOOK STUDIO (Matches image_7c8405) -->
+    <!-- =================================================================== -->
+    <section id="adminPane_studio" class="hidden bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[680px]">
+
+        <!-- LEFT SIDEBAR: "Customize flipbook" Studio Controls (Matches image_7c8405.jpg left panel) -->
+        <aside class="lg:col-span-3 bg-white border-b lg:border-b-0 lg:border-r border-slate-200 p-4 sm:p-5 flex flex-col justify-between space-y-5">
+          <div class="space-y-4">
+            <!-- Studio Title & Action Buttons -->
+            <div class="space-y-2.5 border-b border-slate-100 pb-4">
+              <div class="flex items-center justify-between">
+                <h2 class="text-base font-extrabold text-slate-900">Customize flipbook</h2>
+                <span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[10px] font-extrabold border border-indigo-200">Studio v2</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="saveStudioFlipbookToLibrary()" class="flex-1 py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold shadow-sm transition flex items-center justify-center gap-1">
+                  <span>🚀 நூலகத்தில் சேமி</span>
+                </button>
+                <button type="button" onclick="exportStandaloneFlipbookHtml()" class="py-2 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition" title="தனி Flipbook .html கோப்பாகப் பதிவிறக்க">
+                  ⬇️ .HTML
+                </button>
+              </div>
+            </div>
+
+            <!-- 1. Select Book or Upload HTML File to Convert -->
+            <div class="space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+              <label for="studioBookSelect" class="block text-[11px] font-extrabold text-slate-700 uppercase">📂 1. HTML புத்தகம் தேர்வு / பதிவேற்றம்</label>
+              <select id="studioBookSelect" onchange="handleStudioBookChange()" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs font-bold bg-white outline-none focus:border-blue-600">
+                <!-- Populated dynamically -->
+              </select>
+              <label class="w-full py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-extrabold cursor-pointer transition flex items-center justify-center gap-1.5 shadow-sm">
+                <span>🌐 கணினியிலிருந்து .HTML கோப்பை மாற்றுக</span>
+                <input type="file" accept=".html,.htm,text/html" onchange="handleStudioHtmlFileUpload(event)" class="hidden" />
+              </label>
+              <div id="studioConvertStatus" class="text-[10px] text-emerald-700 font-bold text-center">✓ 80 Flipbook பக்கங்கள் தயார்</div>
+            </div>
+
+            <!-- 2. Branding & Style (Matches image_7c8405.jpg) -->
+            <div class="space-y-3 border-t border-slate-100 pt-3">
+              <div class="text-xs font-extrabold text-slate-800 flex items-center justify-between">
+                <span>🖌️ Branding &amp; Style</span>
+                <span class="text-[10px] text-slate-400">⌃</span>
+              </div>
+
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-600 font-medium">Page Skin (பக்க வண்ணம்)</span>
+                <select id="studioPageSkinSelect" onchange="applyStudioCustomization()" class="px-2.5 py-1 rounded-lg border border-slate-300 text-xs font-semibold bg-white">
+                  <option value="gold">Warm Gold (மஞ்சள்)</option>
+                  <option value="ivory">Classic Ivory (வெள்ளை)</option>
+                  <option value="mint">Emerald Mint (பச்சை)</option>
+                  <option value="sky">Sky Academic (நீலம்)</option>
+                </select>
+              </div>
+
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-600 font-medium">Background (பின்னணி)</span>
+                <select id="studioBackdropSelect" onchange="applyStudioCustomization()" class="px-2.5 py-1 rounded-lg border border-slate-300 text-xs font-semibold bg-white">
+                  <option value="studio">Clean Studio Gray</option>
+                  <option value="dark">Dark Slate Cinema</option>
+                  <option value="indigo">Royal Indigo Desk</option>
+                  <option value="wood">Warm Amber Desk</option>
+                </select>
+              </div>
+
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-600 font-medium">Top Chapter Tabs</span>
+                <input id="studioRibbonToggle" type="checkbox" checked onchange="applyStudioCustomization()" class="rounded text-blue-600 focus:ring-blue-500" />
+              </div>
+
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-600 font-medium">Corner Callout Frame</span>
+                <input id="studioBracketToggle" type="checkbox" checked onchange="applyStudioCustomization()" class="rounded text-blue-600 focus:ring-blue-500" />
+              </div>
+            </div>
+
+            <!-- 3. Controls & Table of Contents -->
+            <div class="space-y-2.5 border-t border-slate-100 pt-3 text-xs">
+              <div class="font-extrabold text-slate-800">🎚️ Controls &amp; Navigation</div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-600">Table of Contents (Index)</span>
+                <button type="button" onclick="studioJumpToSpread(0)" class="px-2.5 py-1 rounded border border-slate-300 hover:bg-slate-50 font-bold text-[11px]">📑 Index காட்டு</button>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-600">Page Thumbnails (பக்கங்கள்)</span>
+                <button type="button" onclick="toggleStudioThumbnails()" class="px-2.5 py-1 rounded border border-slate-300 hover:bg-slate-50 font-bold text-[11px]">⊞ கட்டம் காட்டு</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom "+ Add video, links, etc." Button (Matches image_7c8405.jpg) -->
+          <div class="pt-3 border-t border-slate-200 space-y-2">
+            <button type="button" onclick="toggleStudioAddMediaBox()" class="w-full py-2.5 px-3 rounded-xl border border-slate-300 hover:border-blue-600 bg-white hover:bg-blue-50/40 text-slate-800 text-xs font-extrabold transition flex items-center justify-center gap-2 shadow-sm">
+              <span>🎬 Add video, links, quiz, etc.</span>
+            </button>
+
+            <!-- Collapsible Add Media / Callout Editor -->
+            <div id="studioAddMediaBox" class="hidden p-3 rounded-xl bg-blue-50/70 border border-blue-200 space-y-2">
+              <div class="text-[11px] font-extrabold text-blue-950">தற்போதைய பக்கத்தில் இணைக்க:</div>
+              <input id="studioMediaTitle" type="text" placeholder="தலைப்பு (எ.கா: Watch Video / முக்கிய குறிப்பு)" class="w-full px-2.5 py-1.5 rounded border border-slate-300 text-xs bg-white" />
+              <input id="studioMediaUrl" type="text" placeholder="YouTube / பட இணைப்பு அல்லது விளக்கம்" class="w-full px-2.5 py-1.5 rounded border border-slate-300 text-xs bg-white" />
+              <button type="button" onclick="insertMediaCardIntoCurrentStudioPage()" class="w-full py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+                ➕ இப்பக்கத்தில் சேர்
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- RIGHT MAIN STAGE: Interactive Magazine Flipbook Preview (Matches image_7c8405.jpg) -->
+        <div id="studioStageBackdrop" class="lg:col-span-9 bg-[#e5e7eb] flex flex-col justify-between p-3 sm:p-6 relative transition-colors duration-300">
+
+          <!-- Top Studio Bar: Book Title + Page Counter + Search -->
+          <div class="flex flex-wrap items-center justify-between gap-2 bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-sm border border-slate-200/80 text-xs">
+            <div class="flex items-center gap-3">
+              <span id="studioTopBookTitle" class="font-extrabold text-slate-800">உயிரியல் (BIOLOGY)</span>
+              <span id="studioTopPageCounter" class="px-2.5 py-0.5 rounded-md bg-slate-100 border border-slate-300 text-slate-700 font-bold">pages 2 – 3 of 80</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <input id="studioJumpInput" type="number" min="1" placeholder="Page #" class="w-16 px-2 py-1 rounded border border-slate-300 text-xs text-center" />
+              <button type="button" onclick="handleStudioPageJump()" class="px-2.5 py-1 rounded bg-slate-800 text-white font-bold">Go</button>
+              <button type="button" onclick="openBookReader(currentStudioBookId, 'FLIPBOOK')" class="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold">
+                ⛶ முழுத்திரையில் திறக்க
+              </button>
+            </div>
+          </div>
+
+          <!-- Center Book Spread with Left/Right Arrows & Top Colored Ribbon Tabs -->
+          <div class="my-auto py-4 flex items-center justify-center gap-2 sm:gap-4 relative">
+            <!-- Left Turn Arrow (<) -->
+            <button type="button" onclick="turnStudioSpread(-1)" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/80 hover:bg-white text-slate-700 hover:text-slate-950 font-extrabold text-xl flex items-center justify-center shadow-md transition shrink-0">
+              ‹
+            </button>
+
+            <!-- The Open 2-Page Magazine Flipbook -->
+            <div id="studioBookContainer" class="w-full max-w-4xl rounded-xl shadow-2xl overflow-hidden border border-slate-300/80 transition-transform duration-300 bg-[#fef08a]">
+
+              <!-- Top Colored Category/Unit Ribbon Bar (Matches OVERVIEW | BRANDING | INTERACTIVITY... in image_7c8405.jpg) -->
+              <div id="studioTopRibbonBar" class="grid grid-cols-4 sm:grid-cols-7 text-[10px] font-extrabold uppercase tracking-wider text-center border-b border-black/10">
+                <button type="button" onclick="studioJumpToSpread(0)" class="py-2 px-1 bg-[#2563eb] text-white hover:opacity-95 truncate">OVERVIEW / INDEX</button>
+                <button type="button" onclick="studioJumpToSpread(1)" class="py-2 px-1 bg-[#7c3aed] text-white hover:opacity-95 truncate">UNIT VI (CH 1–3)</button>
+                <button type="button" onclick="studioJumpToSpread(8)" class="py-2 px-1 bg-[#a855f7] text-white hover:opacity-95 truncate">UNIT VII (CH 4–6)</button>
+                <button type="button" onclick="studioJumpToSpread(18)" class="py-2 px-1 bg-[#f472b6] text-slate-950 hover:opacity-95 truncate">UNIT VIII (CH 7–8)</button>
+                <button type="button" onclick="studioJumpToSpread(25)" class="py-2 px-1 bg-[#facc15] text-slate-950 hover:opacity-95 truncate hidden sm:block">UNIT IX (CH 9–10)</button>
+                <button type="button" onclick="studioJumpToSpread(31)" class="py-2 px-1 bg-[#fde047] text-slate-950 hover:opacity-95 truncate hidden sm:block">UNIT X (CH 11–13)</button>
+                <button type="button" onclick="studioJumpToSpread(37)" class="py-2 px-1 bg-[#5eead4] text-slate-950 hover:opacity-95 truncate hidden sm:block">SUMMARY &amp; QUIZ</button>
+              </div>
+
+              <!-- 2-Page Spread Body with Center Spine Crease Shadow -->
+              <div id="studioSpreadPages" class="grid grid-cols-1 md:grid-cols-2 min-h-[450px] sm:min-h-[490px] relative">
+                <!-- Realistic Center Crease Shadow -->
+                <div class="hidden md:block absolute inset-y-0 left-1/2 -ml-5 w-10 spine-shadow pointer-events-none z-20"></div>
+
+                <!-- Left Page -->
+                <div id="studioLeftPage" class="p-5 sm:p-7 flex flex-col justify-between border-b md:border-b-0 md:border-r border-black/10 relative">
+                  <!-- Populated dynamically -->
+                </div>
+
+                <!-- Right Page -->
+                <div id="studioRightPage" class="p-5 sm:p-7 flex flex-col justify-between relative cursor-pointer" onclick="turnStudioSpread(1)">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Turn Arrow (>) -->
+            <button type="button" onclick="turnStudioSpread(1)" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/80 hover:bg-white text-slate-700 hover:text-slate-950 font-extrabold text-xl flex items-center justify-center shadow-md transition shrink-0">
+              ›
+            </button>
+          </div>
+
+          <!-- Thumbnail Grid Drawer (When toggled) -->
+          <div id="studioThumbnailsDrawer" class="hidden bg-white/95 backdrop-blur rounded-2xl p-4 shadow-xl border border-slate-300 max-h-52 overflow-y-auto mb-2">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-extrabold text-slate-800">⊞ அனைத்துப் பக்கங்களின் முன்னோட்டம் (Page Thumbnails)</span>
+              <button type="button" onclick="toggleStudioThumbnails()" class="text-xs font-bold text-rose-600">✕ மூடு</button>
+            </div>
+            <div id="studioThumbnailsGrid" class="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 gap-2"></div>
+          </div>
+
+          <!-- Bottom Icon Bar (Matches bottom bar of image_7c8405.jpg: Grid, TOC, Share, Sound, Zoom, Fullscreen) -->
+          <div class="flex items-center justify-between bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-sm border border-slate-200/80 text-xs text-slate-700">
+            <button type="button" onclick="studioJumpToSpread(0)" class="px-2 py-1 rounded hover:bg-slate-100 font-bold" title="First Page">⏮</button>
+            <div class="flex items-center gap-3 sm:gap-5">
+              <button type="button" onclick="toggleStudioThumbnails()" class="p-1.5 rounded hover:bg-slate-100 font-bold text-sm" title="Page Thumbnails">⊞</button>
+              <button type="button" onclick="studioJumpToSpread(0)" class="p-1.5 rounded hover:bg-slate-100 font-bold text-sm" title="Table of Contents (Index)">📑</button>
+              <button type="button" onclick="exportStandaloneFlipbookHtml()" class="p-1.5 rounded hover:bg-slate-100 font-bold text-sm" title="Download / Share Flipbook HTML">🔗</button>
+              <button type="button" onclick="toggleFlipSound()" class="p-1.5 rounded hover:bg-slate-100 font-bold text-sm" title="Toggle Flip Sound">🔊</button>
+              <button type="button" onclick="toggleStudioZoom()" class="p-1.5 rounded hover:bg-slate-100 font-bold text-sm" title="Zoom In/Out">🔍</button>
+              <button type="button" onclick="openBookReader(currentStudioBookId, 'FLIPBOOK')" class="p-1.5 rounded bg-slate-800 text-white hover:bg-indigo-600 font-bold text-xs px-2.5" title="Full Screen">⛶</button>
+            </div>
+            <span class="text-[11px] font-bold text-slate-500">சிவகங்கை கல்விக்களம் Flipbook Studio</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
 
     <!-- =================================================================== -->
     <!-- ADMIN SUB-PANE 2: MANAGE UPLOADED BOOKS CATALOG                     -->
@@ -827,9 +1053,20 @@
 
         <!-- 2-Page Spread Book Container -->
         <div id="flipbookStage" class="flipbook-stage w-full max-w-4xl">
-          <div id="flipbookSheet" class="flipbook-sheet bg-[#fdfbf7] text-slate-800 rounded-2xl shadow-2xl border-4 border-amber-900/30 overflow-hidden grid grid-cols-1 md:grid-cols-2 min-h-[430px] sm:min-h-[490px] relative">
-            <!-- Center Spine Shadow on Desktop -->
-            <div class="hidden md:block absolute inset-y-0 left-1/2 -ml-3 w-6 spine-shadow pointer-events-none z-20"></div>
+          <div id="flipbookOuterFrame" class="rounded-2xl shadow-2xl border-4 border-amber-900/30 overflow-hidden bg-[#fdfbf7] text-slate-800">
+            <!-- Top Colored Unit/Chapter Ribbon Tabs across top of Flipbook (Matches image_7c8405.jpg) -->
+            <div id="readerFlipRibbonBar" class="grid grid-cols-4 sm:grid-cols-7 text-[10px] font-extrabold uppercase tracking-wider text-center border-b border-black/10">
+              <button type="button" onclick="jumpFlipbookSpread(0)" class="py-2 px-1 bg-[#2563eb] text-white hover:opacity-95 truncate">OVERVIEW / INDEX</button>
+              <button type="button" onclick="jumpFlipbookSpread(1)" class="py-2 px-1 bg-[#7c3aed] text-white hover:opacity-95 truncate">UNIT VI (CH 1–3)</button>
+              <button type="button" onclick="jumpFlipbookSpread(8)" class="py-2 px-1 bg-[#a855f7] text-white hover:opacity-95 truncate">UNIT VII (CH 4–6)</button>
+              <button type="button" onclick="jumpFlipbookSpread(18)" class="py-2 px-1 bg-[#f472b6] text-slate-950 hover:opacity-95 truncate">UNIT VIII (CH 7–8)</button>
+              <button type="button" onclick="jumpFlipbookSpread(25)" class="py-2 px-1 bg-[#facc15] text-slate-950 hover:opacity-95 truncate hidden sm:block">UNIT IX (CH 9–10)</button>
+              <button type="button" onclick="jumpFlipbookSpread(31)" class="py-2 px-1 bg-[#fde047] text-slate-950 hover:opacity-95 truncate hidden sm:block">UNIT X (CH 11–13)</button>
+              <button type="button" onclick="goToFlipbookIndexPage()" class="py-2 px-1 bg-[#5eead4] text-slate-950 hover:opacity-95 truncate hidden sm:block">📑 ALL CHAPTERS</button>
+            </div>
+            <div id="flipbookSheet" class="flipbook-sheet grid grid-cols-1 md:grid-cols-2 min-h-[430px] sm:min-h-[490px] relative">
+              <!-- Center Spine Shadow on Desktop -->
+              <div class="hidden md:block absolute inset-y-0 left-1/2 -ml-5 w-10 spine-shadow pointer-events-none z-20"></div>
 
             <!-- Left Page -->
             <div id="flipLeftPage" class="p-5 sm:p-7 flex flex-col justify-between border-b md:border-b-0 md:border-r border-amber-900/10 relative">
@@ -839,6 +1076,7 @@
             <!-- Right Page -->
             <div id="flipRightPage" class="p-5 sm:p-7 flex flex-col justify-between page-curl-right relative cursor-pointer" onclick="turnFlipbookPage(1)" title="அடுத்த பக்கத்திற்குப் புரட்ட சொடுக்கவும்">
               <!-- Populated dynamically -->
+            </div>
             </div>
           </div>
         </div>
@@ -1692,6 +1930,9 @@ function jsonResponse(obj) {
           reject(err);
         }
       });
+      if (tabName === 'studio') {
+        initFlipbookStudio();
+      }
     }
 
     function saveToIndexedDB(key, val) {
@@ -2093,7 +2334,7 @@ function jsonResponse(obj) {
     }
 
     function switchAdminSubTab(tabName) {
-      const tabs = ['upload', 'books', 'users', 'drive'];
+      const tabs = ['upload', 'studio', 'books', 'users', 'drive'];
       tabs.forEach(t => {
         const pane = document.getElementById('adminPane_' + t);
         const btn = document.getElementById('adminSubTab_' + t);
@@ -3745,6 +3986,259 @@ function jsonResponse(obj) {
       document.getElementById('htmlFileNameLabel').textContent = 'கோப்பைத் தேர்ந்தெடுத்தால் அதன் HTML உள்ளடக்கம் கீழே தானாகவே ஏற்றப்படும்';
       document.getElementById('flipbookUploadStatus').textContent = '✓ தானியங்கி 3D தயார்';
       updateAdminLivePreview();
+    }
+
+
+    // =====================================================================
+    // HTML → FLIPBOOK STUDIO (CUSTOMIZE FLIPBOOK) ENGINE
+    // =====================================================================
+    let currentStudioBookId = '';
+    let currentStudioSpread = 1; // Open to pages 3-4 by default like a magazine spread
+    let studioZoomed = false;
+
+    const STUDIO_SKIN_CLASSES = {
+      gold: '#fef08a',
+      ivory: '#fdfbf7',
+      mint: '#d1fae5',
+      sky: '#e0f2fe'
+    };
+
+    const STUDIO_BACKDROP_CLASSES = {
+      studio: '#e5e7eb',
+      dark: '#0f172a',
+      indigo: '#1e1b4b',
+      wood: '#78350f'
+    };
+
+    function initFlipbookStudio() {
+      const sel = document.getElementById('studioBookSelect');
+      if (!sel) return;
+      if (!currentStudioBookId && booksCatalog.length > 0) {
+        currentStudioBookId = booksCatalog[0].id;
+      }
+      sel.innerHTML = booksCatalog.map(b =>
+        `<option value="${b.id}" ${b.id === currentStudioBookId ? 'selected' : ''}>${b.titleTa} (${b.titleEn})</option>`
+      ).join('');
+      renderStudioSpread();
+    }
+
+    function handleStudioBookChange() {
+      const sel = document.getElementById('studioBookSelect');
+      if (!sel) return;
+      currentStudioBookId = sel.value;
+      currentStudioSpread = 0;
+      renderStudioSpread();
+    }
+
+    function handleStudioHtmlFileUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const st = document.getElementById('studioConvertStatus');
+      if (st) st.textContent = `⏳ "${file.name}" Flipbook-ஆக மாற்றப்படுகிறது...`;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const htmlContent = e.target.result || '';
+        const baseTitle = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]+/g, ' ').trim();
+        let targetBook = booksCatalog.find(b => b.id === currentStudioBookId);
+        if (!targetBook) {
+          targetBook = {
+            id: 'book-studio-' + Date.now(),
+            titleTa: baseTitle,
+            titleEn: baseTitle,
+            classLevel: 'Class XII',
+            medium: 'தமிழ் வழி',
+            cover: pendingUploadCoverDataUrl,
+            formats: { flipbook: true, pdf: true, html: true },
+            views: 1
+          };
+          booksCatalog.unshift(targetBook);
+          currentStudioBookId = targetBook.id;
+        }
+        targetBook.customHtmlContent = htmlContent;
+        targetBook.hasCustomHtml = true;
+
+        // Clear cache and parse into Flipbook pages
+        const pages = buildBookPagesData(targetBook);
+        saveStoredState();
+        initFlipbookStudio();
+        if (st) st.textContent = `✓ "${file.name}" → ${pages.length} Flipbook பக்கங்களாக மாற்றப்பட்டது!`;
+        showToast(`🎨 "${file.name}" கோப்பு ${pages.length} பக்கங்கள் கொண்ட 3D Flipbook-ஆக வெற்றிகரமாக மாற்றப்பட்டது!`, 'success');
+      };
+      reader.readAsText(file);
+    }
+
+    function applyStudioCustomization() {
+      const skinVal = document.getElementById('studioPageSkinSelect')?.value || 'gold';
+      const backVal = document.getElementById('studioBackdropSelect')?.value || 'studio';
+      const showRibbon = document.getElementById('studioRibbonToggle')?.checked !== false;
+
+      const bookCont = document.getElementById('studioBookContainer');
+      const stageBack = document.getElementById('studioStageBackdrop');
+      const ribbonBar = document.getElementById('studioTopRibbonBar');
+      const outerReader = document.getElementById('flipbookOuterFrame');
+
+      const skinHex = STUDIO_SKIN_CLASSES[skinVal] || '#fef08a';
+      const backHex = STUDIO_BACKDROP_CLASSES[backVal] || '#e5e7eb';
+
+      if (bookCont) bookCont.style.backgroundColor = skinHex;
+      if (outerReader) outerReader.style.backgroundColor = skinHex;
+      if (stageBack) stageBack.style.backgroundColor = backHex;
+      if (ribbonBar) ribbonBar.classList.toggle('hidden', !showRibbon);
+
+      const targetBook = booksCatalog.find(b => b.id === currentStudioBookId);
+      if (targetBook) {
+        targetBook.flipSkin = skinVal;
+        targetBook.flipBackdrop = backVal;
+        targetBook.showRibbon = showRibbon;
+      }
+      renderStudioSpread();
+    }
+
+    function renderStudioSpread() {
+      const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+      if (!book) return;
+      currentStudioBookId = book.id;
+
+      const pages = buildBookPagesData(book);
+      const totalSpreads = Math.ceil(pages.length / 2);
+      if (currentStudioSpread < 0) currentStudioSpread = 0;
+      if (currentStudioSpread >= totalSpreads) currentStudioSpread = totalSpreads - 1;
+
+      const leftIdx = currentStudioSpread * 2;
+      const rightIdx = leftIdx + 1;
+
+      const titleEl = document.getElementById('studioTopBookTitle');
+      const counterEl = document.getElementById('studioTopPageCounter');
+      const leftEl = document.getElementById('studioLeftPage');
+      const rightEl = document.getElementById('studioRightPage');
+      const statusEl = document.getElementById('studioConvertStatus');
+      const useBrackets = document.getElementById('studioBracketToggle')?.checked !== false;
+
+      if (titleEl) titleEl.textContent = `${book.titleTa} (${book.titleEn})`;
+      if (counterEl) {
+        const p1 = leftIdx + 1;
+        const p2 = Math.min(rightIdx + 1, pages.length);
+        counterEl.textContent = `pages ${p1} – ${p2} of ${pages.length}`;
+      }
+      if (statusEl) {
+        statusEl.textContent = `✓ மொத்தம் ${pages.length} Flipbook பக்கங்கள் தயார்`;
+      }
+
+      const wrapClass = useBrackets ? 'corner-bracket-box p-3.5 rounded-xl h-full' : 'h-full';
+
+      if (leftEl && pages[leftIdx]) {
+        leftEl.innerHTML = `<div class="${wrapClass}">${pages[leftIdx].html}</div>`;
+      }
+      if (rightEl) {
+        if (pages[rightIdx]) {
+          rightEl.innerHTML = `<div class="${wrapClass}">${pages[rightIdx].html}</div>`;
+        } else {
+          rightEl.innerHTML = `<div class="h-full flex items-center justify-center text-xs text-slate-500">நூலின் இறுதிப் பக்கம்</div>`;
+        }
+      }
+    }
+
+    function turnStudioSpread(delta) {
+      const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+      if (!book) return;
+      const pages = buildBookPagesData(book);
+      const totalSpreads = Math.ceil(pages.length / 2);
+      const next = currentStudioSpread + delta;
+      if (next < 0 || next >= totalSpreads) {
+        showToast(delta > 0 ? 'கடைசிப் பக்கத்தை அடைந்துவிட்டீர்கள்.' : 'இதுவே முதல் பக்கம்.', 'info');
+        return;
+      }
+      playPaperFlipSound();
+      currentStudioSpread = next;
+      renderStudioSpread();
+    }
+
+    function studioJumpToSpread(spreadIdx) {
+      playPaperFlipSound();
+      currentStudioSpread = spreadIdx;
+      renderStudioSpread();
+    }
+
+    function handleStudioPageJump() {
+      const inp = document.getElementById('studioJumpInput');
+      if (!inp) return;
+      const p = parseInt(inp.value, 10);
+      if (!p || p < 1) return;
+      studioJumpToSpread(Math.floor((p - 1) / 2));
+    }
+
+    function toggleStudioThumbnails() {
+      const drawer = document.getElementById('studioThumbnailsDrawer');
+      const grid = document.getElementById('studioThumbnailsGrid');
+      if (!drawer || !grid) return;
+      const isHidden = drawer.classList.contains('hidden');
+      if (isHidden) {
+        const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+        const pages = buildBookPagesData(book);
+        grid.innerHTML = pages.map((p, idx) => `
+          <button type="button" onclick="studioJumpToSpread(${Math.floor(idx / 2)}); toggleStudioThumbnails();" class="p-2 rounded-lg border ${Math.floor(idx / 2) === currentStudioSpread ? 'border-blue-600 bg-blue-50 font-extrabold' : 'border-slate-200 bg-slate-50 hover:bg-indigo-50'} text-center text-[11px] transition">
+            <div class="text-xs font-extrabold text-indigo-900">பக். ${p.pageNumber}</div>
+          </button>
+        `).join('');
+      }
+      drawer.classList.toggle('hidden');
+    }
+
+    function toggleStudioZoom() {
+      studioZoomed = !studioZoomed;
+      const cont = document.getElementById('studioBookContainer');
+      if (cont) {
+        cont.style.transform = studioZoomed ? 'scale(1.06)' : 'scale(1)';
+      }
+    }
+
+    function toggleStudioAddMediaBox() {
+      const box = document.getElementById('studioAddMediaBox');
+      if (box) box.classList.toggle('hidden');
+    }
+
+    function insertMediaCardIntoCurrentStudioPage() {
+      const title = (document.getElementById('studioMediaTitle')?.value || '').trim() || 'Watch Video / சிறப்புக் குறிப்பு';
+      const urlOrNote = (document.getElementById('studioMediaUrl')?.value || '').trim() || 'மாணவர்களுக்கான முக்கிய பாட விளக்கக் குறிப்பு மற்றும் காணொளி.';
+      const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+      if (!book) return;
+
+      if (!Array.isArray(book.studioAddedCards)) book.studioAddedCards = [];
+      book.studioAddedCards.push({ title, urlOrNote });
+
+      const rightEl = document.getElementById('studioRightPage');
+      if (rightEl) {
+        const mediaHtml = `
+          <div class="mt-3 p-3 rounded-xl bg-slate-900 text-white shadow-md space-y-1">
+            <div class="text-[11px] font-extrabold text-amber-300 flex items-center gap-1">▶ ${title}</div>
+            <div class="text-[11px] text-slate-200">${urlOrNote}</div>
+          </div>
+        `;
+        rightEl.insertAdjacentHTML('beforeend', mediaHtml);
+      }
+      document.getElementById('studioMediaTitle').value = '';
+      document.getElementById('studioMediaUrl').value = '';
+      toggleStudioAddMediaBox();
+      saveStoredState();
+      showToast('🎬 புதிய ஊடாடும் பெட்டி (Video / Callout Card) இப்பக்கத்தில் சேர்க்கப்பட்டது!', 'success');
+    }
+
+    function saveStudioFlipbookToLibrary() {
+      const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+      if (!book) return;
+      book.formats = { ...book.formats, flipbook: true, html: true };
+      saveStoredState();
+      renderLibraryGrid();
+      renderAdminBooksTable();
+      showToast(`🚀 "${book.titleTa}" தனிப்பயன் 3D Flipbook வடிவமைப்பு நூலகத்தில் சேமிக்கப்பட்டது!`, 'success');
+    }
+
+    function exportStandaloneFlipbookHtml() {
+      const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+      if (!book) return;
+      currentReaderBook = book;
+      downloadCurrentBookFile();
     }
 
     function editBookInAdmin(bookId) {
