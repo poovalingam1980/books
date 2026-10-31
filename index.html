@@ -1182,9 +1182,6 @@
         <button type="button" id="soundToggleBtn" onclick="toggleFlipSound()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-indigo-300 border border-slate-700 transition" title="பக்கம் புரட்டும் ஒலி">
           🔊 ஒலி: ON
         </button>
-        <button type="button" onclick="downloadCurrentBookFile()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1">
-          <span>⬇️ பதிவிறக்கம்</span>
-        </button>
         <button type="button" onclick="closeReaderModal()" class="w-8 h-8 rounded-lg bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white font-bold text-sm flex items-center justify-center transition">✕</button>
       </div>
     </div>
@@ -1298,7 +1295,7 @@
 
     <!-- MODE C: FULL-SCREEN NATIVE WEB VIEW FOR HTML BOOKS -->
     <div id="readerPaneHtml" class="hidden flex-1 w-full h-full flex flex-col bg-white overflow-hidden relative">
-      <!-- Floating return pill at TOP-RIGHT corner as requested -->
+      <!-- Floating return pill at TOP-RIGHT corner as requested (No download / external tab option for users) -->
       <div id="htmlFloatingControls" class="fixed top-3 right-4 z-50 flex items-center gap-2 bg-slate-900/95 hover:bg-slate-950 text-white px-3.5 py-1.5 rounded-full shadow-2xl border border-amber-400/40 backdrop-blur-sm transition">
         <button type="button" onclick="closeReaderModal()" class="text-xs font-extrabold flex items-center gap-1 text-amber-300 hover:text-white">
           <span>← நூலகத்திற்குச் செல்க</span>
@@ -1306,10 +1303,6 @@
         <span id="htmlFloatingFlipSep" class="hidden text-slate-600">|</span>
         <button id="htmlFloatingFlipBtn" type="button" onclick="switchReaderFormat('FLIPBOOK')" class="hidden text-[11px] font-extrabold text-emerald-300 hover:text-white items-center gap-1" title="3D Flipbook வடிவில் படிக்க">
           <span>📖 3D Flipbook</span>
-        </button>
-        <span class="text-slate-600">|</span>
-        <button type="button" onclick="openHtmlBookInNewTab()" class="text-[11px] font-bold text-indigo-200 hover:text-white flex items-center gap-1" title="புதிய உலாவித் தாவலில் முழு இணையப்பக்கமாகத் திறக்க">
-          <span>↗ தனித் தாவல்</span>
         </button>
       </div>
 
@@ -1817,7 +1810,7 @@ function jsonResponse(obj) {
       </div>
       <button id="darkModeBtn" type="button" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-800 hover:bg-emerald-700 text-amber-300 border border-emerald-600"><span id="darkModeIcon">🌙 இரவு</span></button>
       <button id="toggleEngBtn" type="button" class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-amber-400 text-emerald-950 hover:bg-amber-300">ஆங்கிலம்: <span id="engStatusText">காட்டு</span></button>
-      <button id="printBtn" type="button" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-700 hover:bg-emerald-600 text-white hidden sm:inline-block">🖨️ அச்சிடு</button>
+      
     </div>
   </header>
 
@@ -1946,7 +1939,6 @@ function jsonResponse(obj) {
       document.getElementById('fontDecBtn')?.addEventListener('click', function() { fontScale = Math.max(90, fontScale - 10); applyScale(); });
       document.getElementById('fontResetBtn')?.addEventListener('click', function() { fontScale = 100; applyScale(); });
       document.getElementById('fontIncBtn')?.addEventListener('click', function() { fontScale = Math.min(120, fontScale + 10); applyScale(); });
-      document.getElementById('printBtn')?.addEventListener('click', function() { window.print(); });
     })();
   <\/script>
 </body>
@@ -3405,10 +3397,9 @@ function jsonResponse(obj) {
         const srcUrl = book.pdfBlobUrl || book.pdfDataUrl || book.pdfExternalUrl;
         container.innerHTML = `
           <div class="bg-slate-800 text-white px-4 py-2.5 flex items-center justify-between text-xs">
-            <span>📄 <strong>${book.pdfFileName || book.titleTa + '.pdf'}</strong> (நேரடி PDF ஆவணம்)</span>
-            <a href="${srcUrl}" download="${(book.pdfFileName || book.titleEn + '.pdf')}" class="px-3 py-1 rounded bg-rose-600 hover:bg-rose-500 font-bold text-white">⬇️ PDF பதிவிறக்கம்</a>
+            <span>📄 <strong>${book.pdfFileName || book.titleTa + '.pdf'}</strong> (வாசிப்பு மட்டும் — Read Only)</span>
           </div>
-          <iframe src="${srcUrl}" class="w-full flex-1 min-h-[520px] border-0" title="PDF Reader"></iframe>
+          <iframe src="${srcUrl}#toolbar=0&navpanes=0" class="w-full flex-1 min-h-[520px] border-0" title="PDF Reader"></iframe>
         `;
         return;
       }
@@ -3428,9 +3419,7 @@ function jsonResponse(obj) {
             <span class="font-bold">${book.titleTa} (${book.titleEn}).pdf</span>
           </div>
           <div class="flex items-center gap-2">
-            <button type="button" onclick="downloadCurrentBookFile()" class="px-3 py-1 rounded bg-white text-rose-900 font-bold hover:bg-rose-50 transition">
-              ⬇️ முழுப் புத்தகத்தையும் பதிவிறக்குக
-            </button>
+            <span class="px-2.5 py-1 rounded bg-rose-800 text-rose-100 text-[11px] font-semibold">🔒 வாசிப்பு மட்டும் (Read-Only)</span>
           </div>
         </div>
         <div class="p-6 sm:p-10 space-y-6 overflow-y-auto max-h-[70vh] bg-slate-100">
