@@ -604,12 +604,18 @@
                 <h2 class="text-base font-extrabold text-slate-900">Customize flipbook</h2>
                 <span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[10px] font-extrabold border border-indigo-200">Studio v2</span>
               </div>
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="saveStudioFlipbookToLibrary()" class="flex-1 py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold shadow-sm transition flex items-center justify-center gap-1">
-                  <span>🚀 நூலகத்தில் சேமி</span>
+              <div class="grid grid-cols-2 gap-1.5">
+                <button type="button" onclick="saveStudioFlipbookToDriveOnly()" class="py-2 px-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-extrabold shadow-sm transition flex items-center justify-center gap-1" title="புத்தகப் பட்டியலில் சேர்க்காமல் Google Drive-ல் மட்டும் சேமிக்க">
+                  <span>💾 Save (Drive)</span>
                 </button>
-                <button type="button" onclick="exportStandaloneFlipbookHtml()" class="py-2 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition" title="தனி Flipbook .html கோப்பாகப் பதிவிறக்க">
-                  ⬇️ .HTML
+                <button type="button" onclick="saveStudioFlipbookToLibrary()" class="py-2 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-extrabold shadow-sm transition flex items-center justify-center gap-1" title="பயனர் புத்தகப் பட்டியலில் வெளியிட (Publish)">
+                  <span>🚀 PUBLISH</span>
+                </button>
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <span id="studioPublishBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">📝 வரைவு நிலை (Draft)</span>
+                <button type="button" onclick="exportStandaloneFlipbookHtml()" class="py-1 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold transition" title="தனி Flipbook .html கோப்பாகப் பதிவிறக்க">
+                  ⬇️ .HTML பதிவிறக்கம்
                 </button>
               </div>
             </div>
@@ -1292,13 +1298,13 @@
 
     <!-- MODE C: FULL-SCREEN NATIVE WEB VIEW FOR HTML BOOKS -->
     <div id="readerPaneHtml" class="hidden flex-1 w-full h-full flex flex-col bg-white overflow-hidden relative">
-      <!-- Floating minimal return pill at bottom-left so the HTML book's own top header is 100% unobstructed -->
-      <div id="htmlFloatingControls" class="fixed bottom-4 left-4 z-50 flex items-center gap-2 bg-slate-900/90 hover:bg-slate-900 text-white px-3.5 py-1.5 rounded-full shadow-xl border border-white/15 backdrop-blur-sm transition">
+      <!-- Floating return pill at TOP-RIGHT corner as requested -->
+      <div id="htmlFloatingControls" class="fixed top-3 right-4 z-50 flex items-center gap-2 bg-slate-900/95 hover:bg-slate-950 text-white px-3.5 py-1.5 rounded-full shadow-2xl border border-amber-400/40 backdrop-blur-sm transition">
         <button type="button" onclick="closeReaderModal()" class="text-xs font-extrabold flex items-center gap-1 text-amber-300 hover:text-white">
-          <span>← நூலகம்</span>
+          <span>← நூலகத்திற்குச் செல்க</span>
         </button>
-        <span class="text-slate-600">|</span>
-        <button type="button" onclick="switchReaderFormat('FLIPBOOK')" class="text-[11px] font-extrabold text-emerald-300 hover:text-white flex items-center gap-1" title="இதே HTML புத்தகத்தை 3D Flipbook வடிவில் பக்கங்களாகப் புரட்டிப் படிக்க">
+        <span id="htmlFloatingFlipSep" class="hidden text-slate-600">|</span>
+        <button id="htmlFloatingFlipBtn" type="button" onclick="switchReaderFormat('FLIPBOOK')" class="hidden text-[11px] font-extrabold text-emerald-300 hover:text-white items-center gap-1" title="3D Flipbook வடிவில் படிக்க">
           <span>📖 3D Flipbook</span>
         </button>
         <span class="text-slate-600">|</span>
@@ -1957,7 +1963,7 @@ function jsonResponse(obj) {
         medium: 'தமிழ் வழி',
         code: '2026_01 • NCERT 12-ஆம் வகுப்பு உயிரியல்',
         cover: 'data:image/jpeg;base64,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',
-        formats: { flipbook: true, pdf: true, html: true },
+        formats: { flipbook: false, pdf: false, html: true },
         views: 2,
         hasCustomHtml: true,
         customHtmlContent: buildCompleteNcert12BiologyHtml(),
@@ -2159,11 +2165,16 @@ function jsonResponse(obj) {
         }
       });
 
-      // Ensure our main uploaded Biology book ALWAYS has the complete 13-chapter HTML & Flipbook content!
+      // Ensure our main uploaded Biology book ALWAYS has the complete 13-chapter HTML content and HTML-only format as uploaded!
       const mainBio = map.get('book-custom-1793373503141');
-      if (mainBio && (!mainBio.customHtmlContent || mainBio.customHtmlContent.length < 5000)) {
-        mainBio.customHtmlContent = cachedBiologyHtml || buildCompleteNcert12BiologyHtml();
+      if (mainBio) {
+        if (!mainBio.customHtmlContent || mainBio.customHtmlContent.length < 5000) {
+          mainBio.customHtmlContent = cachedBiologyHtml || buildCompleteNcert12BiologyHtml();
+        }
         mainBio.hasCustomHtml = true;
+        if (!mainBio.formatsCustomizedByAdmin) {
+          mainBio.formats = { flipbook: false, pdf: false, html: true };
+        }
       }
 
       const result = Array.from(map.values());
@@ -2278,9 +2289,9 @@ function jsonResponse(obj) {
                   code: 'CEO-SVG • ' + String(r.Class_Level || 'Class XII'),
                   cover: resolvedCover,
                   formats: {
-                    flipbook: fmtStr.includes('FLIPBOOK') || true,
-                    pdf: fmtStr.includes('PDF') || true,
-                    html: fmtStr.includes('HTML') || !!htmlDriveId
+                    flipbook: fmtStr.includes('FLIPBOOK'),
+                    pdf: fmtStr.includes('PDF'),
+                    html: fmtStr.includes('HTML') || (!fmtStr.includes('FLIPBOOK') && !fmtStr.includes('PDF'))
                   },
                   hasCustomHtml: !!htmlDriveId,
                   driveHtmlFileId: htmlDriveId,
@@ -2548,7 +2559,7 @@ function jsonResponse(obj) {
         const hasHtml = book.formats && book.formats.html;
 
         return `
-          <article class="book-card bg-white rounded-2xl p-2.5 border border-slate-200/90 shadow-sm flex flex-col justify-between group cursor-pointer" onclick="openBookReader('${book.id}', '${((book.customHtmlContent || book.hasCustomHtml) && book.formats?.html) ? 'HTML' : (book.formats?.flipbook ? 'FLIPBOOK' : (book.formats?.pdf ? 'PDF' : 'HTML'))}')">
+          <article class="book-card bg-white rounded-2xl p-2.5 border border-slate-200/90 shadow-sm flex flex-col justify-between group cursor-pointer" onclick="openBookReader('${book.id}', '${(!hasFlip && !hasPdf && hasHtml) ? 'HTML' : (hasFlip ? 'FLIPBOOK' : (hasPdf ? 'PDF' : 'HTML'))}')">
             <div>
               <!-- Book Cover Image Container -->
               <div class="relative rounded-xl overflow-hidden aspect-[3/4.1] bg-slate-100 border border-slate-100">
@@ -2580,23 +2591,23 @@ function jsonResponse(obj) {
               </div>
             </div>
 
-            <!-- Interactive Format Buttons (Flipbook / PDF / HTML) -->
-            <div class="pt-1.5 border-t border-slate-100 grid grid-cols-3 gap-1" onclick="event.stopPropagation()">
+            <!-- Format Buttons: Only show enabled formats (HTML-only books show ONLY HTML webpage button!) -->
+            <div class="pt-1.5 border-t border-slate-100 flex items-center gap-1" onclick="event.stopPropagation()">
               ${hasFlip ? `
-                <button type="button" onclick="openBookReader('${book.id}', 'FLIPBOOK')" class="py-1 px-1 rounded-lg bg-indigo-50 hover:bg-indigo-600 text-indigo-900 hover:text-white text-[10px] font-bold transition text-center" title="3D Flipbook வடிவில் படிக்க">
-                  📖 Flip
+                <button type="button" onclick="openBookReader('${book.id}', 'FLIPBOOK')" class="flex-1 py-1.5 px-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-600 text-indigo-900 hover:text-white text-[10px] font-bold transition text-center" title="3D Flipbook வடிவில் படிக்க">
+                  📖 Flipbook
                 </button>
-              ` : `<span class="py-1 px-1 rounded-lg bg-slate-50 text-slate-300 text-[10px] text-center">Flip</span>`}
+              ` : ''}
               ${hasPdf ? `
-                <button type="button" onclick="openBookReader('${book.id}', 'PDF')" class="py-1 px-1 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white text-[10px] font-bold transition text-center" title="PDF வடிவில் படிக்க">
+                <button type="button" onclick="openBookReader('${book.id}', 'PDF')" class="flex-1 py-1.5 px-1.5 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white text-[10px] font-bold transition text-center" title="PDF வடிவில் படிக்க">
                   📄 PDF
                 </button>
-              ` : `<span class="py-1 px-1 rounded-lg bg-slate-50 text-slate-300 text-[10px] text-center">PDF</span>`}
+              ` : ''}
               ${hasHtml ? `
-                <button type="button" onclick="openBookReader('${book.id}', 'HTML')" class="py-1 px-1 rounded-lg bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white text-[10px] font-bold transition text-center" title="Interactive HTML வடிவில் படிக்க">
-                  🌐 HTML
+                <button type="button" onclick="openBookReader('${book.id}', 'HTML')" class="flex-1 py-1.5 px-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-extrabold transition text-center shadow-sm" title="இணையப்பக்கமாகப் படிக்க">
+                  🌐 ${(!hasFlip && !hasPdf) ? 'இணையப்பக்கமாகப் படிக்க (HTML)' : 'HTML'}
                 </button>
-              ` : `<span class="py-1 px-1 rounded-lg bg-slate-50 text-slate-300 text-[10px] text-center">HTML</span>`}
+              ` : ''}
             </div>
           </article>
         `;
@@ -2620,7 +2631,7 @@ function jsonResponse(obj) {
     // READER MODAL: 3D FLIPBOOK, PDF VIEWER & INTERACTIVE HTML READER
     // =====================================================================
     function openBookReader(bookId, initialFormat) {
-      const book = booksCatalog.find(b => b.id === bookId);
+      const book = booksCatalog.find(b => b.id === bookId) || studioDraftBooks.find(b => b.id === bookId);
       if (!book) return;
 
       book.views = (book.views || 0) + 1;
@@ -2674,16 +2685,29 @@ function jsonResponse(obj) {
         HTML: document.getElementById('readerTabHtml')
       };
 
+      const allowedFormats = {
+        FLIPBOOK: !!(currentReaderBook && currentReaderBook.formats && currentReaderBook.formats.flipbook),
+        PDF: !!(currentReaderBook && currentReaderBook.formats && currentReaderBook.formats.pdf),
+        HTML: !!(currentReaderBook && currentReaderBook.formats && currentReaderBook.formats.html)
+      };
+
       Object.keys(panes).forEach(k => {
         if (panes[k]) panes[k].classList.toggle('hidden', k !== fmt);
         if (tabs[k]) {
-          if (k === fmt) {
+          if (!allowedFormats[k]) {
+            tabs[k].className = 'hidden';
+          } else if (k === fmt) {
             tabs[k].className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold bg-indigo-600 text-white transition flex items-center gap-1 shadow';
           } else {
             tabs[k].className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition flex items-center gap-1';
           }
         }
       });
+
+      const floatFlipBtn = document.getElementById('htmlFloatingFlipBtn');
+      const floatFlipSep = document.getElementById('htmlFloatingFlipSep');
+      if (floatFlipBtn) floatFlipBtn.classList.toggle('hidden', !allowedFormats.FLIPBOOK);
+      if (floatFlipSep) floatFlipSep.classList.toggle('hidden', !allowedFormats.FLIPBOOK);
 
       const topBar = document.getElementById('readerTopBar');
       if (topBar) {
@@ -3847,8 +3871,10 @@ function jsonResponse(obj) {
           label.className = 'text-xs font-bold text-indigo-700 mt-0.5';
         }
         document.getElementById('chkHtml').checked = true;
+        document.getElementById('chkFlipbook').checked = false;
+        document.getElementById('chkPdf').checked = false;
         updateAdminLivePreview();
-        showToast(`🌐 HTML மின்-நூல் "${file.name}" வெற்றிகரமாக ஏற்றப்பட்டது!`, 'success');
+        showToast(`🌐 HTML மின்-நூல் "${file.name}" (இணையப்பக்க வடிவம் மட்டும்) ஏற்றப்பட்டது!`, 'success');
       };
       reader.readAsText(file);
     }
@@ -4077,6 +4103,7 @@ function jsonResponse(obj) {
         medium,
         code,
         cover: pendingUploadCoverDataUrl || (existingBook && existingBook.cover) || 'data:image/jpeg;base64,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',
+        formatsCustomizedByAdmin: true,
         formats: {
           flipbook: !!hasFlip,
           pdf: !!hasPdf,
@@ -4152,9 +4179,22 @@ function jsonResponse(obj) {
     // =====================================================================
     // HTML → FLIPBOOK STUDIO (CUSTOMIZE FLIPBOOK) ENGINE
     // =====================================================================
+    let studioDraftBooks = [];
     let currentStudioBookId = '';
-    let currentStudioSpread = 1; // Open to pages 3-4 by default like a magazine spread
+    let currentStudioSpread = 1;
     let studioZoomed = false;
+
+    function getAllStudioBooks() {
+      const map = new Map();
+      [...studioDraftBooks, ...booksCatalog].forEach(b => {
+        if (b && b.id && !map.has(b.id)) map.set(b.id, b);
+      });
+      return Array.from(map.values());
+    }
+
+    function findStudioBookById(id) {
+      return studioDraftBooks.find(b => b.id === id) || booksCatalog.find(b => b.id === id) || getAllStudioBooks()[0];
+    }
 
     const STUDIO_SKIN_CLASSES = {
       gold: '#fef08a',
@@ -4330,15 +4370,13 @@ function jsonResponse(obj) {
           description: `${baseTitle} — PDF கோப்பிலிருந்து உருவாக்கப்பட்ட 3D Flipbook.`
         };
 
-        booksCatalog.unshift(newBook);
+        newBook.isStudioDraft = true;
+        studioDraftBooks.unshift(newBook);
         currentStudioBookId = newBook.id;
         currentStudioSpread = 0;
-        saveStoredState();
         initFlipbookStudio();
-        renderLibraryGrid();
-        renderAdminBooksTable();
-        if (st) st.textContent = `✓ PDF → ${pageImages.length || numPages} Flipbook பக்கங்கள் தயார்!`;
-        showToast(`📄 "${file.name}" PDF கோப்பு 3D Flipbook-ஆக மாற்றப்பட்டு நூலகத்தில் சேர்க்கப்பட்டது!`, 'success');
+        if (st) st.textContent = `✓ PDF → ${pageImages.length || numPages} Flipbook பக்கங்கள் (வரைவு தயார்)!`;
+        showToast(`📄 "${file.name}" Flipbook Studio-வில் தயாரிக்கப்பட்டது! Drive-ல் சேமிக்க Save பொத்தானையும், நூலகத்தில் வெளியிட PUBLISH பொத்தானையும் அழுத்தவும்.`, 'info');
       };
       reader.readAsDataURL(file);
     }
@@ -4444,16 +4482,14 @@ function jsonResponse(obj) {
         description: `${baseTitle} — Word (DOC/DOCX) ஆவணத்திலிருந்து உருவாக்கப்பட்ட 3D Flipbook.`
       };
 
+      newBook.isStudioDraft = true;
       const pages = buildBookPagesData(newBook);
-      booksCatalog.unshift(newBook);
+      studioDraftBooks.unshift(newBook);
       currentStudioBookId = newBook.id;
       currentStudioSpread = 0;
-      saveStoredState();
       initFlipbookStudio();
-      renderLibraryGrid();
-      renderAdminBooksTable();
-      if (st) st.textContent = `✓ DOC → ${pages.length} Flipbook பக்கங்களாக மாற்றப்பட்டது!`;
-      showToast(`📝 "${fileName}" Word ஆவணம் ${pages.length} பக்கங்கள் கொண்ட 3D Flipbook-ஆக வெற்றிகரமாக மாற்றப்பட்டது!`, 'success');
+      if (st) st.textContent = `✓ DOC → ${pages.length} Flipbook பக்கங்கள் (வரைவு தயார்)!`;
+      showToast(`📝 "${fileName}" Flipbook Studio-வில் தயாரிக்கப்பட்டது! Drive-ல் சேமிக்க Save பொத்தானையும், நூலகத்தில் வெளியிட PUBLISH பொத்தானையும் அழுத்தவும்.`, 'info');
     }
 
     // =====================================================================
@@ -4476,7 +4512,7 @@ function jsonResponse(obj) {
       const promptInput = (document.getElementById('studioGeminiPromptInput')?.value || '').trim();
       const apiKey = (document.getElementById('studioGeminiApiKey')?.value || storedGeminiApiKey || '').trim();
       const st = document.getElementById('studioConvertStatus');
-      const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+      const book = findStudioBookById(currentStudioBookId);
 
       const topicTitle = promptInput || (book ? book.titleTa : '12-ஆம் வகுப்பு உயிரியல் சிறப்புப் பாடம்');
       if (st) st.textContent = `✨ Gemini AI "${topicTitle}" Flipbook பக்கங்களை வடிவமைக்கிறது...`;
@@ -4587,28 +4623,28 @@ function jsonResponse(obj) {
           views: 1,
           description: `Gemini AI மூலம் உருவாக்கப்பட்ட "${topicTitle}" இருமொழி 3D Flipbook மற்றும் சுய-மதிப்பீட்டுக் கையேடு.`
         };
+        aiBook.isStudioDraft = true;
         const pages = buildBookPagesData(aiBook);
-        booksCatalog.unshift(aiBook);
+        studioDraftBooks.unshift(aiBook);
         currentStudioBookId = aiBook.id;
         currentStudioSpread = 0;
-        saveStoredState();
         initFlipbookStudio();
-        renderLibraryGrid();
-        renderAdminBooksTable();
-        if (st) st.textContent = `✓ Gemini AI: ${pages.length} பக்கங்கள் கொண்ட புதிய Flipbook தயார்!`;
-        showToast(`🤖 Gemini AI மூலம் "${topicTitle}" புதிய 3D Flipbook உருவாக்கப்பட்டு நூலகத்தில் சேர்க்கப்பட்டது!`, 'success');
+        if (st) st.textContent = `✓ Gemini AI: ${pages.length} பக்கங்கள் கொண்ட வரைவு (Draft) தயார்!`;
+        showToast(`🤖 Gemini AI மூலம் "${topicTitle}" Flipbook தயாரிக்கப்பட்டது! Drive-ல் சேமிக்க Save-ம், பட்டியலில் சேர்க்க PUBLISH-ம் அழுத்தவும்.`, 'info');
       }
     }
 
     function initFlipbookStudio() {
       const sel = document.getElementById('studioBookSelect');
       if (!sel) return;
-      if (!currentStudioBookId && booksCatalog.length > 0) {
-        currentStudioBookId = booksCatalog[0].id;
+      const allStudio = getAllStudioBooks();
+      if (!currentStudioBookId && allStudio.length > 0) {
+        currentStudioBookId = allStudio[0].id;
       }
-      sel.innerHTML = booksCatalog.map(b =>
-        `<option value="${b.id}" ${b.id === currentStudioBookId ? 'selected' : ''}>${b.titleTa} (${b.titleEn})</option>`
-      ).join('');
+      sel.innerHTML = allStudio.map(b => {
+        const isPub = booksCatalog.some(pub => pub.id === b.id);
+        return `<option value="${b.id}" ${b.id === currentStudioBookId ? 'selected' : ''}>${isPub ? '✅' : '📝 [Draft]'} ${b.titleTa} (${b.titleEn})</option>`;
+      }).join('');
       renderStudioSpread();
     }
 
@@ -4630,30 +4666,28 @@ function jsonResponse(obj) {
       reader.onload = (e) => {
         const htmlContent = e.target.result || '';
         const baseTitle = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]+/g, ' ').trim();
-        let targetBook = booksCatalog.find(b => b.id === currentStudioBookId);
-        if (!targetBook) {
-          targetBook = {
-            id: 'book-studio-' + Date.now(),
-            titleTa: baseTitle,
-            titleEn: baseTitle,
-            classLevel: 'Class XII',
-            medium: 'தமிழ் வழி',
-            cover: pendingUploadCoverDataUrl,
-            formats: { flipbook: true, pdf: true, html: true },
-            views: 1
-          };
-          booksCatalog.unshift(targetBook);
-          currentStudioBookId = targetBook.id;
-        }
-        targetBook.customHtmlContent = htmlContent;
-        targetBook.hasCustomHtml = true;
+        const draftBook = {
+          id: 'book-studio-html-' + Date.now(),
+          titleTa: baseTitle,
+          titleEn: baseTitle,
+          classLevel: 'Class XII',
+          medium: 'தமிழ் வழி',
+          cover: pendingUploadCoverDataUrl,
+          formats: { flipbook: true, pdf: false, html: true },
+          customHtmlContent: htmlContent,
+          hasCustomHtml: true,
+          isStudioDraft: true,
+          views: 1,
+          description: `${baseTitle} — Flipbook Studio-வில் உருவாக்கப்பட்ட 3D Flipbook.`
+        };
+        studioDraftBooks.unshift(draftBook);
+        currentStudioBookId = draftBook.id;
+        currentStudioSpread = 0;
 
-        // Clear cache and parse into Flipbook pages
-        const pages = buildBookPagesData(targetBook);
-        saveStoredState();
+        const pages = buildBookPagesData(draftBook);
         initFlipbookStudio();
-        if (st) st.textContent = `✓ "${file.name}" → ${pages.length} Flipbook பக்கங்களாக மாற்றப்பட்டது!`;
-        showToast(`🎨 "${file.name}" கோப்பு ${pages.length} பக்கங்கள் கொண்ட 3D Flipbook-ஆக வெற்றிகரமாக மாற்றப்பட்டது!`, 'success');
+        if (st) st.textContent = `✓ "${file.name}" → ${pages.length} Flipbook பக்கங்கள் (வரைவு / Draft தயார்)`;
+        showToast(`🎨 "${file.name}" Flipbook Studio-வில் தயாரிக்கப்பட்டது! (Save மூலம் Drive-ல் சேமிக்கலாம்; PUBLISH மூலம் பட்டியலில் சேர்க்கலாம்)`, 'info');
       };
       reader.readAsText(file);
     }
@@ -4676,7 +4710,7 @@ function jsonResponse(obj) {
       if (stageBack) stageBack.style.backgroundColor = backHex;
       if (ribbonBar) ribbonBar.classList.toggle('hidden', !showRibbon);
 
-      const targetBook = booksCatalog.find(b => b.id === currentStudioBookId);
+      const targetBook = findStudioBookById(currentStudioBookId);
       if (targetBook) {
         targetBook.flipSkin = skinVal;
         targetBook.flipBackdrop = backVal;
@@ -4686,7 +4720,7 @@ function jsonResponse(obj) {
     }
 
     function renderStudioSpread() {
-      const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+      const book = findStudioBookById(currentStudioBookId);
       if (!book) return;
       currentStudioBookId = book.id;
 
@@ -4706,6 +4740,14 @@ function jsonResponse(obj) {
       const useBrackets = document.getElementById('studioBracketToggle')?.checked !== false;
 
       if (titleEl) titleEl.textContent = `${book.titleTa} (${book.titleEn})`;
+      const pubBadge = document.getElementById('studioPublishBadge');
+      if (pubBadge) {
+        const isPub = booksCatalog.some(pub => pub.id === book.id);
+        pubBadge.className = isPub
+          ? 'text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200'
+          : 'text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200';
+        pubBadge.textContent = isPub ? '✅ புத்தகப் பட்டியலில் உள்ளது (Published)' : '📝 வரைவு நிலை (Not in Book List)';
+      }
       if (counterEl) {
         const p1 = leftIdx + 1;
         const p2 = Math.min(rightIdx + 1, pages.length);
@@ -4730,7 +4772,7 @@ function jsonResponse(obj) {
     }
 
     function turnStudioSpread(delta) {
-      const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+      const book = findStudioBookById(currentStudioBookId);
       if (!book) return;
       const pages = buildBookPagesData(book);
       const totalSpreads = Math.ceil(pages.length / 2);
@@ -4764,7 +4806,7 @@ function jsonResponse(obj) {
       if (!drawer || !grid) return;
       const isHidden = drawer.classList.contains('hidden');
       if (isHidden) {
-        const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+        const book = findStudioBookById(currentStudioBookId);
         const pages = buildBookPagesData(book);
         grid.innerHTML = pages.map((p, idx) => `
           <button type="button" onclick="studioJumpToSpread(${Math.floor(idx / 2)}); toggleStudioThumbnails();" class="p-2 rounded-lg border ${Math.floor(idx / 2) === currentStudioSpread ? 'border-blue-600 bg-blue-50 font-extrabold' : 'border-slate-200 bg-slate-50 hover:bg-indigo-50'} text-center text-[11px] transition">
@@ -4791,7 +4833,7 @@ function jsonResponse(obj) {
     function insertMediaCardIntoCurrentStudioPage() {
       const title = (document.getElementById('studioMediaTitle')?.value || '').trim() || 'Watch Video / சிறப்புக் குறிப்பு';
       const urlOrNote = (document.getElementById('studioMediaUrl')?.value || '').trim() || 'மாணவர்களுக்கான முக்கிய பாட விளக்கக் குறிப்பு மற்றும் காணொளி.';
-      const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+      const book = findStudioBookById(currentStudioBookId);
       if (!book) return;
 
       if (!Array.isArray(book.studioAddedCards)) book.studioAddedCards = [];
@@ -4814,18 +4856,42 @@ function jsonResponse(obj) {
       showToast('🎬 புதிய ஊடாடும் பெட்டி (Video / Callout Card) இப்பக்கத்தில் சேர்க்கப்பட்டது!', 'success');
     }
 
-    function saveStudioFlipbookToLibrary() {
-      const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+    // SAVE BUTTON: Saves the Flipbook ONLY to Google Drive (digitalbooks folder), NOT to the public Book List!
+    function saveStudioFlipbookToDriveOnly() {
+      const book = findStudioBookById(currentStudioBookId);
       if (!book) return;
-      book.formats = { ...book.formats, flipbook: true, html: true };
+      syncBookUploadToGoogleDrive(book);
+      showToast(`💾 "${book.titleTa}" புத்தகம் Google Drive (digitalbooks) கோப்புறையில் மட்டும் சேமிக்கப்பட்டது! (புத்தகப் பட்டியலில் சேர்க்க PUBLISH அழுத்தவும்)`, 'info');
+    }
+
+    // PUBLISH BUTTON: Publishes the Studio Flipbook into the main Book Catalog (booksCatalog) AND Google Drive!
+    function saveStudioFlipbookToLibrary() {
+      const book = findStudioBookById(currentStudioBookId);
+      if (!book) return;
+      book.isStudioDraft = false;
+      book.formatsCustomizedByAdmin = true;
+      book.formats = { ...book.formats, flipbook: true };
+
+      // Remove from draft list and add/update in booksCatalog
+      studioDraftBooks = studioDraftBooks.filter(d => d.id !== book.id);
+      const existingIdx = booksCatalog.findIndex(b => b.id === book.id);
+      if (existingIdx >= 0) {
+        booksCatalog[existingIdx] = book;
+      } else {
+        booksCatalog.unshift(book);
+      }
+
+      syncBookUploadToGoogleDrive(book);
       saveStoredState();
+      initFlipbookStudio();
       renderLibraryGrid();
       renderAdminBooksTable();
-      showToast(`🚀 "${book.titleTa}" தனிப்பயன் 3D Flipbook வடிவமைப்பு நூலகத்தில் சேமிக்கப்பட்டது!`, 'success');
+      updateHeroStats();
+      showToast(`🚀 "${book.titleTa}" புத்தகம் வெற்றிகரமாகப் புத்தகப் பட்டியலில் வெளியிடப்பட்டது (Published)!`, 'success');
     }
 
     function exportStandaloneFlipbookHtml() {
-      const book = booksCatalog.find(b => b.id === currentStudioBookId) || booksCatalog[0];
+      const book = findStudioBookById(currentStudioBookId);
       if (!book) return;
       currentReaderBook = book;
       downloadCurrentBookFile();
