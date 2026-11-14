@@ -2810,9 +2810,8 @@ function jsonResponse(obj) {
 
       const topBar = document.getElementById('readerTopBar');
       if (topBar) {
-        // Hide the dark modal top bar when viewing a full uploaded HTML book so it looks 100% like a native website
-        const isFullUploadedHtml = (fmt === 'HTML' && currentReaderBook && (currentReaderBook.hasCustomHtml || (currentReaderBook.customHtmlContent && currentReaderBook.customHtmlContent.trim())));
-        topBar.classList.toggle('hidden', !!isFullUploadedHtml);
+        // Always hide the modal top bar in HTML mode so the uploaded HTML file renders 100% as a standalone website
+        topBar.classList.toggle('hidden', fmt === 'HTML');
       }
 
       if (fmt === 'FLIPBOOK') {
@@ -3818,36 +3817,13 @@ function jsonResponse(obj) {
       }
     }
 
-    // Helper: Enhance uploaded HTML so internal #hash links scroll smoothly without reloading parent URL
+    // 100% Unmodified Exact HTML Blob URL Builder (Publishes uploaded HTML file as a website without any modification)
     function buildSafeStandaloneHtmlBlobUrl(rawHtml) {
-      const navGuardScript = `<script>
-        document.addEventListener('click', function(e) {
-          var a = e.target && e.target.closest ? e.target.closest('a') : null;
-          if (!a) return;
-          var href = a.getAttribute('href') || '';
-          if (href.charAt(0) === '#') {
-            e.preventDefault();
-            var id = href.slice(1);
-            if (!id) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
-            var target = document.getElementById(id) || document.querySelector('[name="' + id + '"]');
-            if (target) target.scrollIntoView({ behavior: 'smooth' });
-          } else if (a.getAttribute('target') === '_top' || a.getAttribute('target') === '_parent') {
-            a.setAttribute('target', '_self');
-          }
-        }, true);
-      <\/script>`;
-
-      let finalHtml = rawHtml;
-      if (/<\/body>/i.test(finalHtml)) {
-        finalHtml = finalHtml.replace(/<\/body>/i, navGuardScript + '</body>');
-      } else {
-        finalHtml = finalHtml + navGuardScript;
-      }
-
       if (activeHtmlBlobUrl) {
         try { URL.revokeObjectURL(activeHtmlBlobUrl); } catch (e) {}
       }
-      const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+      // Pass rawHtml byte-for-byte into the Blob without modifying a single character
+      const blob = new Blob([rawHtml], { type: 'text/html;charset=utf-8' });
       activeHtmlBlobUrl = URL.createObjectURL(blob);
       return activeHtmlBlobUrl;
     }
@@ -3875,17 +3851,16 @@ function jsonResponse(obj) {
       reader.readAsText(file);
     }
 
-    // RENDER INTERACTIVE HTML READER PANE (100% Full-Screen Native Webpage View)
+    // RENDER 100% UNMODIFIED FULL-SCREEN WEBSITE VIEW FOR UPLOADED HTML FILES
     function renderHtmlReaderPane() {
       const contentEl = document.getElementById('htmlReaderContent');
       if (!contentEl || !currentReaderBook) return;
       const book = currentReaderBook;
 
-      if (book.customHtmlContent && book.customHtmlContent.trim()) {
-        const rawHtml = book.customHtmlContent.trim();
-        const blobUrl = buildSafeStandaloneHtmlBlobUrl(rawHtml);
+      if (book.customHtmlContent && book.customHtmlContent.length > 0) {
+        const blobUrl = buildSafeStandaloneHtmlBlobUrl(book.customHtmlContent);
         contentEl.className = 'w-full h-full flex-1 overflow-hidden p-0 m-0';
-        contentEl.innerHTML = '<iframe id="customHtmlBookIframe" class="w-full h-full border-0 block bg-white" style="width:100vw;height:100vh;border:none;display:block;"></iframe>';
+        contentEl.innerHTML = '<iframe id="customHtmlBookIframe" class="w-full h-full border-0 block bg-white" style="width:100vw;height:100vh;border:none;display:block;" allow="fullscreen"></iframe>';
         const ifr = document.getElementById('customHtmlBookIframe');
         if (ifr) {
           ifr.src = blobUrl;
@@ -4044,6 +4019,15 @@ function jsonResponse(obj) {
     // ADMIN DASHBOARD: UPLOAD HTML, PDF & FLIPBOOK WORKFLOWS
     // =====================================================================
     function switchUploadTab(tab) {
+      if (tab === 'html') {
+        const cHtml = document.getElementById('chkHtml');
+        const cFlip = document.getElementById('chkFlipbook');
+        const cPdf = document.getElementById('chkPdf');
+        if (cHtml) cHtml.checked = true;
+        if (cFlip) cFlip.checked = false;
+        if (cPdf) cPdf.checked = false;
+        updateAdminLivePreview();
+      }
       const panes = {
         flipbook: document.getElementById('uploadPaneFlipbook'),
         pdf: document.getElementById('uploadPanePdf'),
@@ -4191,7 +4175,8 @@ function jsonResponse(obj) {
       }
       const reader = new FileReader();
       reader.onload = (e) => {
-        const content = e.target.result || '';
+        // Preserve 100% exact raw HTML file content without any modification
+        const content = String(e.target.result || '');
         pendingUploadHtmlContent = content;
         const editor = document.getElementById('htmlContentEditor');
         if (editor) {
@@ -4662,8 +4647,8 @@ function jsonResponse(obj) {
         return;
       }
 
-      const rawEditorText = (document.getElementById('htmlContentEditor')?.value || '').trim();
-      const htmlEditorVal = pendingUploadHtmlContent || (rawEditorText.startsWith('<!-- ✓') ? '' : rawEditorText);
+      const rawEditorText = document.getElementById('htmlContentEditor')?.value || '';
+      const htmlEditorVal = pendingUploadHtmlContent || (rawEditorText.trim().startsWith('<!-- ✓') ? '' : rawEditorText);
       const pdfExtUrl = (document.getElementById('pdfExternalUrl')?.value || '').trim();
       const flipExtUrl = (document.getElementById('flipbookExternalUrl')?.value || '').trim();
 
@@ -4735,6 +4720,7 @@ function jsonResponse(obj) {
       // Sync uploaded book to Google Drive (CEOSVG.IN -> digitalbooks) & Google Sheet via Google Apps Script
       syncBookUploadToGoogleDrive(newBookObj);
 
+      isIdbInitialized = true;
       saveStoredState();
       resetAdminUploadForm();
       renderAdminBooksTable();
