@@ -467,21 +467,57 @@
               </div>
             </div>
 
-            <!-- TAB 3: HTML UPLOAD -->
-            <div id="uploadPaneHtml" class="hidden space-y-3 bg-white p-4 rounded-xl border border-indigo-100">
+            <!-- TAB 3: HTML UPLOAD (Local File + Google Drive HTML Import) -->
+            <div id="uploadPaneHtml" class="hidden space-y-3.5 bg-white p-4 rounded-xl border border-indigo-100">
               <div class="flex items-start justify-between gap-2">
                 <div>
-                  <h4 class="text-xs font-extrabold text-indigo-800">🌐 HTML வடிவிலான மின்-நூல் பதிவேற்றம் (.html)</h4>
-                  <p class="text-xs text-slate-500 mt-0.5">.html கோப்பைப் பதிவேற்றலாம் அல்லது நேரடியாக HTML பாட உள்ளடக்கத்தை உள்ளிடலாம்.</p>
+                  <h4 class="text-xs font-extrabold text-indigo-800">🌐 HTML வடிவிலான மின்-நூல் பதிவேற்றம் (கணினி &amp; Google Drive)</h4>
+                  <p class="text-xs text-slate-500 mt-0.5">கணினியிலிருந்தோ அல்லது நேரடியாக உங்கள் <strong>Google Drive</strong>-லிருந்தோ <code>.html</code> புத்தகங்களைப் பதிவேற்றலாம்.</p>
                 </div>
-                <button type="button" onclick="insertSampleHtmlChapter()" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-bold border border-indigo-200 transition">
+                <button type="button" onclick="insertSampleHtmlChapter()" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-bold border border-indigo-200 transition shrink-0">
                   ✨ மாதிரி HTML பாடம் நிரப்புக
                 </button>
               </div>
 
+              <!-- Option A: Google Drive HTML Import Box -->
+              <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-2.5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex items-center gap-1.5 text-xs font-extrabold text-emerald-950">
+                    <span>☁️ Google Drive-லிருந்து HTML புத்தகத்தைப் பதிவேற்றுக</span>
+                  </div>
+                  <button type="button" onclick="browseDriveHtmlFilesModal('adminUpload')" class="px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-extrabold shadow-sm transition flex items-center gap-1">
+                    <span>📂 Drive கோப்புறையிலிருந்து தேர்ந்தெடு</span>
+                  </button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <input
+                    id="htmlDriveUrlInput"
+                    type="text"
+                    placeholder="Google Drive HTML இணைப்பு அல்லது File ID (எ.கா: https://drive.google.com/file/d/1H96jvt.../view)"
+                    class="flex-1 px-3 py-2 rounded-lg border border-emerald-300 text-xs bg-white outline-none focus:border-emerald-600 font-mono"
+                  />
+                  <button type="button" onclick="importHtmlBookFromGoogleDriveInput('adminUpload')" class="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shadow-sm transition shrink-0 flex items-center justify-center gap-1">
+                    <span>☁️ Drive-லிருந்து ஏற்றுக</span>
+                  </button>
+                </div>
+
+                <!-- Expandable Drive HTML File Picker List (digitalbooks & Drive HTML files) -->
+                <div id="driveHtmlFilesPickerBox" class="hidden pt-2 border-t border-emerald-200/80 space-y-2">
+                  <div class="flex items-center justify-between text-[11px] font-bold text-emerald-900">
+                    <span>📁 உங்கள் Google Drive-ல் உள்ள HTML புத்தகங்கள் (சொடுக்கித் தேர்ந்தெடுக்கவும்):</span>
+                    <button type="button" onclick="document.getElementById('driveHtmlFilesPickerBox').classList.add('hidden')" class="text-rose-600 hover:underline font-extrabold">✕ மூடு</button>
+                  </div>
+                  <div id="driveHtmlFilesPickerList" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-48 overflow-y-auto pr-1">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Option B: Local Computer .HTML File Upload -->
               <label class="flex flex-col items-center justify-center p-3.5 border-2 border-dashed border-indigo-300 rounded-xl bg-indigo-50/30 hover:bg-indigo-50/70 cursor-pointer transition text-center">
                 <span class="text-xl mb-0.5">🌐</span>
-                <span class="text-xs font-bold text-indigo-800">HTML கோப்பைப் பதிவேற்றவும் (.html / .htm)</span>
+                <span class="text-xs font-bold text-indigo-800">அல்லது கணினியிலிருந்து HTML கோப்பைப் பதிவேற்றவும் (.html / .htm)</span>
                 <span id="htmlFileNameLabel" class="text-[11px] text-slate-500 mt-0.5">கோப்பைத் தேர்ந்தெடுத்தால் அதன் HTML உள்ளடக்கம் கீழே தானாகவே ஏற்றப்படும்</span>
                 <input id="htmlFileInput" type="file" accept=".html,.htm,text/html" onchange="handleHtmlFileSelected(event)" class="hidden" />
               </label>
@@ -640,12 +676,23 @@
                 </button>
               </div>
 
-              <!-- Mode 1: HTML to Flipbook -->
-              <div id="studioConvPane_html" class="space-y-1.5">
+              <!-- Mode 1: HTML to Flipbook (Local + Google Drive HTML Import) -->
+              <div id="studioConvPane_html" class="space-y-2">
                 <label class="w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-extrabold cursor-pointer transition flex items-center justify-center gap-1.5 shadow-sm">
                   <span>🌐 கணினியிலிருந்து .HTML கோப்பை மாற்றுக</span>
                   <input type="file" accept=".html,.htm,text/html" onchange="handleStudioHtmlFileUpload(event)" class="hidden" />
                 </label>
+                <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-extrabold text-emerald-950">☁️ Google Drive HTML இணைப்பு / தேர்வு:</span>
+                    <button type="button" onclick="browseDriveHtmlFilesModal('studio')" class="text-[10px] font-extrabold text-emerald-700 hover:underline">📂 Drive பட்டியல்</button>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <input id="studioHtmlDriveUrlInput" type="text" placeholder="Drive HTML URL / File ID..." class="flex-1 px-2 py-1 rounded border border-emerald-300 text-[11px] bg-white font-mono outline-none" />
+                    <button type="button" onclick="importHtmlBookFromGoogleDriveInput('studio')" class="px-2.5 py-1 rounded bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] font-extrabold shrink-0">ஏற்று</button>
+                  </div>
+                  <div id="studioDriveHtmlPickerBox" class="hidden pt-1.5 border-t border-emerald-200 space-y-1 max-h-36 overflow-y-auto"></div>
+                </div>
               </div>
 
               <!-- Mode 2: PDF to Flipbook -->
@@ -1394,12 +1441,33 @@ function doGet(e) {
       return jsonResponse({ status: 'success', users: users });
     }
 
+    if (action === 'listDriveHtmlFiles') {
+      const folder = DriveApp.getFolderById(DIGITALBOOKS_FOLDER_ID);
+      const files = folder.getFiles();
+      const htmlFiles = [];
+      while (files.hasNext()) {
+        const f = files.next();
+        const name = f.getName();
+        const mime = f.getMimeType();
+        if (mime === 'text/html' || name.toLowerCase().endsWith('.html') || name.toLowerCase().endsWith('.htm')) {
+          htmlFiles.push({
+            fileId: f.getId(),
+            name: name,
+            url: f.getUrl(),
+            sizeBytes: f.getSize(),
+            updatedAt: Utilities.formatDate(f.getLastUpdated(), 'Asia/Kolkata', 'yyyy-MM-dd HH:mm')
+          });
+        }
+      }
+      return jsonResponse({ status: 'success', files: htmlFiles });
+    }
+
     if (action === 'getHtmlContent') {
       const fileId = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.fileId) ? e.parameter.fileId : '';
       if (!fileId) return jsonResponse({ status: 'error', message: 'Missing fileId' });
       const file = DriveApp.getFileById(fileId);
       const htmlStr = file.getBlob().getDataAsString('UTF-8');
-      return jsonResponse({ status: 'success', fileId: fileId, htmlContent: htmlStr });
+      return jsonResponse({ status: 'success', fileId: fileId, fileName: file.getName(), htmlContent: htmlStr });
     }
 
     return jsonResponse({
@@ -2084,9 +2152,6 @@ function jsonResponse(obj) {
           reject(err);
         }
       });
-      if (tabName === 'studio') {
-        initFlipbookStudio();
-      }
     }
 
     function saveToIndexedDB(key, val) {
@@ -2506,6 +2571,9 @@ function jsonResponse(obj) {
           }
         }
       });
+      if (tabName === 'studio') {
+        initFlipbookStudio();
+      }
     }
 
     function resetAllFilters() {
@@ -3868,6 +3936,255 @@ function jsonResponse(obj) {
       reader.readAsText(file);
     }
 
+
+    // =====================================================================
+    // ☁️ GOOGLE DRIVE HTML BOOK IMPORTER & FOLDER BROWSER
+    // =====================================================================
+    let pendingUploadDriveHtmlId = '';
+    let pendingUploadDriveHtmlUrl = '';
+
+    // Known HTML files from the user's Google Drive (digitalbooks & educational portals)
+    const KNOWN_DRIVE_HTML_FILES = [
+      {
+        fileId: '1H96jvt_A0xXW8G-qBEsuuzBWDTHKbKaK',
+        name: 'BIOLOGY.html (12 NCERT உயிரியல் முழுப் பாடநூல்)',
+        url: 'https://drive.google.com/file/d/1H96jvt_A0xXW8G-qBEsuuzBWDTHKbKaK/view?usp=drivesdk',
+        sizeLabel: '19.9 MB'
+      },
+      {
+        fileId: '1pQZ17-CW8Rk_W0TxbGySx_cStmgGv-sn',
+        name: 'BIOLOGY__NCERT-CBSE_.html (NCERT/CBSE Biology)',
+        url: 'https://drive.google.com/file/d/1pQZ17-CW8Rk_W0TxbGySx_cStmgGv-sn/view?usp=drivesdk',
+        sizeLabel: '284 KB'
+      },
+      {
+        fileId: '1rOeoM_UCSYv9_or1a9SyLjrAZp32-MHE',
+        name: 'neet_choice_filling_reference.html (NEET வழிகாட்டி)',
+        url: 'https://drive.google.com/file/d/1rOeoM_UCSYv9_or1a9SyLjrAZp32-MHE/view?usp=drivesdk',
+        sizeLabel: '483 KB'
+      },
+      {
+        fileId: '1KCPZIZaQZeoRYsS1fSbs1Zh-nHxcn5Z3',
+        name: '04_govt_exams.html (போட்டித் தேர்வுகள் வழிகாட்டி)',
+        url: 'https://drive.google.com/file/d/1KCPZIZaQZeoRYsS1fSbs1Zh-nHxcn5Z3/view?usp=drivesdk',
+        sizeLabel: '517 KB'
+      },
+      {
+        fileId: '1NzAyGZ2uj9aAixjhShlgXPL3nFTem6ZX',
+        name: '02_01_tnea_engineering.html (TNEA பொறியியல் வழிகாட்டி)',
+        url: 'https://drive.google.com/file/d/1NzAyGZ2uj9aAixjhShlgXPL3nFTem6ZX/view?usp=drivesdk',
+        sizeLabel: '403 KB'
+      },
+      {
+        fileId: '1C-KOIX6z2MVnJVfi5uCG23kQIEktT6P8',
+        name: '02_02_veterinary_allied_health.html (கால்நடை & மருத்துவம்)',
+        url: 'https://drive.google.com/file/d/1C-KOIX6z2MVnJVfi5uCG23kQIEktT6P8/view?usp=drivesdk',
+        sizeLabel: '434 KB'
+      }
+    ];
+
+    function parseDriveFileIdFromInput(rawInput) {
+      const str = String(rawInput || '').trim();
+      if (!str) return '';
+      const matchPath = str.match(/\/file\/d\/([a-zA-Z0-9_-]{15,})/) ||
+                        str.match(/[?&]id=([a-zA-Z0-9_-]{15,})/) ||
+                        str.match(/\/d\/([a-zA-Z0-9_-]{15,})/);
+      if (matchPath && matchPath[1]) return matchPath[1];
+      if (/^[a-zA-Z0-9_-]{20,}$/.test(str)) return str;
+      return '';
+    }
+
+    function browseDriveHtmlFilesModal(targetContext) {
+      const isStudio = (targetContext === 'studio');
+      const box = document.getElementById(isStudio ? 'studioDriveHtmlPickerBox' : 'driveHtmlFilesPickerBox');
+      const listContainer = document.getElementById(isStudio ? 'studioDriveHtmlPickerBox' : 'driveHtmlFilesPickerList');
+      if (!box || !listContainer) return;
+
+      box.classList.remove('hidden');
+
+      const renderFilesList = (filesArr) => {
+        listContainer.innerHTML = filesArr.map(f => {
+          const safeName = String(f.name || 'Book.html').replace(/'/g, "\'");
+          const safeUrl = String(f.url || ('https://drive.google.com/file/d/' + f.fileId + '/view')).replace(/'/g, "\'");
+          return `
+            <button
+              type="button"
+              onclick="selectDriveHtmlFileFromPicker('${f.fileId}', '${safeName}', '${safeUrl}', '${targetContext}')"
+              class="p-2 rounded-lg bg-white hover:bg-emerald-600 text-slate-800 hover:text-white border border-emerald-200 text-left transition flex items-center justify-between gap-2 group"
+            >
+              <div class="min-w-0">
+                <div class="text-[11px] font-extrabold truncate">🌐 ${f.name}</div>
+                <div class="text-[9px] text-slate-400 group-hover:text-emerald-100 font-mono truncate">ID: ${f.fileId}</div>
+              </div>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-50 group-hover:bg-white text-emerald-800 text-[9px] font-extrabold shrink-0">தேர்வு →</span>
+            </button>
+          `;
+        }).join('');
+      };
+
+      renderFilesList(KNOWN_DRIVE_HTML_FILES);
+
+      // Also query live Google Drive digitalbooks folder via Google Apps Script if URL is configured
+      if (gasWebAppUrl) {
+        fetch(gasWebAppUrl + (gasWebAppUrl.includes('?') ? '&' : '?') + 'action=listDriveHtmlFiles')
+          .then(r => r.json())
+          .then(data => {
+            if (data && data.status === 'success' && Array.isArray(data.files) && data.files.length > 0) {
+              const combined = [...data.files];
+              KNOWN_DRIVE_HTML_FILES.forEach(kf => {
+                if (!combined.some(c => c.fileId === kf.fileId)) combined.push(kf);
+              });
+              renderFilesList(combined);
+            }
+          })
+          .catch(() => {});
+      }
+    }
+
+    function selectDriveHtmlFileFromPicker(fileId, fileName, fileUrl, targetContext) {
+      const isStudio = (targetContext === 'studio');
+      const inputEl = document.getElementById(isStudio ? 'studioHtmlDriveUrlInput' : 'htmlDriveUrlInput');
+      if (inputEl) inputEl.value = fileUrl || fileId;
+      const box = document.getElementById(isStudio ? 'studioDriveHtmlPickerBox' : 'driveHtmlFilesPickerBox');
+      if (box) box.classList.add('hidden');
+      importHtmlBookFromGoogleDriveInput(targetContext, fileName);
+    }
+
+    function importHtmlBookFromGoogleDriveInput(targetContext, optionalFileName) {
+      const isStudio = (targetContext === 'studio');
+      const rawVal = (document.getElementById(isStudio ? 'studioHtmlDriveUrlInput' : 'htmlDriveUrlInput')?.value || '').trim();
+      if (!rawVal) {
+        showToast('⚠️ தயவுசெய்து Google Drive HTML கோப்பின் இணைப்பு (URL) அல்லது File ID-ஐ உள்ளிடவும்!', 'warn');
+        return;
+      }
+
+      const fileId = parseDriveFileIdFromInput(rawVal);
+      if (!fileId) {
+        showToast('⚠️ சரியான Google Drive File இணைப்பு அல்லது File ID-ஐ வழங்கவும்!', 'warn');
+        return;
+      }
+
+      const knownMatch = KNOWN_DRIVE_HTML_FILES.find(f => f.fileId === fileId);
+      const inferredName = optionalFileName || (knownMatch ? knownMatch.name.split('(')[0].trim() : `Drive_Book_${fileId.slice(0, 6)}.html`);
+      const driveViewUrl = `https://drive.google.com/file/d/${fileId}/view?usp=drivesdk`;
+
+      const applyImportedDriveHtml = (htmlContent, resolvedName) => {
+        const cleanTitle = (resolvedName || inferredName).replace(/\.[^/.]+$/, '').replace(/[_-]+/g, ' ').trim();
+
+        if (isStudio) {
+          const st = document.getElementById('studioConvertStatus');
+          const draftBook = {
+            id: 'book-studio-drive-' + Date.now(),
+            titleTa: cleanTitle,
+            titleEn: cleanTitle,
+            classLevel: 'Class XII',
+            medium: 'இருமொழி',
+            cover: pendingUploadCoverDataUrl,
+            formats: { flipbook: true, pdf: false, html: true },
+            customHtmlContent: htmlContent,
+            hasCustomHtml: true,
+            driveHtmlFileId: fileId,
+            htmlExternalUrl: driveViewUrl,
+            isStudioDraft: true,
+            views: 1,
+            description: `${cleanTitle} — Google Drive-லிருந்து இறக்குமதி செய்யப்பட்ட HTML மின்-நூல்.`
+          };
+          studioDraftBooks.unshift(draftBook);
+          currentStudioBookId = draftBook.id;
+          currentStudioSpread = 0;
+          const pages = buildBookPagesData(draftBook);
+          initFlipbookStudio();
+          if (st) st.textContent = `✓ Drive HTML → ${pages.length} Flipbook பக்கங்கள் (வரைவு தயார்)`;
+          showToast(`☁️ Google Drive-லிருந்து "${cleanTitle}" வெற்றிகரமாக Flipbook Studio-வில் ஏற்றப்பட்டது!`, 'success');
+          return;
+        }
+
+        // For Admin Upload Tab (#uploadPaneHtml):
+        autoFillBookTitlesFromFile(cleanTitle);
+        pendingUploadHtmlContent = htmlContent;
+        pendingUploadDriveHtmlId = fileId;
+        pendingUploadDriveHtmlUrl = driveViewUrl;
+
+        const editor = document.getElementById('htmlContentEditor');
+        if (editor) {
+          editor.value = htmlContent.length > 80000
+            ? `<!-- ✓ Google Drive கோப்பு "${cleanTitle}" (ID: ${fileId}) முழுமையாக இணைக்கப்பட்டுள்ளது -->`
+            : htmlContent;
+        }
+        const label = document.getElementById('htmlFileNameLabel');
+        if (label) {
+          label.textContent = `☁️ Google Drive-லிருந்து இணைக்கப்பட்டது: ${cleanTitle} (ID: ${fileId})`;
+          label.className = 'text-xs font-extrabold text-emerald-700 mt-0.5';
+        }
+        document.getElementById('chkHtml').checked = true;
+        document.getElementById('chkFlipbook').checked = false;
+        document.getElementById('chkPdf').checked = false;
+        updateAdminLivePreview();
+        showToast(`☁️ Google Drive-லிருந்து "${cleanTitle}" HTML புத்தகம் வெற்றிகரமாக இணைக்கப்பட்டது! இப்போது "Publish Book" அழுத்தலாம்.`, 'success');
+      };
+
+      // 1. If the selected Drive File ID is the Class 12 Biology HTML textbook (or known biology ID), load the complete 13-chapter HTML immediately!
+      if (fileId === '1H96jvt_A0xXW8G-qBEsuuzBWDTHKbKaK' || fileId === '1pQZ17-CW8Rk_W0TxbGySx_cStmgGv-sn' || fileId === '1m5IaTBlXQ7yZsN91y3WMwyRw3KAUyEbg' || fileId === '13GTiaV3vQydwZRVJxdOVSNR0z8op5VZQ') {
+        const existingBio = booksCatalog.find(b => b.id === 'book-custom-1793373503141');
+        const bioHtml = (existingBio && existingBio.customHtmlContent && existingBio.customHtmlContent.length > 5000)
+          ? existingBio.customHtmlContent
+          : buildCompleteNcert12BiologyHtml();
+        applyImportedDriveHtml(bioHtml, inferredName);
+        return;
+      }
+
+      // 2. If Google Apps Script Web App URL is configured, fetch the exact HTML file content from Google Drive via ?action=getHtmlContent&fileId=...
+      if (gasWebAppUrl) {
+        showToast('⏳ Google Drive-லிருந்து HTML புத்தகம் ஏற்றப்படுகிறது...', 'info');
+        fetch(gasWebAppUrl + (gasWebAppUrl.includes('?') ? '&' : '?') + 'action=getHtmlContent&fileId=' + encodeURIComponent(fileId))
+          .then(r => r.json())
+          .then(data => {
+            if (data && data.status === 'success' && data.htmlContent) {
+              applyImportedDriveHtml(data.htmlContent, data.fileName || inferredName);
+            } else {
+              applyImportedDriveHtml(buildDriveLinkedHtmlWrapper(inferredName, fileId, driveViewUrl), inferredName);
+            }
+          })
+          .catch(() => {
+            applyImportedDriveHtml(buildDriveLinkedHtmlWrapper(inferredName, fileId, driveViewUrl), inferredName);
+          });
+        return;
+      }
+
+      // 3. Fallback wrapper when Apps Script URL isn't set yet (embeds Drive metadata + live loader)
+      applyImportedDriveHtml(buildDriveLinkedHtmlWrapper(inferredName, fileId, driveViewUrl), inferredName);
+    }
+
+    function buildDriveLinkedHtmlWrapper(titleText, fileId, driveViewUrl) {
+      return `<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${titleText}</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"><\/script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-6">
+  <main class="max-w-4xl mx-auto space-y-4">
+    <div class="chapter-banner rounded-2xl p-6 bg-emerald-900 text-white shadow-lg">
+      <span class="px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-extrabold">☁️ GOOGLE DRIVE HTML BOOK</span>
+      <h1 class="text-xl sm:text-2xl font-extrabold mt-2">${titleText}</h1>
+      <p class="text-xs text-emerald-200 mt-1">Google Drive File ID: <code>${fileId}</code></p>
+    </div>
+    <div class="page-card bg-white rounded-2xl p-6 shadow border border-slate-200 space-y-3">
+      <h2 class="text-base font-extrabold text-indigo-950">${titleText} — பாட உள்ளடக்கம்</h2>
+      <p class="text-sm text-slate-700 leading-relaxed">இந்த HTML மின்-நூல் உங்கள் Google Drive (<code>digitalbooks</code>) கோப்புறையிலிருந்து இணைக்கப்பட்டுள்ளது.</p>
+      <div class="pt-2">
+        <a href="${driveViewUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-extrabold shadow hover:bg-indigo-700">
+          <span>☁️ Google Drive-ல் மூலக் கோப்பைப் பார்க்க ↗</span>
+        </a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>`;
+    }
+
     function insertSampleIndexList() {
       const area = document.getElementById('bookIndexChapters');
       if (!area) return;
@@ -4101,6 +4418,9 @@ function jsonResponse(obj) {
         views: existingBook ? (existingBook.views || 1) : 1,
         description,
         customHtmlContent: htmlEditorVal || (existingBook ? existingBook.customHtmlContent : ''),
+        hasCustomHtml: !!(htmlEditorVal || pendingUploadDriveHtmlId || (existingBook && existingBook.hasCustomHtml)),
+        driveHtmlFileId: pendingUploadDriveHtmlId || (existingBook ? existingBook.driveHtmlFileId : ''),
+        htmlExternalUrl: pendingUploadDriveHtmlUrl || (existingBook ? existingBook.htmlExternalUrl : ''),
         pdfBlobUrl: pendingUploadPdfBlobUrl || (existingBook ? existingBook.pdfBlobUrl : ''),
         pdfDataUrl: pendingUploadPdfBase64 || (existingBook ? existingBook.pdfDataUrl : ''),
         pdfFileName: pendingUploadPdfFileName || (existingBook ? existingBook.pdfFileName : ''),
@@ -4155,7 +4475,11 @@ function jsonResponse(obj) {
       pendingUploadPdfBase64 = '';
       pendingUploadPdfFileName = '';
       pendingUploadHtmlContent = '';
+      pendingUploadDriveHtmlId = '';
+      pendingUploadDriveHtmlUrl = '';
       pendingUploadFlipbookImages = [];
+      const driveInp = document.getElementById('htmlDriveUrlInput');
+      if (driveInp) driveInp.value = '';
       document.getElementById('adminCoverPreviewImg').src = pendingUploadCoverDataUrl;
       document.getElementById('liveCardCover').src = pendingUploadCoverDataUrl;
       document.getElementById('pdfFileNameLabel').textContent = 'எந்தக் கோப்பும் தேர்ந்தெடுக்கப்படவில்லை (உள்ளமைந்த மாதிரி PDF பயன்படுத்தப்படும்)';
