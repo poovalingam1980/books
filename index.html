@@ -12,6 +12,7 @@
     }
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -103,6 +104,28 @@
     }
     .page-curl-right {
       background: linear-gradient(135deg, transparent 75%, rgba(15, 23, 42, 0.06) 88%, rgba(255, 255, 255, 0.9) 92%, rgba(15, 23, 42, 0.14) 100%);
+    }
+    /* StPageFlip (FlippingBook Style) Real Page Curl Styling */
+    .stf-page-sheet {
+      background-color: #fdfbf7;
+      color: #1e293b;
+      border: 1px solid #d6d3c9;
+      box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.045);
+      box-sizing: border-box;
+      overflow: hidden;
+      user-select: none;
+    }
+    .stf-page-hardcover {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #0f172a 100%) !important;
+      color: #ffffff !important;
+      border: 3px solid #f59e0b !important;
+      box-shadow: inset 0 0 36px rgba(0, 0, 0, 0.45) !important;
+    }
+    .stf-stage-host {
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     /* Custom scrollbar */
     ::-webkit-scrollbar {
@@ -849,8 +872,16 @@
                 <button type="button" onclick="studioJumpToSpread(37)" class="py-2 px-1 bg-[#5eead4] text-slate-950 hover:opacity-95 truncate hidden sm:block">SUMMARY &amp; QUIZ</button>
               </div>
 
-              <!-- 2-Page Spread Body with Center Spine Crease Shadow -->
-              <div id="studioSpreadPages" class="grid grid-cols-1 md:grid-cols-2 min-h-[450px] sm:min-h-[490px] relative">
+              <!-- StPageFlip Interactive Curl Stage inside Studio -->
+              <div id="studioStPageFlipWrapper" class="w-full py-2 px-1 sm:px-3 flex flex-col items-center justify-center relative">
+                <div id="studioStPageFlipHost" class="stf-stage-host w-full"></div>
+                <div class="text-[10px] text-slate-800 font-extrabold mt-1 text-center">
+                  ✨ StPageFlip 3D Engine: பக்கத்தின் மூலையை சுட்டியால் (Mouse) இழுத்துப் புரட்டிப் பார்க்கவும்
+                </div>
+              </div>
+
+              <!-- 2-Page Spread Body with Center Spine Crease Shadow (Fallback) -->
+              <div id="studioSpreadPages" class="hidden grid grid-cols-1 md:grid-cols-2 min-h-[450px] sm:min-h-[490px] relative">
                 <!-- Realistic Center Crease Shadow -->
                 <div class="hidden md:block absolute inset-y-0 left-1/2 -ml-5 w-10 spine-shadow pointer-events-none z-20"></div>
 
@@ -1267,7 +1298,15 @@
               <button type="button" onclick="jumpFlipbookSpread(31)" class="py-2 px-1 bg-[#fde047] text-slate-950 hover:opacity-95 truncate hidden sm:block">UNIT X (CH 11–13)</button>
               <button type="button" onclick="goToFlipbookIndexPage()" class="py-2 px-1 bg-[#5eead4] text-slate-950 hover:opacity-95 truncate hidden sm:block">📑 ALL CHAPTERS</button>
             </div>
-            <div id="flipbookSheet" class="flipbook-sheet grid grid-cols-1 md:grid-cols-2 min-h-[430px] sm:min-h-[490px] relative">
+            <!-- StPageFlip (FlippingBook Realistic Drag & Corner Curl Engine) Stage -->
+            <div id="readerStPageFlipWrapper" class="w-full py-2 px-1 sm:px-3 flex flex-col items-center justify-center relative">
+              <div id="readerStPageFlipHost" class="stf-stage-host w-full"></div>
+              <div class="text-[10px] text-amber-900/80 font-bold mt-1 text-center">
+                ✨ பக்கத்தின் மூலையை இழுத்து (Drag Corner) அல்லது தொட்டு உண்மையான புத்தகம் போலப் புரட்டலாம் (StPageFlip 3D Curl)
+              </div>
+            </div>
+
+            <div id="flipbookSheet" class="hidden flipbook-sheet grid grid-cols-1 md:grid-cols-2 min-h-[430px] sm:min-h-[490px] relative">
               <!-- Center Spine Shadow on Desktop -->
               <div class="hidden md:block absolute inset-y-0 left-1/2 -ml-5 w-10 spine-shadow pointer-events-none z-20"></div>
 
@@ -3148,6 +3187,8 @@ function jsonResponse(obj) {
 
     function renderPdfFlipbookSpread() {
       if (!activePdfDoc) return;
+      document.getElementById('readerStPageFlipWrapper')?.classList.add('hidden');
+      document.getElementById('flipbookSheet')?.classList.remove('hidden');
       const totalPages = activePdfTotalPages;
       const totalSpreads = Math.ceil(totalPages / 2);
       if (currentFlipSpread < 0) currentFlipSpread = 0;
@@ -3214,8 +3255,8 @@ function jsonResponse(obj) {
       if (!currentReaderBook) return;
       const pdfSource = currentReaderBook.pdfBlobUrl || currentReaderBook.pdfDataUrl;
 
-      // If the book has an uploaded PDF file and PDF.js is available, render all pages natively in 3D Flipbook!
-      if (pdfSource && window.pdfjsLib) {
+      // If the book has an uploaded PDF file (without pre-extracted StPageFlip images) and PDF.js is available:
+      if (pdfSource && window.pdfjsLib && (!Array.isArray(currentReaderBook.customFlipImages) || currentReaderBook.customFlipImages.length === 0)) {
         if (activePdfDoc && activePdfBookId === currentReaderBook.id) {
           renderPdfFlipbookSpread();
           return;
@@ -3264,9 +3305,237 @@ function jsonResponse(obj) {
       renderStandardHtmlFlipbookSpread();
     }
 
+
+    // =====================================================================
+    // StPageFlip (page-flip@2.0.7) REALISTIC 3D PAGE CURL CONTROLLER
+    // =====================================================================
+    let readerPageFlipInstance = null;
+    let readerPageFlipBookKey = '';
+    let studioPageFlipInstance = null;
+    let studioPageFlipBookKey = '';
+
+    function getStPageFlipCtor() {
+      if (window.St && window.St.PageFlip) return window.St.PageFlip;
+      if (window.PageFlip) return window.PageFlip;
+      return null;
+    }
+
+    function updateReaderIndicatorFromPageIndex(pageIdx, totalPages) {
+      currentFlipSpread = Math.floor(pageIdx / 2);
+      const indicatorEl = document.getElementById('flipPageIndicator');
+      const immBadge = document.getElementById('immersivePageBadge');
+      const p1 = pageIdx + 1;
+      const p2 = Math.min(pageIdx + 2, totalPages);
+      const label = (p1 === 1) ? `பக்கம் 1 / ${totalPages}` : `பக்கம் ${p1}–${p2} / ${totalPages}`;
+      if (indicatorEl) indicatorEl.textContent = label;
+      if (immBadge) immBadge.textContent = `பக். ${p1}–${p2} / ${totalPages}`;
+    }
+
+    function updateStudioIndicatorFromPageIndex(pageIdx, totalPages) {
+      currentStudioSpread = Math.floor(pageIdx / 2);
+      const counterEl = document.getElementById('studioTopPageCounter');
+      if (counterEl) {
+        const p1 = pageIdx + 1;
+        const p2 = Math.min(pageIdx + 2, totalPages);
+        counterEl.textContent = `pages ${p1} – ${p2} of ${totalPages}`;
+      }
+    }
+
+    function mountReaderStPageFlip(book, pages) {
+      const PageFlipCtor = getStPageFlipCtor();
+      const host = document.getElementById('readerStPageFlipHost');
+      const wrapper = document.getElementById('readerStPageFlipWrapper');
+      const fallbackSheet = document.getElementById('flipbookSheet');
+
+      if (!PageFlipCtor || !host || !Array.isArray(pages) || pages.length === 0) {
+        if (wrapper) wrapper.classList.add('hidden');
+        if (fallbackSheet) fallbackSheet.classList.remove('hidden');
+        return false;
+      }
+
+      if (wrapper) wrapper.classList.remove('hidden');
+      if (fallbackSheet) fallbackSheet.classList.add('hidden');
+
+      const skinVal = book.flipSkin || document.getElementById('studioPageSkinSelect')?.value || 'ivory';
+      const skinHex = STUDIO_SKIN_CLASSES[skinVal] || '#fdfbf7';
+      const bookKey = `${book.id}_${pages.length}_${skinHex}_${isImmersiveBookFullscreen ? 'full' : 'norm'}`;
+
+      const targetPageIdx = Math.min(Math.max(0, currentFlipSpread * 2), pages.length - 1);
+
+      if (readerPageFlipInstance && readerPageFlipBookKey === bookKey) {
+        const curIdx = readerPageFlipInstance.getCurrentPageIndex();
+        if (Math.floor(curIdx / 2) !== currentFlipSpread) {
+          try {
+            readerPageFlipInstance.flip(targetPageIdx);
+          } catch (e) {
+            try { readerPageFlipInstance.turnToPage(targetPageIdx); } catch (e2) {}
+          }
+        }
+        updateReaderIndicatorFromPageIndex(targetPageIdx, pages.length);
+        return true;
+      }
+
+      if (readerPageFlipInstance) {
+        try { readerPageFlipInstance.destroy(); } catch (e) {}
+        readerPageFlipInstance = null;
+      }
+
+      host.innerHTML = '';
+      const bookEl = document.createElement('div');
+      bookEl.className = 'w-full';
+
+      pages.forEach((p, idx) => {
+        const pageDiv = document.createElement('div');
+        const isHard = (idx === 0 || idx === pages.length - 1);
+        pageDiv.setAttribute('data-density', isHard ? 'hard' : 'soft');
+        pageDiv.className = 'stf-page-sheet p-4 sm:p-6 flex flex-col justify-between';
+        pageDiv.style.backgroundColor = skinHex;
+        pageDiv.innerHTML = `<div class="h-full flex flex-col justify-between overflow-y-auto pr-1">${p.html}</div>`;
+        bookEl.appendChild(pageDiv);
+      });
+
+      host.appendChild(bookEl);
+
+      try {
+        const baseW = isImmersiveBookFullscreen ? 520 : 430;
+        const baseH = isImmersiveBookFullscreen ? 650 : 500;
+        readerPageFlipInstance = new PageFlipCtor(bookEl, {
+          width: baseW,
+          height: baseH,
+          size: 'stretch',
+          minWidth: 270,
+          maxWidth: 680,
+          minHeight: 380,
+          maxHeight: 780,
+          drawShadow: true,
+          maxShadowOpacity: 0.65,
+          showCover: false,
+          usePortrait: true,
+          flippingTime: 750,
+          startPage: targetPageIdx,
+          mobileScrollSupport: false,
+          clickEventForward: true,
+          useMouseEvents: true,
+          swipeDistance: 30
+        });
+
+        readerPageFlipInstance.loadFromHTML(bookEl.querySelectorAll('.stf-page-sheet'));
+        readerPageFlipBookKey = bookKey;
+
+        readerPageFlipInstance.on('flip', (e) => {
+          playPaperFlipSound();
+          updateReaderIndicatorFromPageIndex(e.data || 0, pages.length);
+        });
+
+        updateReaderIndicatorFromPageIndex(targetPageIdx, pages.length);
+        return true;
+      } catch (err) {
+        if (wrapper) wrapper.classList.add('hidden');
+        if (fallbackSheet) fallbackSheet.classList.remove('hidden');
+        return false;
+      }
+    }
+
+    function mountStudioStPageFlip(book, pages) {
+      const PageFlipCtor = getStPageFlipCtor();
+      const host = document.getElementById('studioStPageFlipHost');
+      const wrapper = document.getElementById('studioStPageFlipWrapper');
+      const fallbackSpread = document.getElementById('studioSpreadPages');
+
+      if (!PageFlipCtor || !host || !Array.isArray(pages) || pages.length === 0) {
+        if (wrapper) wrapper.classList.add('hidden');
+        if (fallbackSpread) fallbackSpread.classList.remove('hidden');
+        return false;
+      }
+
+      if (wrapper) wrapper.classList.remove('hidden');
+      if (fallbackSpread) fallbackSpread.classList.add('hidden');
+
+      const skinVal = document.getElementById('studioPageSkinSelect')?.value || book.flipSkin || 'gold';
+      const skinHex = STUDIO_SKIN_CLASSES[skinVal] || '#fef08a';
+      const useBrackets = document.getElementById('studioBracketToggle')?.checked !== false;
+      const bookKey = `studio_${book.id}_${pages.length}_${skinHex}_${useBrackets ? 'b1' : 'b0'}`;
+      const targetPageIdx = Math.min(Math.max(0, currentStudioSpread * 2), pages.length - 1);
+
+      if (studioPageFlipInstance && studioPageFlipBookKey === bookKey) {
+        const curIdx = studioPageFlipInstance.getCurrentPageIndex();
+        if (Math.floor(curIdx / 2) !== currentStudioSpread) {
+          try {
+            studioPageFlipInstance.flip(targetPageIdx);
+          } catch (e) {
+            try { studioPageFlipInstance.turnToPage(targetPageIdx); } catch (e2) {}
+          }
+        }
+        updateStudioIndicatorFromPageIndex(targetPageIdx, pages.length);
+        return true;
+      }
+
+      if (studioPageFlipInstance) {
+        try { studioPageFlipInstance.destroy(); } catch (e) {}
+        studioPageFlipInstance = null;
+      }
+
+      host.innerHTML = '';
+      const bookEl = document.createElement('div');
+      bookEl.className = 'w-full';
+      const wrapClass = useBrackets ? 'corner-bracket-box p-3 rounded-xl h-full flex flex-col justify-between overflow-y-auto' : 'h-full flex flex-col justify-between overflow-y-auto';
+
+      pages.forEach((p, idx) => {
+        const pageDiv = document.createElement('div');
+        const isHard = (idx === 0 || idx === pages.length - 1);
+        pageDiv.setAttribute('data-density', isHard ? 'hard' : 'soft');
+        pageDiv.className = 'stf-page-sheet p-4 sm:p-5';
+        pageDiv.style.backgroundColor = skinHex;
+        pageDiv.innerHTML = `<div class="${wrapClass}">${p.html}</div>`;
+        bookEl.appendChild(pageDiv);
+      });
+
+      host.appendChild(bookEl);
+
+      try {
+        studioPageFlipInstance = new PageFlipCtor(bookEl, {
+          width: 420,
+          height: 490,
+          size: 'stretch',
+          minWidth: 260,
+          maxWidth: 560,
+          minHeight: 380,
+          maxHeight: 620,
+          drawShadow: true,
+          maxShadowOpacity: 0.65,
+          showCover: false,
+          usePortrait: true,
+          flippingTime: 750,
+          startPage: targetPageIdx,
+          mobileScrollSupport: false,
+          clickEventForward: true,
+          useMouseEvents: true,
+          swipeDistance: 30
+        });
+
+        studioPageFlipInstance.loadFromHTML(bookEl.querySelectorAll('.stf-page-sheet'));
+        studioPageFlipBookKey = bookKey;
+
+        studioPageFlipInstance.on('flip', (e) => {
+          playPaperFlipSound();
+          updateStudioIndicatorFromPageIndex(e.data || 0, pages.length);
+        });
+
+        updateStudioIndicatorFromPageIndex(targetPageIdx, pages.length);
+        return true;
+      } catch (err) {
+        if (wrapper) wrapper.classList.add('hidden');
+        if (fallbackSpread) fallbackSpread.classList.remove('hidden');
+        return false;
+      }
+    }
+
     function renderStandardHtmlFlipbookSpread() {
       if (!currentReaderBook) return;
       const pages = buildBookPagesData(currentReaderBook);
+      if (mountReaderStPageFlip(currentReaderBook, pages)) {
+        return;
+      }
       const totalSpreads = Math.ceil(pages.length / 2);
       if (currentFlipSpread < 0) currentFlipSpread = 0;
       if (currentFlipSpread >= totalSpreads) currentFlipSpread = totalSpreads - 1;
@@ -3299,6 +3568,15 @@ function jsonResponse(obj) {
 
     function turnFlipbookPage(delta) {
       if (!currentReaderBook) return;
+      const stWrapper = document.getElementById('readerStPageFlipWrapper');
+      if (readerPageFlipInstance && stWrapper && !stWrapper.classList.contains('hidden')) {
+        if (delta > 0) {
+          readerPageFlipInstance.flipNext('bottom');
+        } else {
+          readerPageFlipInstance.flipPrev('bottom');
+        }
+        return;
+      }
       const totalSpreads = getTotalSpreadsForCurrentBook();
       const nextSpread = currentFlipSpread + delta;
 
@@ -5070,6 +5348,10 @@ function jsonResponse(obj) {
         statusEl.textContent = `✓ மொத்தம் ${pages.length} Flipbook பக்கங்கள் தயார்`;
       }
 
+      if (mountStudioStPageFlip(book, pages)) {
+        return;
+      }
+
       const wrapClass = useBrackets ? 'corner-bracket-box p-3.5 rounded-xl h-full' : 'h-full';
 
       if (leftEl && pages[leftIdx]) {
@@ -5085,6 +5367,15 @@ function jsonResponse(obj) {
     }
 
     function turnStudioSpread(delta) {
+      const stWrapper = document.getElementById('studioStPageFlipWrapper');
+      if (studioPageFlipInstance && stWrapper && !stWrapper.classList.contains('hidden')) {
+        if (delta > 0) {
+          studioPageFlipInstance.flipNext('bottom');
+        } else {
+          studioPageFlipInstance.flipPrev('bottom');
+        }
+        return;
+      }
       const book = findStudioBookById(currentStudioBookId);
       if (!book) return;
       const pages = buildBookPagesData(book);
